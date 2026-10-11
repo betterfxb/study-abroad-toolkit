@@ -1,0 +1,40 @@
+{
+  "description": "模块二真实源清单。全部为公开可访问的数据源，用于验证真实采集链路。",
+  "sources": [
+    {
+      "code": "job_remotive",
+      "name": "Remotive 远程招聘 API",
+      "adapter": "job_platform",
+      "config": { "platform": "remotive", "rate_limit": 6 },
+      "enabled": true
+    },
+    {
+      "code": "job_remoteok",
+      "name": "RemoteOK 招聘 API",
+      "adapter": "job_platform",
+      "config": { "platform": "remoteok", "rate_limit": 6 },
+      "enabled": true
+    },
+    {
+      "code": "rss_hn_jobs",
+      "name": "Hacker News Jobs",
+      "adapter": "rss",
+      "config": { "feed_url": "https://hnrss.org/jobs", "account_name": "HN Jobs", "rate_limit": 6 },
+      "enabled": true
+    },
+    {
+      "code": "rss_sspai",
+      "name": "少数派",
+      "adapter": "rss",
+      "config": { "feed_url": "https://sspai.com/feed", "account_name": "少数派", "rate_limit": 6 },
+      "enabled": true
+    },
+    {
+      "code": "rss_juejin",
+      "name": "掘金",
+      "adapter": "rss",
+      "config": { "feed_url": "https://juejin.cn/rss", "account_name": "掘金", "rate_limit": 6 },
+      "enabled": true
+    }
+  ]
+}

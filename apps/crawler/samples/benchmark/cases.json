@@ -1,0 +1,111 @@
+{
+  "description": "实习信息抽取评测基准集。用于对比不同抽取器（规则 / LLM）的字段准确率。ground truth 为人工标注的核心字段。",
+  "fields": ["company", "title", "city", "salary", "deadline", "apply_method"],
+  "cases": [
+    {
+      "id": "c01_bracket",
+      "format": "标准【】标签",
+      "text": "【公司】理想汽车\n【岗位】数据分析实习生\n工作地点：北京市\n薪资：200-250元/天\n学历要求：本科\n截止日期：2026-11-30\n投递方式：hr-data@lixiang.com",
+      "expect": {
+        "company": "理想汽车",
+        "title": "数据分析实习生",
+        "city": "北京",
+        "salary": "200-250元/天",
+        "deadline": "2026-11-30",
+        "apply_method": "hr-data@lixiang.com"
+      }
+    },
+    {
+      "id": "c02_colon",
+      "format": "冒号标签",
+      "text": "公司：字节跳动\n岗位：产品运营实习生\n工作地点：上海市\n薪资：180元/天\n截止日期：2026-11-15\n投递方式：https://jobs.bytedance.com/intern/123",
+      "expect": {
+        "company": "字节跳动",
+        "title": "产品运营实习生",
+        "city": "上海",
+        "salary": "180元/天",
+        "deadline": "2026-11-15",
+        "apply_method": "jobs.bytedance.com"
+      }
+    },
+    {
+      "id": "c03_freeform",
+      "format": "无标签自然段（公众号软文）",
+      "text": "字节跳动最近在招产品运营实习生，base 上海，一天给到 180 块，主要做内容生态运营和活动策划，感兴趣的同学可以把简历发到 hr@bytedance.com，截止到 11 月 15 日。",
+      "expect": {
+        "company": "字节跳动",
+        "title": "产品运营实习生",
+        "city": "上海",
+        "salary": "180元/天",
+        "deadline": "2026-11-15",
+        "apply_method": "hr@bytedance.com"
+      }
+    },
+    {
+      "id": "c04_oneline",
+      "format": "一行式（招聘平台风格）",
+      "text": "【腾讯】交互设计实习生｜深圳｜200元/天｜投递：design@tencent.com｜截止 11-25",
+      "expect": {
+        "company": "腾讯",
+        "title": "交互设计实习生",
+        "city": "深圳",
+        "salary": "200元/天",
+        "deadline": "2026-11-25",
+        "apply_method": "design@tencent.com"
+      }
+    },
+    {
+      "id": "c05_multi",
+      "format": "多岗位混排",
+      "text": "【公司】宁德时代\n【岗位】算法实习生\n工作地点：宁德市\n薪资：220-300元/天\n学历要求：硕士\n截止日期：2026-11-20\n投递方式：campus@catl.com\n\n【公司】美团\n【岗位】商业分析实习生\n工作地点：北京市\n薪资：200元/天\n学历要求：本科\n截止日期：2026-12-01\n投递方式：ba@meituan.com",
+      "expect_jobs": 2,
+      "expect": {
+        "company": "宁德时代",
+        "title": "算法实习生",
+        "city": "宁德",
+        "salary": "220-300元/天",
+        "deadline": "2026-11-20",
+        "apply_method": "campus@catl.com"
+      }
+    },
+    {
+      "id": "c06_mixed_lang",
+      "format": "中英混排",
+      "text": "Company: NVIDIA\nPosition: Machine Learning Intern\nLocation: 上海\nSalary: 300元/天\nDeadline: 2026-12-10\nApply: ml-intern@nvidia.com",
+      "expect": {
+        "company": "NVIDIA",
+        "title": "Machine Learning Intern",
+        "city": "上海",
+        "salary": "300元/天",
+        "deadline": "2026-12-10",
+        "apply_method": "ml-intern@nvidia.com"
+      }
+    },
+    {
+      "id": "c07_distractor",
+      "format": "含干扰词（岗位职责/任职要求）",
+      "text": "【公司】小米集团\n【岗位】增长运营实习生\n工作地点：北京市\n薪资：180-220元/天\n岗位职责：负责用户增长活动的策划与执行，跟进渠道投放效果并输出复盘报告。\n任职要求：本科及以上在读，熟悉 Excel 与 SQL，有活动运营经验优先。\n截止日期：2026-11-28\n投递方式：growth@mi.com",
+      "expect": {
+        "company": "小米集团",
+        "title": "增长运营实习生",
+        "city": "北京",
+        "salary": "180-220元/天",
+        "deadline": "2026-11-28",
+        "apply_method": "growth@mi.com"
+      }
+    },
+    {
+      "id": "c08_minimal",
+      "format": "极简（仅公司+岗位+邮箱）",
+      "text": "小红书招内容运营实习生，简历发 xhs-intern@xiaohongshu.com",
+      "expect": {
+        "company": "小红书",
+        "title": "内容运营实习生",
+        "city": null,
+        "salary": null,
+        "deadline": null,
+        "apply_method": "xhs-intern@xiaohongshu.com"
+      }
+    }
+  ]
+}

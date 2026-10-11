@@ -1,0 +1,254 @@
+{
+  "summaries": {
+    "规则抽取": {
+      "field_accuracy": {
+        "company": 0.25,
+        "title": 0.6667,
+        "city": 0.1667,
+        "salary": 0.6667,
+        "deadline": 0.2,
+        "apply_method": 0.8333
+      },
+      "overall_accuracy": 0.4848,
+      "total_hit": 16,
+      "total_count": 33,
+      "case_count_accuracy": 0.6667,
+      "errors": []
+    }
+  },
+  "details": {
+    "规则抽取": [
+      {
+        "id": "h01_table",
+        "format": "TSV 表格（表头+数据行）",
+        "jobs_found": 1,
+        "expected_jobs": 1,
+        "count_ok": true,
+        "error": null,
+        "fields": {
+          "company": {
+            "ok": false,
+            "expected": "快手",
+            "actual": "岗位\t地点\t薪资\t截止"
+          },
+          "title": {
+            "ok": true,
+            "expected": "短视频运营实习生",
+            "actual": "短视频运营实习生"
+          },
+          "city": {
+            "ok": false,
+            "expected": "北京",
+            "actual": "薪资\t截止"
+          },
+          "salary": {
+            "ok": true,
+            "expected": "200元/天",
+            "actual": "200元/天"
+          },
+          "deadline": {
+            "ok": false,
+            "expected": "2026-11-18",
+            "actual": null
+          },
+          "apply_method": {
+            "ok": true,
+            "expected": "intern@kuaishou.com",
+            "actual": "邮箱: intern@kuaishou.com"
+          }
+        }
+      },
+      {
+        "id": "h02_multi_bullet",
+        "format": "编号列表多岗位（无标签）",
+        "jobs_found": 1,
+        "expected_jobs": 3,
+        "count_ok": false,
+        "error": null,
+        "fields": {
+          "title": {
+            "ok": true,
+            "expected": "算法实习生",
+            "actual": "算法实习生"
+          },
+          "city": {
+            "ok": false,
+            "expected": "北京",
+            "actual": ""
+          },
+          "salary": {
+            "ok": true,
+            "expected": "300元/天",
+            "actual": "300元/天"
+          },
+          "apply_method": {
+            "ok": true,
+            "expected": "campus@example.com",
+            "actual": "邮箱: campus@example.com"
+          }
+        }
+      },
+      {
+        "id": "h03_english",
+        "format": "英文自由文本",
+        "jobs_found": 0,
+        "expected_jobs": 1,
+        "count_ok": false,
+        "error": null,
+        "fields": {
+          "company": {
+            "ok": false,
+            "expected": "NVIDIA",
+            "actual": null
+          },
+          "title": {
+            "ok": false,
+            "expected": "Machine Learning Intern",
+            "actual": null
+          },
+          "city": {
+            "ok": false,
+            "expected": "上海",
+            "actual": null
+          },
+          "salary": {
+            "ok": false,
+            "expected": "300元/天",
+            "actual": null
+          },
+          "deadline": {
+            "ok": false,
+            "expected": "2026-12-10",
+            "actual": null
+          },
+          "apply_method": {
+            "ok": false,
+            "expected": "ml-intern@nvidia.com",
+            "actual": null
+          }
+        }
+      },
+      {
+        "id": "h04_verbose_prose",
+        "format": "长软文（信息散落多句）",
+        "jobs_found": 1,
+        "expected_jobs": 1,
+        "count_ok": true,
+        "error": null,
+        "fields": {
+          "title": {
+            "ok": false,
+            "expected": "数据科学实习生",
+            "actual": "届同学开放数据科学实习生"
+          },
+          "city": {
+            "ok": false,
+            "expected": "深圳",
+            "actual": ""
+          },
+          "salary": {
+            "ok": true,
+            "expected": "260元/天",
+            "actual": "260元/天"
+          },
+          "deadline": {
+            "ok": true,
+            "expected": "2026-12-20",
+            "actual": "2026-12-20"
+          },
+          "apply_method": {
+            "ok": true,
+            "expected": "data-intern@feishu.cn",
+            "actual": "邮箱: data-intern@feishu.cn"
+          }
+        }
+      },
+      {
+        "id": "h05_hourly",
+        "format": "时薪结算（无标准薪资标签）",
+        "jobs_found": 1,
+        "expected_jobs": 1,
+        "count_ok": true,
+        "error": null,
+        "fields": {
+          "company": {
+            "ok": true,
+            "expected": "哔哩哔哩",
+            "actual": "哔哩哔哩内容审核团队现"
+          },
+          "title": {
+            "ok": true,
+            "expected": "内容审核实习生",
+            "actual": "内容审核实习生"
+          },
+          "city": {
+            "ok": true,
+            "expected": "上海",
+            "actual": "上海"
+          },
+          "salary": {
+            "ok": false,
+            "expected": "25元/小时",
+            "actual": "25元/天"
+          },
+          "deadline": {
+            "ok": false,
+            "expected": "2026-12-05",
+            "actual": null
+          },
+          "apply_method": {
+            "ok": true,
+            "expected": "intern@bilibili.com",
+            "actual": "邮箱: intern@bilibili.com"
+          }
+        }
+      },
+      {
+        "id": "h06_brand_team",
+        "format": "母公司+事业群 + 后缀式截止",
+        "jobs_found": 1,
+        "expected_jobs": 1,
+        "count_ok": true,
+        "error": null,
+        "fields": {
+          "company": {
+            "ok": false,
+            "expected": "腾讯",
+            "actual": "事业群面向在校生"
+          },
+          "title": {
+            "ok": true,
+            "expected": "游戏运营实习生",
+            "actual": "游戏运营实习生"
+          },
+          "city": {
+            "ok": false,
+            "expected": "深圳",
+            "actual": ""
+          },
+          "salary": {
+            "ok": true,
+            "expected": "180元/天",
+            "actual": "180元/天"
+          },
+          "deadline": {
+            "ok": false,
+            "expected": "2026-11-28",
+            "actual": null
+          },
+          "apply_method": {
+            "ok": true,
+            "expected": "game-intern@tencent.com",
+            "actual": "邮箱: game-intern@tencent.com"
+          }
+        }
+      }
+    ]
+  },
+  "meta": {
+    "运行时间": "2026-10-09T06:37:42.756653+00:00",
+    "基准集": "hard（6 例）",
+    "来源": "C:\\Users\\19560\\WorkBuddy AI\\new_job_project\\apps\\crawler\\samples\\benchmark\\cases.hard.json",
+    "LLM": "未启用"
+  }
+}

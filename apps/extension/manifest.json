@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "留学网申助手",
+  "version": "0.1.0",
+  "description": "识别海外院校网申表单字段，一键填充已保存的申请档案（只填充，不提交）。",
+  "minimum_chrome_version": "110",
+
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["http://localhost:8090/*"],
+
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+
+  "action": {
+    "default_title": "留学网申助手",
+    "default_popup": "src/popup/popup.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["src/content/content-script.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/core/*.js",
+        "src/shared/*.js",
+        "src/content/panel.css"
+      ],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
+}

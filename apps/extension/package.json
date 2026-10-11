@@ -1,0 +1,10 @@
+{
+  "name": "qiuzhi-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "留学网申助手 · Chrome MV3 填充执行器（零构建）",
+  "scripts": {
+    "test": "node tests/smoke_test.js"
+  }
+}

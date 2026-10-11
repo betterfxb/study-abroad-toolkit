@@ -1,0 +1,79 @@
+{
+  "description": "模块一字段匹配【难例集】。取自真实网申页面里容易让词典匹配翻车的情形：缩写、题干与字段关键词撞车、非英文标签、行业黑话、无 label 仅有 placeholder 等。expect_key 为 null 表示该字段【不应被匹配】——用于检验误报。",
+  "profile": {
+    "basic_info": {
+      "last_name": "Feng",
+      "first_name": "Zong",
+      "middle_name": "Ming",
+      "preferred_name": "Zong",
+      "email": "fengzong@example.com",
+      "phone": "+8613800138000",
+      "gender": "M",
+      "birth_date": "2003-01-01",
+      "nationality": "CN",
+      "citizenship": "CN"
+    },
+    "education": [
+      {
+        "school": "Tsinghua University",
+        "degree": "Bachelor",
+        "major": "Computer Science",
+        "start": "2022-09",
+        "end": "2026-06",
+        "gpa": { "value": 88.5, "scale": "100" }
+      }
+    ],
+    "tests": [
+      { "type": "TOEFL", "total": 105, "subs": { "reading": 28, "listening": 27, "speaking": 24, "writing": 26 }, "test_date": "2026-03-15" }
+    ],
+    "addresses": [
+      { "type": "permanent", "country": "CN", "province": "北京", "city": "Beijing", "street": "Zhongguancun Street No.1", "postal": "100084" }
+    ],
+    "experiences": [
+      { "org": "ByteDance", "role": "Data Analyst Intern", "start": "2025-06", "end": "2025-09" }
+    ]
+  },
+  "pages": [
+    {
+      "id": "h01_abbrev_and_collision",
+      "system_code": "applyweb",
+      "name": "缩写 + 题干撞车",
+      "fields": [
+        { "selector": "#lname", "label": "LName", "name": "lname", "type": "text", "expect_key": "basic_info.last_name" },
+        { "selector": "#fname", "label": "FName", "name": "fname", "type": "text", "expect_key": "basic_info.first_name" },
+        { "selector": "#sop", "label": "Statement of Purpose", "name": "sop", "type": "textarea", "expect_key": "essays.statement_of_purpose" },
+        { "selector": "#q_state", "label": "State your purpose for graduate study", "name": "q_state", "type": "textarea", "expect_key": null },
+        { "selector": "#q_country", "label": "Country of intended study", "name": "q_country", "type": "select", "options": ["China", "United States"], "expect_key": null },
+        { "selector": "#q_name", "label": "Name three academic honors you have received", "name": "q_name", "type": "textarea", "expect_key": null }
+      ]
+    },
+    {
+      "id": "h02_industry_jargon",
+      "system_code": "liaison",
+      "name": "行业黑话 / 部门口径",
+      "fields": [
+        { "selector": "#dept", "label": "Department", "name": "dept", "type": "text", "expect_key": "education[0].major" },
+        { "selector": "#cumgpa", "label": "Cumulative Grade Point Average", "name": "cumGpa", "type": "number", "expect_key": "education[0].gpa" },
+        { "selector": "#awa", "label": "AWA", "name": "awa", "type": "number", "expect_key": "tests[0].aw" },
+        { "selector": "#toeflTotal", "label": "Toefl Total", "name": "toeflTotal", "type": "number", "expect_key": "tests[0].total" },
+        { "selector": "#addr1", "label": "Permanent Address Line 1", "name": "permAddr1", "type": "text", "expect_key": "address.street" },
+        { "selector": "#zipPostal", "label": "Zip/Postal Code", "name": "zipPostal", "type": "text", "expect_key": "address.postal" }
+      ]
+    },
+    {
+      "id": "h03_nonenglish_and_nolabel",
+      "system_code": "slate",
+      "name": "非英文标签 / 无 label 仅 placeholder",
+      "fields": [
+        { "selector": "#nom", "label": "Nom de famille", "name": "nom", "type": "text", "expect_key": "basic_info.last_name" },
+        { "selector": "#nachname", "label": "Nachname", "name": "nachname", "type": "text", "expect_key": "basic_info.last_name" },
+        { "selector": "#vorname", "label": "Vorname", "name": "vorname", "type": "text", "expect_key": "basic_info.first_name" },
+        { "selector": "#field_27", "name": "field_27", "placeholder": "Enter the name of your current employer", "type": "text", "expect_key": "experiences[0].org" },
+        { "selector": "#field_31", "name": "field_31", "placeholder": "Job title", "type": "text", "expect_key": "experiences[0].role" },
+        { "selector": "#field_42", "name": "field_42", "placeholder": "If applicable, enter your middle name", "type": "text", "expect_key": "basic_info.middle_name" },
+        { "selector": "#cc", "label": "Country Code", "name": "countryCode", "type": "text", "expect_key": null },
+        { "selector": "#years", "label": "How many years of work experience do you have?", "name": "yearsExp", "type": "number", "expect_key": null }
+      ]
+    }
+  ]
+}

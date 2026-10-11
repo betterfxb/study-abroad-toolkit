@@ -1,0 +1,76 @@
+/* 浮窗样式（注入到 Shadow DOM，避免与宿主页面样式冲突） */
+:host { all: initial; }
+
+.panel {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 260px;
+  z-index: 2147483647;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  color: #1f2937;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #2563eb;
+  color: #fff;
+}
+.head .title { flex: 1; font-weight: 600; }
+.head .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #d4af37;
+}
+.head .dot.good { background: #34d399; }
+.head .dot.bad { background: #f87171; }
+.head .close {
+  border: 0; background: transparent; color: #fff;
+  font-size: 16px; line-height: 1; cursor: pointer; opacity: .8;
+}
+.head .close:hover { opacity: 1; }
+
+.body { padding: 12px; }
+.status { margin-bottom: 6px; }
+.status.good { color: #047857; }
+.status.bad { color: #b91c1c; }
+.stats { color: #6b7280; font-size: 12px; }
+
+/* 多步向导：自动填充开关 */
+.auto {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #4b5563;
+  cursor: pointer;
+  user-select: none;
+}
+.auto input { margin: 0; cursor: pointer; }
+
+.foot {
+  display: flex; gap: 8px;
+  padding: 10px 12px 12px;
+}
+.foot .primary {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #2563eb;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.foot .primary:hover { background: #1d4ed8; color: #fff; }
+.foot .primary:disabled { opacity: .5; cursor: not-allowed; }

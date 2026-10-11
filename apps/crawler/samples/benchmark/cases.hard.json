@@ -1,0 +1,90 @@
+{
+  "description": "实习信息抽取【难例集】。取自真实公众号软文 / 招聘平台一行式 / 表格 / 英文文本等自由形态，用于评测规则抽取的天花板，并体现 LLM 抽取的增量价值。ground truth 为人工标注；无法明确判定的字段标注为 null（不计入统计）。",
+  "fields": ["company", "title", "city", "salary", "deadline", "apply_method"],
+  "cases": [
+    {
+      "id": "h01_table",
+      "format": "TSV 表格（表头+数据行）",
+      "text": "公司\t岗位\t地点\t薪资\t截止\n快手\t短视频运营实习生\t北京\t200元/天\t2026-11-18\n投递方式：intern@kuaishou.com",
+      "expect_jobs": 1,
+      "expect": {
+        "company": "快手",
+        "title": "短视频运营实习生",
+        "city": "北京",
+        "salary": "200元/天",
+        "deadline": "2026-11-18",
+        "apply_method": "intern@kuaishou.com"
+      }
+    },
+    {
+      "id": "h02_multi_bullet",
+      "format": "编号列表多岗位（无标签）",
+      "text": "这次我们开放了 3 个岗位：\n1. 算法实习生（北京，300元/天）\n2. 产品实习生（上海，200元/天）\n3. 设计实习生（深圳，180元/天）\n统一投递：campus@example.com",
+      "expect_jobs": 3,
+      "expect": {
+        "company": null,
+        "title": "算法实习生",
+        "city": "北京",
+        "salary": "300元/天",
+        "deadline": null,
+        "apply_method": "campus@example.com"
+      }
+    },
+    {
+      "id": "h03_english",
+      "format": "英文自由文本",
+      "text": "NVIDIA is hiring a Machine Learning Intern based in Shanghai. Compensation is 300 CNY per day. Please send your resume to ml-intern@nvidia.com before December 10, 2026.",
+      "expect_jobs": 1,
+      "expect": {
+        "company": "NVIDIA",
+        "title": "Machine Learning Intern",
+        "city": "上海",
+        "salary": "300元/天",
+        "deadline": "2026-12-10",
+        "apply_method": "ml-intern@nvidia.com"
+      }
+    },
+    {
+      "id": "h04_verbose_prose",
+      "format": "长软文（信息散落多句）",
+      "text": "飞书是字节跳动旗下的企业协作平台。随着业务快速扩张，我们面向 2027 届同学开放数据科学实习生岗位，工作地点位于深圳南山，实习期间提供 260 元/天的实习补贴，表现优秀可转正。有意者请将简历投递至 data-intern@feishu.cn，本轮招募截止到 12 月 20 日。",
+      "expect_jobs": 1,
+      "expect": {
+        "company": null,
+        "title": "数据科学实习生",
+        "city": "深圳",
+        "salary": "260元/天",
+        "deadline": "2026-12-20",
+        "apply_method": "data-intern@feishu.cn"
+      }
+    },
+    {
+      "id": "h05_hourly",
+      "format": "时薪结算（无标准薪资标签）",
+      "text": "哔哩哔哩内容审核团队现招聘内容审核实习生，base 上海，按小时结算，每小时 25 元，每周到岗 4 天，实习 3 个月，简历投至 intern@bilibili.com，12 月 5 日前有效。",
+      "expect_jobs": 1,
+      "expect": {
+        "company": "哔哩哔哩",
+        "title": "内容审核实习生",
+        "city": "上海",
+        "salary": "25元/小时",
+        "deadline": "2026-12-05",
+        "apply_method": "intern@bilibili.com"
+      }
+    },
+    {
+      "id": "h06_brand_team",
+      "format": "母公司+事业群 + 后缀式截止",
+      "text": "好消息！腾讯 IEG 事业群面向在校生招募游戏运营实习生。你将在深圳办公，日薪 180 元，表现优异者可转正。投递邮箱：game-intern@tencent.com，本批次 11 月 28 日截止。",
+      "expect_jobs": 1,
+      "expect": {
+        "company": "腾讯",
+        "title": "游戏运营实习生",
+        "city": "深圳",
+        "salary": "180元/天",
+        "deadline": "2026-11-28",
+        "apply_method": "game-intern@tencent.com"
+      }
+    }
+  ]
+}

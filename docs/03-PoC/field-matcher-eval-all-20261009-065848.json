@@ -1,0 +1,667 @@
+{
+  "aggregate": {
+    "pages": 6,
+    "total_fields": 59,
+    "matchable": 52,
+    "correct": 49,
+    "missed": 3,
+    "wrong": 0,
+    "false_positive": 1,
+    "recognition_rate": 0.9423,
+    "precision": 0.98,
+    "fill_rate": 0.661,
+    "auto_fill_rate": 0.6271
+  },
+  "results": [
+    {
+      "id": "p01_applyweb_personal",
+      "name": "ApplyWeb · Personal Information",
+      "system_code": "applyweb",
+      "total": 14,
+      "matchable": 12,
+      "correct": 12,
+      "missed": 0,
+      "wrong": 0,
+      "false_positive": 0,
+      "filled": 11,
+      "auto": 11,
+      "recognition_rate": 1.0,
+      "precision": 1.0,
+      "fill_rate": 0.7857,
+      "auto_fill_rate": 0.7857,
+      "rows": [
+        {
+          "selector": "#lastName",
+          "label": "Last Name *",
+          "expected": "basic_info.last_name",
+          "predicted": "basic_info.last_name",
+          "value": "Feng",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#firstName",
+          "label": "First Name *",
+          "expected": "basic_info.first_name",
+          "predicted": "basic_info.first_name",
+          "value": "Zong",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#middleName",
+          "label": "Middle Name",
+          "expected": "basic_info.middle_name",
+          "predicted": "basic_info.middle_name",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#prefName",
+          "label": "Preferred Name",
+          "expected": "basic_info.preferred_name",
+          "predicted": "basic_info.preferred_name",
+          "value": "Zong",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#email",
+          "label": "E-mail Address *",
+          "expected": "basic_info.email",
+          "predicted": "basic_info.email",
+          "value": "fengzong@example.com",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#phone",
+          "label": "Mobile Phone Number *",
+          "expected": "basic_info.phone",
+          "predicted": "basic_info.phone",
+          "value": "+8613800138000",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#dob",
+          "label": "Date of Birth",
+          "expected": "basic_info.birth_date",
+          "predicted": "basic_info.birth_date",
+          "value": "01/01/2003",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#gender",
+          "label": "Gender",
+          "expected": "basic_info.gender",
+          "predicted": "basic_info.gender",
+          "value": "Male",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#citizenship",
+          "label": "Country of Citizenship",
+          "expected": "basic_info.citizenship",
+          "predicted": "basic_info.citizenship",
+          "value": "China",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#birthCountry",
+          "label": "Country of Birth",
+          "expected": "basic_info.birth_country",
+          "predicted": "basic_info.birth_country",
+          "value": "China",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#birthCity",
+          "label": "City of Birth",
+          "expected": "basic_info.birth_city",
+          "predicted": "basic_info.birth_city",
+          "value": "Beijing",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#marital",
+          "label": "Marital Status",
+          "expected": "basic_info.marital_status",
+          "predicted": "basic_info.marital_status",
+          "value": "Single",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#hearAbout",
+          "label": "How did you hear about us?",
+          "expected": null,
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        },
+        {
+          "selector": "#customQ1",
+          "label": "Do you require a student visa?",
+          "expected": null,
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": "p02_liaison_academic",
+      "name": "Liaison · Academic History",
+      "system_code": "liaison",
+      "total": 10,
+      "matchable": 10,
+      "correct": 10,
+      "missed": 0,
+      "wrong": 0,
+      "false_positive": 0,
+      "filled": 9,
+      "auto": 9,
+      "recognition_rate": 1.0,
+      "precision": 1.0,
+      "fill_rate": 0.9,
+      "auto_fill_rate": 0.9,
+      "rows": [
+        {
+          "selector": "#inst1",
+          "label": "Institution Name",
+          "expected": "education[0].institution",
+          "predicted": "education[0].institution",
+          "value": "Tsinghua University",
+          "confidence": 0.98,
+          "action": "fill"
+        },
+        {
+          "selector": "#degree1",
+          "label": "Degree Earned",
+          "expected": "education[0].degree",
+          "predicted": "education[0].degree",
+          "value": "Bachelor's Degree",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#major1",
+          "label": "Field of Study",
+          "expected": "education[0].major",
+          "predicted": "education[0].major",
+          "value": "Computer Science",
+          "confidence": 0.98,
+          "action": "fill"
+        },
+        {
+          "selector": "#start1",
+          "label": "Attendance From",
+          "expected": "education[0].start_date",
+          "predicted": "education[0].start_date",
+          "value": "09/2022",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#end1",
+          "label": "Attendance To",
+          "expected": "education[0].end_date",
+          "predicted": "education[0].end_date",
+          "value": "06/2026",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#gpa1",
+          "label": "GPA",
+          "expected": "education[0].gpa",
+          "predicted": "education[0].gpa",
+          "value": "3.7",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#gpaScale1",
+          "label": "GPA Scale",
+          "expected": "education[0].gpa_scale",
+          "predicted": "education[0].gpa_scale",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#inst2",
+          "label": "Institution Name",
+          "expected": "education[1].institution",
+          "predicted": "education[1].institution",
+          "value": "Peking University",
+          "confidence": 0.98,
+          "action": "fill"
+        },
+        {
+          "selector": "#degree2",
+          "label": "Degree Earned",
+          "expected": "education[1].degree",
+          "predicted": "education[1].degree",
+          "value": "Master's Degree",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#major2",
+          "label": "Field of Study",
+          "expected": "education[1].major",
+          "predicted": "education[1].major",
+          "value": "Data Science",
+          "confidence": 0.98,
+          "action": "fill"
+        }
+      ]
+    },
+    {
+      "id": "p03_slate_tests_address",
+      "name": "Slate · Tests & Address",
+      "system_code": "slate",
+      "total": 15,
+      "matchable": 15,
+      "correct": 15,
+      "missed": 0,
+      "wrong": 0,
+      "false_positive": 0,
+      "filled": 11,
+      "auto": 11,
+      "recognition_rate": 1.0,
+      "precision": 1.0,
+      "fill_rate": 0.7333,
+      "auto_fill_rate": 0.7333,
+      "rows": [
+        {
+          "selector": "#testType1",
+          "label": "Test Type",
+          "expected": "tests[0].test_type",
+          "predicted": "tests[0].test_type",
+          "value": "TOEFL",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#totalScore1",
+          "label": "Total Score",
+          "expected": "tests[0].total",
+          "predicted": "tests[0].total",
+          "value": "105",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#reading1",
+          "label": "Reading",
+          "expected": "tests[0].reading",
+          "predicted": "tests[0].reading",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#listening1",
+          "label": "Listening",
+          "expected": "tests[0].listening",
+          "predicted": "tests[0].listening",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#speaking1",
+          "label": "Speaking",
+          "expected": "tests[0].speaking",
+          "predicted": "tests[0].speaking",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#writing1",
+          "label": "Writing",
+          "expected": "tests[0].writing",
+          "predicted": "tests[0].writing",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#testDate1",
+          "label": "Test Date",
+          "expected": "tests[0].test_date",
+          "predicted": "tests[0].test_date",
+          "value": "2026-03-15",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#addr1",
+          "label": "Street Address",
+          "expected": "address.street",
+          "predicted": "address.street",
+          "value": "Zhongguancun Street No.1",
+          "confidence": 0.98,
+          "action": "fill"
+        },
+        {
+          "selector": "#addr2",
+          "label": "Address Line 2",
+          "expected": "address.street2",
+          "predicted": "address.street2",
+          "value": "Room 502",
+          "confidence": 0.98,
+          "action": "fill"
+        },
+        {
+          "selector": "#city",
+          "label": "City",
+          "expected": "address.city",
+          "predicted": "address.city",
+          "value": "Beijing",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#state",
+          "label": "State/Province",
+          "expected": "address.state",
+          "predicted": "address.state",
+          "value": "Beijing",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#postal",
+          "label": "Postal Code",
+          "expected": "address.postal",
+          "predicted": "address.postal",
+          "value": "100084",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#country",
+          "label": "Country",
+          "expected": "address.country",
+          "predicted": "address.country",
+          "value": "China",
+          "confidence": 0.95,
+          "action": "fill"
+        },
+        {
+          "selector": "#ecName",
+          "label": "Emergency Contact Name",
+          "expected": "emergency_contact.name",
+          "predicted": "emergency_contact.name",
+          "value": "Feng Ming",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#ecPhone",
+          "label": "Emergency Contact Phone",
+          "expected": "emergency_contact.phone",
+          "predicted": "emergency_contact.phone",
+          "value": "+8613900139000",
+          "confidence": 1.0,
+          "action": "fill"
+        }
+      ]
+    },
+    {
+      "id": "h01_abbrev_and_collision",
+      "name": "缩写 + 题干撞车",
+      "system_code": "applyweb",
+      "total": 6,
+      "matchable": 3,
+      "correct": 3,
+      "missed": 0,
+      "wrong": 0,
+      "false_positive": 1,
+      "filled": 3,
+      "auto": 3,
+      "recognition_rate": 1.0,
+      "precision": 0.75,
+      "fill_rate": 0.5,
+      "auto_fill_rate": 0.5,
+      "rows": [
+        {
+          "selector": "#lname",
+          "label": "LName",
+          "expected": "basic_info.last_name",
+          "predicted": "basic_info.last_name",
+          "value": "Feng",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#fname",
+          "label": "FName",
+          "expected": "basic_info.first_name",
+          "predicted": "basic_info.first_name",
+          "value": "Zong",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#sop",
+          "label": "Statement of Purpose",
+          "expected": "essays.statement_of_purpose",
+          "predicted": "essays.statement_of_purpose",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#q_state",
+          "label": "State your purpose for graduate study",
+          "expected": null,
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        },
+        {
+          "selector": "#q_country",
+          "label": "Country of intended study",
+          "expected": null,
+          "predicted": "address.country",
+          "value": "China",
+          "confidence": 0.91,
+          "action": "fill"
+        },
+        {
+          "selector": "#q_name",
+          "label": "Name three academic honors you have received",
+          "expected": null,
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": "h02_industry_jargon",
+      "name": "行业黑话 / 部门口径",
+      "system_code": "liaison",
+      "total": 6,
+      "matchable": 6,
+      "correct": 6,
+      "missed": 0,
+      "wrong": 0,
+      "false_positive": 0,
+      "filled": 5,
+      "auto": 3,
+      "recognition_rate": 1.0,
+      "precision": 1.0,
+      "fill_rate": 0.8333,
+      "auto_fill_rate": 0.5,
+      "rows": [
+        {
+          "selector": "#dept",
+          "label": "Department",
+          "expected": "education[0].major",
+          "predicted": "education[0].major",
+          "value": "Computer Science",
+          "confidence": 1.0,
+          "action": "fill"
+        },
+        {
+          "selector": "#cumgpa",
+          "label": "Cumulative Grade Point Average",
+          "expected": "education[0].gpa",
+          "predicted": "education[0].gpa",
+          "value": "3.7",
+          "confidence": 0.92,
+          "action": "fill"
+        },
+        {
+          "selector": "#awa",
+          "label": "AWA",
+          "expected": "tests[0].aw",
+          "predicted": "tests[0].aw",
+          "value": "",
+          "confidence": 1.0,
+          "action": "skip"
+        },
+        {
+          "selector": "#toeflTotal",
+          "label": "Toefl Total",
+          "expected": "tests[0].total",
+          "predicted": "tests[0].total",
+          "value": "105",
+          "confidence": 0.92,
+          "action": "fill"
+        },
+        {
+          "selector": "#addr1",
+          "label": "Permanent Address Line 1",
+          "expected": "address.street",
+          "predicted": "address.street",
+          "value": "Zhongguancun Street No.1",
+          "confidence": 0.84,
+          "action": "review"
+        },
+        {
+          "selector": "#zipPostal",
+          "label": "Zip/Postal Code",
+          "expected": "address.postal",
+          "predicted": "address.postal",
+          "value": "100084",
+          "confidence": 0.88,
+          "action": "review"
+        }
+      ]
+    },
+    {
+      "id": "h03_nonenglish_and_nolabel",
+      "name": "非英文标签 / 无 label 仅 placeholder",
+      "system_code": "slate",
+      "total": 8,
+      "matchable": 6,
+      "correct": 3,
+      "missed": 3,
+      "wrong": 0,
+      "false_positive": 0,
+      "filled": 0,
+      "auto": 0,
+      "recognition_rate": 0.5,
+      "precision": 1.0,
+      "fill_rate": 0.0,
+      "auto_fill_rate": 0.0,
+      "rows": [
+        {
+          "selector": "#nom",
+          "label": "Nom de famille",
+          "expected": "basic_info.last_name",
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        },
+        {
+          "selector": "#nachname",
+          "label": "Nachname",
+          "expected": "basic_info.last_name",
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        },
+        {
+          "selector": "#vorname",
+          "label": "Vorname",
+          "expected": "basic_info.first_name",
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        },
+        {
+          "selector": "#field_27",
+          "label": "",
+          "expected": "experiences[0].org",
+          "predicted": "experiences[0].org",
+          "value": "",
+          "confidence": 0.72,
+          "action": "skip"
+        },
+        {
+          "selector": "#field_31",
+          "label": "",
+          "expected": "experiences[0].role",
+          "predicted": "experiences[0].role",
+          "value": "",
+          "confidence": 0.92,
+          "action": "skip"
+        },
+        {
+          "selector": "#field_42",
+          "label": "",
+          "expected": "basic_info.middle_name",
+          "predicted": "basic_info.middle_name",
+          "value": "",
+          "confidence": 0.72,
+          "action": "skip"
+        },
+        {
+          "selector": "#cc",
+          "label": "Country Code",
+          "expected": null,
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        },
+        {
+          "selector": "#years",
+          "label": "How many years of work experience do you have?",
+          "expected": null,
+          "predicted": null,
+          "value": "",
+          "confidence": 0.0,
+          "action": "unmatched"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "运行时间": "2026-10-09T06:58:48.998704+00:00",
+    "基准集": "all（6 页）",
+    "来源": "C:\\Users\\19560\\WorkBuddy AI\\new_job_project\\apps\\intelligence\\samples\\benchmark\\pages.json + C:\\Users\\19560\\WorkBuddy AI\\new_job_project\\apps\\intelligence\\samples\\benchmark\\pages.hard.json"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "description": "模块一字段匹配评测基准。三套页面分别模拟 ApplyWeb / Liaison / Slate 的字段命名风格，expect_key 为人工标注的目标语义槽位（null 表示该字段不应被匹配，用于检验误匹配）。",
+  "profile": {
+    "basic_info": {
+      "last_name": "Feng",
+      "first_name": "Zong",
+      "middle_name": "",
+      "preferred_name": "Zong",
+      "passport_name": "FENG ZONG",
+      "email": "fengzong@example.com",
+      "phone": "+8613800138000",
+      "gender": "M",
+      "birth_date": "2003-01-01",
+      "birth_city": "Beijing",
+      "birth_country": "CN",
+      "nationality": "CN",
+      "citizenship": "CN",
+      "marital_status": "Single"
+    },
+    "education": [
+      {
+        "school": "Tsinghua University",
+        "degree": "Bachelor",
+        "major": "Computer Science",
+        "start": "2022-09",
+        "end": "2026-06",
+        "gpa": { "value": 88.5, "scale": "100" }
+      },
+      {
+        "school": "Peking University",
+        "degree": "Master",
+        "major": "Data Science",
+        "start": "2026-09",
+        "end": "2028-06",
+        "gpa": { "value": 3.8, "scale": "4.0" }
+      }
+    ],
+    "tests": [
+      {
+        "type": "TOEFL",
+        "total": 105,
+        "subs": { "reading": 28, "listening": 27, "speaking": 24, "writing": 26 },
+        "test_date": "2026-03-15",
+        "registration_id": "TOEFL-2026-0315"
+      }
+    ],
+    "addresses": [
+      {
+        "type": "permanent",
+        "country": "CN",
+        "province": "北京",
+        "city": "Beijing",
+        "street": "Zhongguancun Street No.1",
+        "street2": "Room 502",
+        "postal": "100084"
+      }
+    ],
+    "emergency_contact": {
+      "name": "Feng Ming",
+      "phone": "+8613900139000",
+      "relationship": "Parent"
+    }
+  },
+  "pages": [
+    {
+      "id": "p01_applyweb_personal",
+      "system_code": "applyweb",
+      "name": "ApplyWeb · Personal Information",
+      "fields": [
+        { "selector": "#lastName", "label": "Last Name *", "name": "lastName", "type": "text", "required": true, "expect_key": "basic_info.last_name" },
+        { "selector": "#firstName", "label": "First Name *", "name": "firstName", "type": "text", "required": true, "expect_key": "basic_info.first_name" },
+        { "selector": "#middleName", "label": "Middle Name", "name": "middleName", "type": "text", "expect_key": "basic_info.middle_name" },
+        { "selector": "#prefName", "label": "Preferred Name", "name": "preferredName", "type": "text", "expect_key": "basic_info.preferred_name" },
+        { "selector": "#email", "label": "E-mail Address *", "name": "emailAddress", "type": "email", "required": true, "expect_key": "basic_info.email" },
+        { "selector": "#phone", "label": "Mobile Phone Number *", "name": "phoneNumber", "type": "tel", "required": true, "expect_key": "basic_info.phone" },
+        { "selector": "#dob", "label": "Date of Birth", "name": "dateOfBirth", "type": "date", "placeholder": "MM/DD/YYYY", "expect_key": "basic_info.birth_date" },
+        { "selector": "#gender", "label": "Gender", "name": "gender", "type": "select", "options": ["Male", "Female", "Other", "Prefer not to say"], "expect_key": "basic_info.gender" },
+        { "selector": "#citizenship", "label": "Country of Citizenship", "name": "countryOfCitizenship", "type": "select", "options": ["China", "United States", "India", "Japan", "Korea, Republic of"], "expect_key": "basic_info.citizenship" },
+        { "selector": "#birthCountry", "label": "Country of Birth", "name": "countryOfBirth", "type": "select", "options": ["China", "United States", "India"], "expect_key": "basic_info.birth_country" },
+        { "selector": "#birthCity", "label": "City of Birth", "name": "cityOfBirth", "type": "text", "expect_key": "basic_info.birth_city" },
+        { "selector": "#marital", "label": "Marital Status", "name": "maritalStatus", "type": "select", "options": ["Single", "Married", "Divorced"], "expect_key": "basic_info.marital_status" },
+        { "selector": "#hearAbout", "label": "How did you hear about us?", "name": "hearAboutUs", "type": "text", "expect_key": null },
+        { "selector": "#customQ1", "label": "Do you require a student visa?", "name": "customQuestion1", "type": "select", "options": ["Yes", "No"], "expect_key": null }
+      ]
+    },
+    {
+      "id": "p02_liaison_academic",
+      "system_code": "liaison",
+      "name": "Liaison · Academic History",
+      "fields": [
+        { "selector": "#inst1", "label": "Institution Name", "name": "institution1", "type": "text", "expect_key": "education[0].institution" },
+        { "selector": "#degree1", "label": "Degree Earned", "name": "degree1", "type": "select", "options": ["High School Diploma", "Bachelor's Degree", "Master's Degree", "Doctoral Degree"], "expect_key": "education[0].degree" },
+        { "selector": "#major1", "label": "Field of Study", "name": "fieldOfStudy1", "type": "text", "expect_key": "education[0].major" },
+        { "selector": "#start1", "label": "Attendance From", "name": "attendanceFrom1", "type": "date", "placeholder": "MM/YYYY", "expect_key": "education[0].start_date" },
+        { "selector": "#end1", "label": "Attendance To", "name": "attendanceTo1", "type": "date", "placeholder": "MM/YYYY", "expect_key": "education[0].end_date" },
+        { "selector": "#gpa1", "label": "GPA", "name": "gpa1", "type": "number", "expect_key": "education[0].gpa" },
+        { "selector": "#gpaScale1", "label": "GPA Scale", "name": "gpaScale1", "type": "number", "expect_key": "education[0].gpa_scale" },
+        { "selector": "#inst2", "label": "Institution Name", "name": "institution2", "type": "text", "expect_key": "education[1].institution" },
+        { "selector": "#degree2", "label": "Degree Earned", "name": "degree2", "type": "select", "options": ["Bachelor's Degree", "Master's Degree", "Doctoral Degree"], "expect_key": "education[1].degree" },
+        { "selector": "#major2", "label": "Field of Study", "name": "fieldOfStudy2", "type": "text", "expect_key": "education[1].major" }
+      ]
+    },
+    {
+      "id": "p03_slate_tests_address",
+      "system_code": "slate",
+      "name": "Slate · Tests & Address",
+      "fields": [
+        { "selector": "#testType1", "label": "Test Type", "name": "testType1", "type": "select", "options": ["TOEFL", "IELTS", "GRE", "GMAT"], "expect_key": "tests[0].test_type" },
+        { "selector": "#totalScore1", "label": "Total Score", "name": "totalScore1", "type": "number", "expect_key": "tests[0].total" },
+        { "selector": "#reading1", "label": "Reading", "name": "reading1", "type": "number", "expect_key": "tests[0].reading" },
+        { "selector": "#listening1", "label": "Listening", "name": "listening1", "type": "number", "expect_key": "tests[0].listening" },
+        { "selector": "#speaking1", "label": "Speaking", "name": "speaking1", "type": "number", "expect_key": "tests[0].speaking" },
+        { "selector": "#writing1", "label": "Writing", "name": "writing1", "type": "number", "expect_key": "tests[0].writing" },
+        { "selector": "#testDate1", "label": "Test Date", "name": "testDate1", "type": "date", "expect_key": "tests[0].test_date" },
+        { "selector": "#addr1", "label": "Street Address", "name": "addressLine1", "type": "text", "expect_key": "address.street" },
+        { "selector": "#addr2", "label": "Address Line 2", "name": "addressLine2", "type": "text", "expect_key": "address.street2" },
+        { "selector": "#city", "label": "City", "name": "city", "type": "text", "expect_key": "address.city" },
+        { "selector": "#state", "label": "State/Province", "name": "stateProvince", "type": "select", "options": ["Beijing", "Shanghai", "Guangdong", "California", "New York"], "expect_key": "address.state" },
+        { "selector": "#postal", "label": "Postal Code", "name": "postalCode", "type": "text", "expect_key": "address.postal" },
+        { "selector": "#country", "label": "Country", "name": "country", "type": "select", "options": ["China", "United States", "India", "Japan"], "expect_key": "address.country" },
+        { "selector": "#ecName", "label": "Emergency Contact Name", "name": "emergencyContactName", "type": "text", "expect_key": "emergency_contact.name" },
+        { "selector": "#ecPhone", "label": "Emergency Contact Phone", "name": "emergencyContactPhone", "type": "tel", "expect_key": "emergency_contact.phone" }
+      ]
+    }
+  ]
+}

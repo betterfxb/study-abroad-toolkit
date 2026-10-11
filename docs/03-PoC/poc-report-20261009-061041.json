@@ -1,0 +1,59 @@
+{
+  "metrics": {
+    "fetched_articles": 6,
+    "new_articles": 3,
+    "duplicate_articles": 3,
+    "new_jobs": 4,
+    "duplicate_jobs": 1,
+    "errors": 0,
+    "duration_ms": 2,
+    "overall_completeness": 0.95,
+    "core_completeness": 1.0,
+    "usable_job_rate": 1.0,
+    "duplicate_rate": 0.5,
+    "low_confidence_rate": 0.0,
+    "field_completeness": {
+      "company": 1.0,
+      "title": 1.0,
+      "city": 1.0,
+      "salary": 1.0,
+      "duration": 1.0,
+      "education_req": 1.0,
+      "major_req": 1.0,
+      "apply_method": 1.0,
+      "deadline": 1.0,
+      "retain_chance": 0.5
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "code": "manual_samples",
+      "fetched": 3,
+      "new_articles": 3,
+      "duplicate_articles": 0,
+      "new_jobs": 4,
+      "duplicate_jobs": 1,
+      "errors": [],
+      "duration_ms": 2
+    },
+    {
+      "round": 2,
+      "code": "manual_samples",
+      "fetched": 3,
+      "new_articles": 0,
+      "duplicate_articles": 3,
+      "new_jobs": 0,
+      "duplicate_jobs": 0,
+      "errors": [],
+      "duration_ms": 0
+    }
+  ],
+  "meta": {
+    "运行时间": "2026-10-09T06:10:41.717705+00:00",
+    "源数量": 1,
+    "轮次": 2,
+    "LLM 结构化": "关闭（规则兜底）",
+    "limit": 50
+  }
+}

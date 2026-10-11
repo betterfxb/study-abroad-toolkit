@@ -1,0 +1,127 @@
+# 留学生助手 · 本地/单机部署
+# 用法：
+#   docker compose -f deploy/docker-compose.yml up -d --build
+#   docker compose -f deploy/docker-compose.yml logs -f crawler-api
+#
+# 说明：compose 文件位于 deploy/，因此所有路径均相对项目根目录书写。
+
+name: study-abroad
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sa-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: study_abroad
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d study_abroad"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: sa-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: sa-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: ../apps/crawler
+    container_name: sa-migrate
+    command: ["python", "-c", "import sys; sys.path.insert(0,'/db'); import migrate; sys.exit(migrate.main())"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/study_abroad
+    volumes:
+      - ../db:/db:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  crawler-api:
+    build:
+      context: ../apps/crawler
+    container_name: sa-crawler-api
+    env_file:
+      - ../apps/crawler/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/study_abroad
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8100:8100"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  crawler-worker:
+    build:
+      context: ../apps/crawler
+    container_name: sa-crawler-worker
+    command: ["celery", "-A", "app.worker:celery_app", "worker", "-l", "info", "--concurrency=4"]
+    env_file:
+      - ../apps/crawler/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/study_abroad
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  crawler-beat:
+    build:
+      context: ../apps/crawler
+    container_name: sa-crawler-beat
+    command: ["celery", "-A", "app.worker:celery_app", "beat", "-l", "info"]
+    env_file:
+      - ../apps/crawler/.env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

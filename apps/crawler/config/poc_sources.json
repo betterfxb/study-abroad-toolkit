@@ -1,0 +1,54 @@
+{
+  "description": "模块二 PoC 源清单。enabled=false 的源默认不跑，填好配置后再打开。",
+  "sources": [
+    {
+      "code": "manual_samples",
+      "name": "人工投递样例（离线可跑）",
+      "adapter": "manual",
+      "config": {
+        "inbox_dir": "samples/inbox",
+        "account_name": "样例数据"
+      },
+      "enabled": true
+    },
+    {
+      "code": "thirdparty_demo",
+      "name": "第三方数据 API（主源 A，待接入）",
+      "adapter": "thirdparty_api",
+      "config": {
+        "base_url": "",
+        "api_key": ""
+      },
+      "enabled": false
+    },
+    {
+      "code": "job_platform_demo",
+      "name": "招聘平台（主源 C，待授权）",
+      "adapter": "job_platform",
+      "config": {
+        "platform": "shixiseng"
+      },
+      "enabled": false
+    },
+    {
+      "code": "rss_demo",
+      "name": "RSS 中转源（补充）",
+      "adapter": "rss",
+      "config": {
+        "feed_url": "",
+        "account_name": ""
+      },
+      "enabled": false
+    },
+    {
+      "code": "company_site_demo",
+      "name": "企业官网招聘页（兜底 B）",
+      "adapter": "company_site",
+      "config": {
+        "urls": [],
+        "account_name": "企业官网"
+      },
+      "enabled": false
+    }
+  ]
+}

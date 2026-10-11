@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>留学生助手 · UI 原型</title>
+<style>
+  :root{
+    --blue:#2563EB; --blue-dark:#1D4ED8; --blue-light:#EFF6FF;
+    --bg:#F6F8FB; --card:#FFFFFF; --line:#E5E9F0;
+    --t1:#0F172A; --t2:#475569; --t3:#94A3B8;
+    --gold:#D4AF37;
+    --r-lg:16px; --r-md:10px; --r-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+       background:var(--bg);color:var(--t1);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  .topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .topbar-in{max-width:1120px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:32px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px}
+  .logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#2563EB,#60A5FA);
+             display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
+  .nav{display:flex;gap:24px;font-size:14px;color:var(--t2)}
+  .nav span{cursor:pointer}
+  .nav span.on{color:var(--blue);font-weight:500}
+  .topbar-right{margin-left:auto;display:flex;gap:12px;align-items:center}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:var(--r-sm);padding:7px 16px;
+       font-size:13px;color:var(--t2);cursor:pointer;font-family:inherit}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:500}
+  .btn.primary:hover{background:var(--blue-dark)}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  .tabs{display:flex;gap:8px;margin:22px 0 20px;border-bottom:1px solid var(--line)}
+  .tab{padding:10px 18px;font-size:14px;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+
+  .hero{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:36px 32px;margin-bottom:24px}
+  .hero h1{font-size:26px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
+  .hero p{color:var(--t2);font-size:14px;max-width:640px}
+  .hero-tags{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+  .pill{font-size:12px;padding:4px 12px;border-radius:999px;background:var(--blue-light);color:var(--blue)}
+  .pill.gold{background:#FDF7E3;color:#8A6D1B}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+        padding:20px;transition:.18s;cursor:pointer;display:flex;flex-direction:column;min-height:172px}
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,23,42,.08);border-color:#D6DEEA}
+  .card-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .card-ico svg{width:20px;height:20px}
+  .card h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .hot{font-size:10px;font-weight:600;color:#fff;background:#EF4444;border-radius:4px;padding:1px 6px;letter-spacing:.5px}
+  .card .desc{color:var(--t2);font-size:13px;margin-top:8px;flex:1}
+  .card .meta{color:var(--t3);font-size:12px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;margin-bottom:20px}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .filters select,.filters input{font-family:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
+        border-radius:var(--r-sm);color:var(--t1);background:#fff;outline:none}
+  .filters input{min-width:220px}
+  .filters select:focus,.filters input:focus{border-color:var(--blue)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{text-align:left;color:var(--t2);font-weight:500;font-size:12px;padding:10px 12px;
+           background:#F8FAFC;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{padding:12px;border-bottom:1px solid #F1F5F9;vertical-align:top}
+  tbody tr:hover{background:#FAFBFD}
+  .co{font-weight:500}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;background:var(--blue-light);
+       color:var(--blue);margin:2px 4px 2px 0;white-space:nowrap}
+  .src{color:var(--t3);font-size:12px}
+  .src b{color:var(--t2);font-weight:500}
+  .money{color:#B45309;font-weight:500;white-space:nowrap}
+  .stat{display:flex;gap:24px;color:var(--t2);font-size:13px;margin-bottom:14px}
+  .stat b{color:var(--t1);font-weight:600}
+
+  .mock{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+  .mock-bar{height:38px;background:#F1F5F9;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 14px}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .mock-url{margin-left:12px;background:#fff;border:1px solid var(--line);border-radius:6px;font-size:12px;
+            color:var(--t3);padding:3px 12px;flex:1}
+  .mock-body{position:relative;padding:28px 32px;min-height:400px;background:#fff}
+  .form-row{margin-bottom:16px;max-width:520px}
+  .form-row label{display:block;font-size:12px;color:var(--t2);margin-bottom:6px}
+  .form-row .inp{height:36px;border:1px solid var(--line);border-radius:var(--r-sm);background:#FBFCFE;
+                 display:flex;align-items:center;padding:0 12px;font-size:13px;color:var(--t3)}
+  .form-row .inp.filled{border-color:#BBF7D0;background:#F0FDF4;color:var(--t1)}
+  .form-row .inp.filled::after{content:"✓";margin-left:auto;color:#16A34A;font-size:12px}
+  .float{position:absolute;right:28px;bottom:28px;width:300px;background:#fff;border:1px solid var(--line);
+         border-radius:var(--r-lg);box-shadow:0 12px 32px rgba(15,23,42,.14);overflow:hidden}
+  .float-h{background:var(--blue);color:#fff;padding:11px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+  .float-h .live{margin-left:auto;font-size:11px;background:rgba(255,255,255,.22);border-radius:4px;padding:1px 7px}
+  .float-b{padding:14px}
+  .float-b .row{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);padding:5px 0}
+  .float-b .row b{color:var(--t1);font-weight:500}
+  .bar{height:6px;background:#EEF2F7;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+  .bar i{display:block;height:100%;width:80%;background:var(--blue);border-radius:99px}
+  .float-f{display:flex;gap:8px;padding:0 14px 14px}
+  .float-f .btn{flex:1;text-align:center}
+  .note{color:var(--t3);font-size:12px;margin-top:14px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="logo"><span class="logo-mark">留</span>留学生助手</div>
+    <div class="nav">
+      <span class="on">首页</span><span>留学网申</span><span>实习信息</span><span>申请管理</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn">安装插件</button>
+      <button class="btn primary">登录</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab on" data-tab="home">工具集首页</div>
+    <div class="tab" data-tab="jobs">实习信息汇总</div>
+    <div class="tab" data-tab="ext">插件浮窗</div>
+  </div>
+
+  <!-- ============ Tab 1 ============ -->
+  <section id="tab-home">
+    <div class="hero">
+      <h1>AI 驱动，载你走完留学申请与实习求职</h1>
+      <p>留学网申自动填写 · 实习信息全网聚合 · 文书与简历精修。把重复枯燥的事交给 AI，你只负责检查与决策。</p>
+      <div class="hero-tags">
+        <span class="pill">浏览器插件</span>
+        <span class="pill">多源聚合</span>
+        <span class="pill gold">不自动提交 · 人工复核</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-ico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+        <h3>留学网申自动填写 <span class="hot">HOT</span></h3>
+        <div class="desc">AI 识别海外院校申请表单，多步向导一键填充，30 分钟缩短到 3 分钟</div>
+        <div class="meta"><span>12.4 万人使用</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#ECFDF5"><svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg></div>
+        <h3>实习信息聚合 <span class="hot">HOT</span></h3>
+        <div class="desc">公众号 + 招聘平台 + 官网多源聚合，岗位结构化，实时更新去重</div>
+        <div class="meta"><span>8.7 万人使用</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#FFF7ED"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg></div>
+        <h3>简历优化 AI</h3>
+        <div class="desc">三档力度智能重写，学术向 / 实习向双模板</div>
+        <div class="meta"><span>6.2 万人使用</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#F5F3FF"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M4 4h16v14H7l-3 3z"/><path d="M8 9h8M8 13h5"/></svg></div>
+        <h3>文书精修 AI</h3>
+        <div class="desc">PS / SOP 按目标项目针对性打磨，字数实时校验</div>
+        <div class="meta"><span>5.1 万人使用</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+        <h3>院校项目库</h3>
+        <div class="desc">覆盖 ApplyWeb / Liaison / Slate 主流申请系统与项目</div>
+        <div class="meta"><span>按平台归类</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#FDF2F8"><svg viewBox="0 0 24 24" fill="none" stroke="#DB2777" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 6h5M18.5 3.5v5"/></svg></div>
+        <h3>推荐信管理</h3>
+        <div class="desc">推荐人信息登记与邀请状态跟踪，不再漏催</div>
+        <div class="meta"><span>3.4 万人使用</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#F0FDF4"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg></div>
+        <h3>申请进度表</h3>
+        <div class="desc">在线表格记录全部申请进展，已投 / 面试 / Offer 一目了然</div>
+        <div class="meta"><span>9.3 万人使用</span><span>→</span></div>
+      </div>
+      <div class="card">
+        <div class="card-ico" style="background:#FEFCE8"><svg viewBox="0 0 24 24" fill="none" stroke="#CA8A04" stroke-width="2"><path d="M4 7h16v13H4z"/><path d="M8 7V4h8v3M8 12h8M8 16h5"/></svg></div>
+        <h3>成绩换算</h3>
+        <div class="desc">GPA 4.0 / 百分制 / UK 等级互转，语言成绩制式映射</div>
+        <div class="meta"><span>2.8 万人使用</span><span>→</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Tab 2 ============ -->
+  <section id="tab-jobs" class="hidden">
+    <div class="panel">
+      <div class="filters">
+        <input placeholder="搜索公司 / 岗位关键词，如：数据分析">
+        <select><option>全部城市</option><option>北京</option><option>上海</option><option>深圳</option></select>
+        <select><option>全部行业</option><option>互联网</option><option>新能源</option><option>金融</option></select>
+        <select><option>全部学历</option><option>本科</option><option>硕士</option></select>
+        <select><option>近 7 天</option><option>近 3 天</option><option>近 30 天</option></select>
+        <button class="btn primary">筛选</button>
+      </div>
+      <div class="stat">
+        <span>共 <b>1,280</b> 条</span>
+        <span>今日新增 <b>86</b> 条</span>
+        <span>数据源 <b>32</b> 个</span>
+        <span>最近更新 <b>10 分钟前</b></span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>公司</th><th>岗位</th><th>城市</th><th>薪资</th><th>学历</th><th>投递方式</th><th>截止</th><th>来源 / 时间</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="co">理想汽车</td><td>数据分析实习生</td><td>北京</td>
+            <td class="money">200-250/天</td><td>本科</td><td>邮箱投递</td><td>11-30</td>
+            <td class="src"><b>XX实习</b> · 10-08</td>
+          </tr>
+          <tr>
+            <td class="co">字节跳动</td><td>产品运营实习生</td><td>上海</td>
+            <td class="money">180/天</td><td>本科</td><td>官网链接</td><td>11-15</td>
+            <td class="src"><b>应届生求职</b> · 10-08</td>
+          </tr>
+          <tr>
+            <td class="co">中金公司</td><td>投行部暑期实习</td><td>北京</td>
+            <td class="money">面议</td><td>硕士</td><td>官网链接</td><td>12-01</td>
+            <td class="src"><b>金融实习圈</b> · 10-07</td>
+          </tr>
+          <tr>
+            <td class="co">宁德时代</td><td>算法实习生</td><td>宁德</td>
+            <td class="money">220-300/天</td><td>硕士</td><td>邮箱投递</td><td>11-20</td>
+            <td class="src"><b>企业官网</b> · 10-07</td>
+          </tr>
+          <tr>
+            <td class="co">腾讯</td><td>交互设计实习生</td><td>深圳</td>
+            <td class="money">200/天</td><td>本科</td><td>官网链接</td><td>11-25</td>
+            <td class="src"><b>设计实习君</b> · 10-06</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">字段完整率 92% · 去重准确率 96% · 每条岗位均可回溯至原文出处（合规要求）</div>
+    </div>
+  </section>
+
+  <!-- ============ Tab 3 ============ -->
+  <section id="tab-ext" class="hidden">
+    <div class="mock">
+      <div class="mock-bar">
+        <span class="dot" style="background:#EF4444"></span>
+        <span class="dot" style="background:#F59E0B"></span>
+        <span class="dot" style="background:#22C55E"></span>
+        <div class="mock-url">https://apply.example.edu/apply/step-3-personal-info</div>
+      </div>
+      <div class="mock-body">
+        <div class="form-row"><label>Last Name *</label><div class="inp filled">Feng</div></div>
+        <div class="form-row"><label>First Name *</label><div class="inp filled">Zong</div></div>
+        <div class="form-row"><label>Date of Birth *</label><div class="inp filled">01/01/2003</div></div>
+        <div class="form-row"><label>Country of Citizenship *</label><div class="inp filled">China</div></div>
+        <div class="form-row"><label>Why this program? (500 words)</label><div class="inp">待人工填写 · 需要个性化</div></div>
+
+        <div class="float">
+          <div class="float-h">
+            <span>留学生助手</span>
+            <span class="live">已识别</span>
+          </div>
+          <div class="float-b">
+            <div class="row"><span>识别平台</span><b>ApplyWeb</b></div>
+            <div class="row"><span>当前步骤</span><b>3 / 9</b></div>
+            <div class="row"><span>字段填充</span><b>18 / 22</b></div>
+            <div class="bar"><i></i></div>
+            <div class="row" style="padding-top:2px"><span style="color:#94A3B8">填充率 82%</span><span style="color:#94A3B8">4 项待人工</span></div>
+          </div>
+          <div class="float-f">
+            <button class="btn">暂停</button>
+            <button class="btn primary">下一步</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note">遇到验证码或"提交"按钮时，插件自动暂停并提示人工处理 —— 不破解验证码、不自动提交（合规硬约束）。</div>
+  </section>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+      t.classList.add('on');
+      ['home','jobs','ext'].forEach(function(k){
+        document.getElementById('tab-' + k).classList.toggle('hidden', k !== t.dataset.tab);
+      });
+    });
+  });
+</script>
+</body>
+</html>

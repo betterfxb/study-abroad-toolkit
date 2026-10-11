@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>留学网申助手</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <h1>留学网申助手</h1>
+    <p class="sub">只填充，不提交 · 提交前请自行复核</p>
+  </header>
+
+  <section class="row">
+    <span class="label">服务状态</span>
+    <span id="health" class="badge">检测中…</span>
+  </section>
+
+  <section class="actions">
+    <button id="scan" class="ghost">扫描当前页面字段</button>
+    <button id="fill" class="primary">一键填充</button>
+  </section>
+
+  <section class="row">
+    <label class="label switch" for="auto">
+      <input id="auto" type="checkbox" />
+      <span>进入新步骤自动填充</span>
+    </label>
+  </section>
+  <p class="hint note">多步网申：首次需手动点一次「一键填充」，之后每步自动填充（不会代你提交）。</p>
+
+  <section class="settings">
+    <label class="label" for="baseUrl">服务地址</label>
+    <input id="baseUrl" type="text" placeholder="http://localhost:8090" />
+    <button id="save" class="ghost small">保存设置</button>
+    <p id="saveHint" class="hint"></p>
+  </section>
+
+  <footer>
+    <p>档案数据保存在本机浏览器，敏感字段不上云。</p>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

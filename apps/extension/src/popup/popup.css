@@ -1,0 +1,59 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 300px;
+  padding: 14px;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  color: #1f2937;
+  background: #fff;
+}
+
+header { margin-bottom: 12px; }
+h1 { font-size: 15px; color: #2563eb; }
+.sub { margin-top: 2px; font-size: 11px; color: #9ca3af; }
+
+.row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.label { color: #6b7280; }
+.badge {
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 12px; background: #f3f4f6; color: #6b7280;
+}
+.badge.ok { background: #d1fae5; color: #047857; }
+.badge.bad { background: #fee2e2; color: #b91c1c; }
+
+.actions { display: flex; gap: 8px; margin: 12px 0; }
+
+button {
+  border-radius: 8px; cursor: pointer; font-size: 13px;
+  padding: 8px 10px; transition: background .15s, color .15s, border-color .15s;
+}
+button.primary { flex: 1; background: #2563eb; color: #fff; border: 1px solid #2563eb; }
+button.primary:hover { background: #1d4ed8; }
+button.ghost { flex: 1; background: #fff; color: #2563eb; border: 1px solid #bfdbfe; }
+button.ghost:hover { border-color: #2563eb; }
+button.small { flex: 0 0 auto; padding: 6px 10px; font-size: 12px; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.settings { margin-top: 6px; }
+.settings .label { display: block; margin-bottom: 6px; font-size: 12px; }
+input[type="text"] {
+  width: 100%; padding: 7px 9px; margin-bottom: 8px;
+  border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px;
+}
+input[type="text"]:focus { outline: none; border-color: #2563eb; }
+.hint { font-size: 11px; color: #047857; min-height: 14px; }
+.hint.note { color: #9ca3af; line-height: 1.5; min-height: 0; margin-top: 6px; }
+
+.switch {
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer; user-select: none;
+}
+.switch input { margin: 0; cursor: pointer; accent-color: #2563eb; }
+
+footer { margin-top: 12px; padding-top: 8px; border-top: 1px solid #f3f4f6; }
+footer p { font-size: 11px; color: #9ca3af; line-height: 1.5; }

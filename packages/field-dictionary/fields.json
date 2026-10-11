@@ -1,0 +1,549 @@
+{
+  "version": "1.0",
+  "description": "留学网申字段词典。每个 slot 描述一个语义槽位：key 为档案路径（点分），keywords 为多信号关键词（label/name/placeholder/aria/邻近文本），negative 为反例关键词（命中则降权）。",
+  "value_types": ["text", "email", "phone", "date", "number", "select", "richtext"],
+  "slots": [
+    {
+      "key": "basic_info.last_name",
+      "label": "姓氏",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 100,
+      "keywords": ["last name", "lastname", "lname", "family name", "familyname", "surname", "姓", "姓氏", "申请人姓"],
+      "negative": ["first name", "given name", "middle name", "former", "previous", "maiden"]
+    },
+    {
+      "key": "basic_info.first_name",
+      "label": "名字",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 100,
+      "keywords": ["first name", "firstname", "fname", "given name", "givenname", "forename", "名", "名字", "申请人名"],
+      "negative": ["last name", "family name", "middle name", "preferred"]
+    },
+    {
+      "key": "basic_info.middle_name",
+      "label": "中间名",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 90,
+      "keywords": ["middle name", "middlename", "middle initial", "中间名"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.preferred_name",
+      "label": "常用名",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 90,
+      "keywords": ["preferred name", "preferredname", "nickname", "chosen name", "常用名", "英文名"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.passport_name",
+      "label": "护照姓名",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 95,
+      "keywords": ["name as in passport", "passport name", "name on passport", "护照姓名", "护照上的姓名", "护照名"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.former_last_name",
+      "label": "曾用姓",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 85,
+      "keywords": ["former last name", "previous last name", "maiden name", "曾用姓"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.email",
+      "label": "电子邮箱",
+      "value_type": "email",
+      "handler": "email",
+      "priority": 100,
+      "keywords": ["email", "e-mail", "email address", "电子邮箱", "邮箱", "电子邮件"],
+      "negative": ["recommender", "reference", "parent", "guardian", "emergency", "alternate", "secondary"]
+    },
+    {
+      "key": "basic_info.phone",
+      "label": "手机号",
+      "value_type": "phone",
+      "handler": "phone",
+      "priority": 100,
+      "keywords": ["phone", "phone number", "mobile", "mobile number", "cell", "cellphone", "telephone", "手机", "手机号", "电话", "联系电话"],
+      "negative": ["alternate", "secondary", "work", "parent", "guardian", "emergency", "home", "country code", "recommender", "reference"]
+    },
+    {
+      "key": "basic_info.alternate_phone",
+      "label": "备用电话",
+      "value_type": "phone",
+      "handler": "phone",
+      "priority": 80,
+      "keywords": ["alternate phone", "secondary phone", "other phone", "备用电话", "第二联系电话"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.gender",
+      "label": "性别",
+      "value_type": "select",
+      "handler": "gender",
+      "priority": 100,
+      "keywords": ["gender", "sex", "性别"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.birth_date",
+      "label": "出生日期",
+      "value_type": "date",
+      "handler": "date",
+      "priority": 100,
+      "keywords": ["date of birth", "dateofbirth", "birth date", "birthdate", "birthday", "dob", "出生日期", "出生年月", "生日"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.birth_city",
+      "label": "出生城市",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 85,
+      "keywords": ["city of birth", "birth city", "place of birth city", "出生城市", "出生地"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.birth_country",
+      "label": "出生国家",
+      "value_type": "select",
+      "handler": "country",
+      "priority": 85,
+      "keywords": ["country of birth", "birth country", "出生国家"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.nationality",
+      "label": "国籍",
+      "value_type": "select",
+      "handler": "country",
+      "priority": 95,
+      "keywords": ["nationality", "国籍", "民族"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.citizenship",
+      "label": "公民身份",
+      "value_type": "select",
+      "handler": "country",
+      "priority": 95,
+      "keywords": ["citizenship", "country of citizenship", "citizen of", "公民身份", "国籍国"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.marital_status",
+      "label": "婚姻状况",
+      "value_type": "select",
+      "handler": "select_by_text",
+      "priority": 70,
+      "keywords": ["marital status", "婚姻状况", "婚姻状态"],
+      "negative": []
+    },
+    {
+      "key": "basic_info.visa_type",
+      "label": "签证类型",
+      "value_type": "select",
+      "handler": "select_by_text",
+      "priority": 75,
+      "keywords": ["visa type", "visa status", "immigration status", "visa category", "签证类型", "签证状态"],
+      "negative": []
+    },
+    {
+      "key": "address.country",
+      "label": "国家/地区",
+      "value_type": "select",
+      "handler": "country",
+      "priority": 80,
+      "keywords": ["country", "country/region", "country of residence", "国家", "国家/地区", "所在国家"],
+      "negative": ["birth", "citizenship", "nationality", "code", "phone"]
+    },
+    {
+      "key": "address.state",
+      "label": "省/州",
+      "value_type": "select",
+      "handler": "state",
+      "priority": 85,
+      "keywords": ["state", "province", "state/province", "state or province", "省", "省份", "州", "省市"],
+      "negative": ["statement", "status"]
+    },
+    {
+      "key": "address.city",
+      "label": "城市",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 85,
+      "keywords": ["city", "town", "city/town", "municipality", "城市", "市", "所在城市"],
+      "negative": ["birth", "citizenship"]
+    },
+    {
+      "key": "address.street",
+      "label": "详细地址",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 85,
+      "keywords": ["address", "street address", "address line 1", "addressline1", "street", "详细地址", "街道地址", "通讯地址", "联系地址"],
+      "negative": ["line 2", "line2", "email", "url"]
+    },
+    {
+      "key": "address.street2",
+      "label": "地址第二行",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 80,
+      "keywords": ["address line 2", "addressline2", "apt", "apartment", "suite", "unit", "地址第二行"],
+      "negative": []
+    },
+    {
+      "key": "address.postal",
+      "label": "邮政编码",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 85,
+      "keywords": ["postal code", "postalcode", "zip", "zip code", "zipcode", "postcode", "邮编", "邮政编码"],
+      "negative": []
+    },
+    {
+      "key": "education[0].institution",
+      "label": "就读院校",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 95,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["institution", "school", "school name", "university", "college", "institution name", "学校", "院校", "学校名称", "就读学校", "毕业院校"],
+      "negative": ["recommender", "reference", "employer", "organization"]
+    },
+    {
+      "key": "education[0].degree",
+      "label": "学位",
+      "value_type": "select",
+      "handler": "degree",
+      "priority": 90,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["degree", "degree earned", "degree type", "degree received", "学位", "学历"],
+      "negative": []
+    },
+    {
+      "key": "education[0].major",
+      "label": "专业",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 90,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["major", "field of study", "fieldofstudy", "program", "concentration", "department", "dept", "specialization", "专业", "所学专业", "主修", "系别"],
+      "negative": []
+    },
+    {
+      "key": "education[0].start_date",
+      "label": "入学时间",
+      "value_type": "date",
+      "handler": "month_date",
+      "priority": 80,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["attendance from", "start date", "date from", "from date", "入学时间", "入学日期", "开始时间"],
+      "negative": ["employment", "work"]
+    },
+    {
+      "key": "education[0].end_date",
+      "label": "毕业时间",
+      "value_type": "date",
+      "handler": "month_date",
+      "priority": 80,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["attendance to", "end date", "graduation date", "date of graduation", "degree date", "毕业时间", "毕业日期", "结束时间"],
+      "negative": []
+    },
+    {
+      "key": "education[0].gpa",
+      "label": "GPA",
+      "value_type": "number",
+      "handler": "gpa",
+      "priority": 90,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["gpa", "grade point average", "average grade", "cumulative gpa", "绩点", "平均分", "平均绩点"],
+      "negative": ["scale", "maximum", "out of"]
+    },
+    {
+      "key": "education[0].gpa_scale",
+      "label": "GPA 满分",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "education",
+      "repeatable": true,
+      "keywords": ["gpa scale", "scale", "maximum gpa", "gpa out of", "绩点满分", "满分"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].test_type",
+      "label": "考试类型",
+      "value_type": "select",
+      "handler": "select_by_text",
+      "priority": 85,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["test type", "exam type", "test name", "exam name", "考试类型", "考试名称"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].total",
+      "label": "总分",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 85,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["total score", "overall score", "total", "总分", "总成绩"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].reading",
+      "label": "阅读",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["reading", "reading score", "阅读"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].listening",
+      "label": "听力",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["listening", "listening score", "听力"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].speaking",
+      "label": "口语",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["speaking", "speaking score", "口语"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].writing",
+      "label": "写作",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["writing", "writing score", "写作"],
+      "negative": ["analytical"]
+    },
+    {
+      "key": "tests[0].verbal",
+      "label": "语文(Verbal)",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["verbal", "verbal score", "语文"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].quant",
+      "label": "数学(Quant)",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["quantitative", "quant", "quantitative score", "数学", "数量"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].aw",
+      "label": "分析性写作(AW)",
+      "value_type": "number",
+      "handler": "number",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["analytical writing", "awa", "aw score", "分析性写作", "写作分析"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].test_date",
+      "label": "考试日期",
+      "value_type": "date",
+      "handler": "date",
+      "priority": 80,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["test date", "date taken", "exam date", "考试日期", "考试时间"],
+      "negative": []
+    },
+    {
+      "key": "tests[0].registration_id",
+      "label": "报名号",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 75,
+      "group": "tests",
+      "repeatable": true,
+      "keywords": ["registration number", "registration id", "registration no", "test id", "报名号", "注册号"],
+      "negative": []
+    },
+    {
+      "key": "experiences[0].org",
+      "label": "单位/机构",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 80,
+      "group": "experiences",
+      "repeatable": true,
+      "keywords": ["employer", "organization", "organisation", "company", "company name", "单位", "公司", "机构", "工作单位"],
+      "negative": ["school", "university", "institution", "recommender"]
+    },
+    {
+      "key": "experiences[0].role",
+      "label": "职位",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 80,
+      "group": "experiences",
+      "repeatable": true,
+      "keywords": ["job title", "position", "position title", "role", "title", "职位", "职务", "岗位"],
+      "negative": []
+    },
+    {
+      "key": "experiences[0].start_date",
+      "label": "开始日期",
+      "value_type": "date",
+      "handler": "month_date",
+      "priority": 70,
+      "group": "experiences",
+      "repeatable": true,
+      "keywords": ["employment from", "work from", "start date", "开始日期", "入职时间"],
+      "negative": []
+    },
+    {
+      "key": "experiences[0].end_date",
+      "label": "结束日期",
+      "value_type": "date",
+      "handler": "month_date",
+      "priority": 70,
+      "group": "experiences",
+      "repeatable": true,
+      "keywords": ["employment to", "work to", "end date", "结束日期", "离职时间"],
+      "negative": []
+    },
+    {
+      "key": "experiences[0].description",
+      "label": "工作描述",
+      "value_type": "richtext",
+      "handler": "richtext",
+      "priority": 70,
+      "group": "experiences",
+      "repeatable": true,
+      "keywords": ["description", "responsibilities", "duties", "job description", "工作内容", "职责", "工作描述"],
+      "negative": []
+    },
+    {
+      "key": "emergency_contact.name",
+      "label": "紧急联系人",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 70,
+      "keywords": ["emergency contact name", "emergency contact", "contact person", "紧急联系人", "紧急联系人姓名"],
+      "negative": ["phone", "relationship"]
+    },
+    {
+      "key": "emergency_contact.phone",
+      "label": "紧急联系电话",
+      "value_type": "phone",
+      "handler": "phone",
+      "priority": 70,
+      "keywords": ["emergency phone", "emergency contact phone", "emergency telephone", "紧急联系电话"],
+      "negative": []
+    },
+    {
+      "key": "emergency_contact.relationship",
+      "label": "与申请人关系",
+      "value_type": "select",
+      "handler": "select_by_text",
+      "priority": 70,
+      "keywords": ["relationship", "relationship to applicant", "relationship to student", "与申请人关系", "关系"],
+      "negative": []
+    },
+    {
+      "key": "recommender[0].name",
+      "label": "推荐人姓名",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 75,
+      "group": "recommender",
+      "repeatable": true,
+      "keywords": ["recommender name", "reference name", "referee name", "recommender", "推荐人姓名", "推荐人"],
+      "negative": ["email", "title", "institution", "phone"]
+    },
+    {
+      "key": "recommender[0].email",
+      "label": "推荐人邮箱",
+      "value_type": "email",
+      "handler": "email",
+      "priority": 75,
+      "group": "recommender",
+      "repeatable": true,
+      "keywords": ["recommender email", "reference email", "referee email", "推荐人邮箱"],
+      "negative": []
+    },
+    {
+      "key": "recommender[0].title",
+      "label": "推荐人职称",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 70,
+      "group": "recommender",
+      "repeatable": true,
+      "keywords": ["recommender title", "reference title", "推荐人职称", "推荐人职务"],
+      "negative": []
+    },
+    {
+      "key": "recommender[0].org",
+      "label": "推荐人单位",
+      "value_type": "text",
+      "handler": "text",
+      "priority": 70,
+      "group": "recommender",
+      "repeatable": true,
+      "keywords": ["recommender institution", "recommender organization", "reference institution", "推荐人单位", "推荐人机构"],
+      "negative": []
+    },
+    {
+      "key": "essays.statement_of_purpose",
+      "label": "个人陈述",
+      "value_type": "richtext",
+      "handler": "richtext",
+      "priority": 65,
+      "group": "essays",
+      "word_limit": 1000,
+      "keywords": ["statement of purpose", "personal statement", "statement", "essay", "sop", "个人陈述", "文书", "申请陈述"],
+      "negative": ["why", "diversity", "optional", "short answer"]
+    }
+  ]
+}
