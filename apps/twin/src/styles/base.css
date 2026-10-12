@@ -1,0 +1,77 @@
+/**
+ * 孪生独立站基础样式：只含本站用到的令牌 + 版式 + 面板 + toast。
+ * 3D HUD 样式在 ../twin/twin.css（作用域 .twin- 前缀）。
+ */
+
+:root {
+  --blue: #2563eb;
+  --blue-dark: #1d4ed8;
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --line: #e5e9f0;
+  --line-soft: #f1f5f9;
+  --t1: #0f172a;
+  --t2: #475569;
+  --t3: #94a3b8;
+  --green: #059669;
+  --red: #ef4444;
+  --r-lg: 16px;
+  --r-md: 10px;
+  --r-sm: 8px;
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --wrap: 1120px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; }
+
+/* ---------------------------------------------------------- 站点头栏 */
+.twin-topbar { background: #0b1526; position: sticky; top: 0; z-index: 20; }
+.twin-topbar-in {
+  max-width: var(--wrap); margin: 0 auto; padding: 0 24px; height: 56px;
+  display: flex; align-items: center; gap: 10px;
+}
+.twin-logo { font-size: 18px; }
+.twin-brand { color: #fff; font-weight: 600; font-size: 15px; letter-spacing: 0.5px; }
+.twin-badge {
+  font-size: 11px; color: #7dd3fc; border: 1px solid rgba(125, 211, 252, 0.4);
+  border-radius: 999px; padding: 1px 10px;
+}
+
+.twin-wrap { max-width: var(--wrap); margin: 0 auto; padding: 20px 24px 64px; }
+
+/* ---------------------------------------------------------- 面板（ChargeTwinTab 头部用） */
+.panel {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 20px; margin-bottom: 20px;
+}
+.panel-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.panel-title .sub { font-size: 12px; color: var(--t3); font-weight: 400; }
+.stat { display: flex; gap: 24px; color: var(--t2); font-size: 13px; flex-wrap: wrap; }
+.stat b { color: var(--t1); font-weight: 600; }
+.note { color: var(--t3); font-size: 12px; margin-top: 14px; }
+
+/* ---------------------------------------------------------- 提示 */
+.toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 80; }
+.toast {
+  background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--blue);
+  border-radius: var(--r-sm); box-shadow: var(--shadow-md); padding: 11px 16px; font-size: 13px;
+  max-width: 340px; animation: toast-in 0.18s ease-out;
+}
+.toast.err { border-left-color: var(--red); }
+.toast.ok { border-left-color: var(--green); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

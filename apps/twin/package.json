@@ -1,0 +1,29 @@
+{
+  "name": "charge-twin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "国扑储能充电站数字孪生 · 独立展示站（Three.js 程序化建模，mock 数据可替换为网关订阅）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5174",
+    "typecheck": "tsc --noEmit",
+    "test": "node test/smoke_twin.js"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.0",
+    "unocss": "^0.58.9",
+    "vite": "^5.4.11"
+  }
+}

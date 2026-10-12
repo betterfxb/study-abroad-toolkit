@@ -1,0 +1,272 @@
+/**
+ * 充电站孪生 · 深色 HUD 样式（作用域全部收敛在 .twin- 前缀内，不污染全局）。
+ * 强调色用设计令牌 --blue，夜视青光用组件内变量 --twin-glow。
+ */
+
+.twin-page {
+  --twin-glow: #38bdf8;
+  --twin-ink: #e8f4ff;
+  --twin-dim: #9fb3c8;
+  --twin-glass: rgba(8, 20, 38, 0.72);
+  --twin-line: rgba(125, 211, 252, 0.22);
+}
+
+.twin-stage {
+  position: relative;
+  height: 640px;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #0b1220;
+}
+
+.twin-canvas {
+  position: absolute;
+  inset: 0;
+}
+.twin-canvas canvas {
+  display: block;
+}
+
+.twin-hud {
+  position: absolute;
+  z-index: 5;
+}
+
+.twin-top {
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(4, 12, 24, 0.72), rgba(4, 12, 24, 0));
+  color: var(--twin-ink);
+  pointer-events: none;
+}
+.twin-top .twin-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  pointer-events: auto;
+}
+.twin-top .twin-sub {
+  font-size: 11px;
+  color: var(--twin-dim);
+}
+.twin-top .twin-spacer {
+  flex: 1;
+}
+.twin-chip {
+  pointer-events: auto;
+  font-size: 12px;
+  color: var(--twin-ink);
+  background: var(--twin-glass);
+  border: 1px solid var(--twin-line);
+  border-radius: 999px;
+  padding: 4px 12px;
+  white-space: nowrap;
+}
+
+.twin-left {
+  left: 12px;
+  top: 64px;
+  width: 268px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.twin-card {
+  background: var(--twin-glass);
+  border: 1px solid var(--twin-line);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  color: var(--twin-ink);
+  backdrop-filter: blur(6px);
+}
+.twin-card h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--twin-dim);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.twin-card h4 .en {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+.twin-kv2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.twin-kv {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.16);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+}
+.twin-kv .k {
+  font-size: 11px;
+  color: var(--twin-dim);
+}
+.twin-kv .v {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--twin-glow);
+  font-variant-numeric: tabular-nums;
+}
+.twin-kv .v.red {
+  color: #f87171;
+}
+.twin-legend {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--twin-dim);
+  margin-bottom: 4px;
+}
+.twin-legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.twin-right {
+  right: 12px;
+  top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.twin-tool {
+  width: 64px;
+  padding: 8px 4px;
+  font-size: 11px;
+  color: var(--twin-ink);
+  background: var(--twin-glass);
+  border: 1px solid var(--twin-line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+.twin-tool:hover {
+  border-color: var(--twin-glow);
+}
+.twin-tool.on {
+  background: rgba(37, 99, 235, 0.55);
+  border-color: var(--twin-glow);
+  color: #fff;
+}
+.twin-tool .dot {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.twin-bottom {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  display: flex;
+  gap: 8px;
+  background: var(--twin-glass);
+  border: 1px solid var(--twin-line);
+  border-radius: 999px;
+  padding: 6px;
+  backdrop-filter: blur(6px);
+}
+.twin-tab {
+  border: 0;
+  background: transparent;
+  color: var(--twin-dim);
+  font-size: 13px;
+  padding: 6px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.twin-tab.on {
+  background: rgba(37, 99, 235, 0.7);
+  color: #fff;
+  font-weight: 600;
+}
+
+.twin-detail {
+  right: 92px;
+  bottom: 64px;
+  width: 300px;
+}
+.twin-detail .soc-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.twin-detail .soc-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--twin-glow);
+}
+.twin-detail .soc-time {
+  font-size: 11px;
+  color: var(--twin-dim);
+}
+.twin-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+.twin-row {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(56, 189, 248, 0.07);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.twin-row .k {
+  color: var(--twin-dim);
+}
+.twin-row .v {
+  color: var(--twin-ink);
+  font-weight: 600;
+}
+.twin-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: none;
+  color: var(--twin-dim);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.twin-hint {
+  left: 12px;
+  bottom: 12px;
+  font-size: 11px;
+  color: var(--twin-dim);
+  background: var(--twin-glass);
+  border: 1px solid var(--twin-line);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+@media (max-width: 860px) {
+  .twin-left {
+    width: 210px;
+  }
+  .twin-detail {
+    right: 12px;
+    bottom: 64px;
+    width: 260px;
+  }
+}
