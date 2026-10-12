@@ -42,15 +42,15 @@ uvicorn app.main:app --port 8090
 
 ## 测试
 
-### 冒烟测试（零依赖，166 项）
+### 冒烟测试（零依赖，234 项）
 
 ```bash
 cd apps/extension
 node tests/smoke_test.js
 ```
 
-覆盖：选择器生成 / 标签定位 / 选项采集 / 可填判定 / 字段提取（含 `maxlength` 缺省归一） / 填充计划（含文书超限降级） / 填充执行 / 校验 / 阻断检测 / 状态机 / API 客户端 / 平台识别 / **多步向导（步骤指纹·稳定窗口·文案识别）** / **源码契约与合规红线** / **本地断点续填**。
-当前 **188 项全通过**（联调 31 项）。
+覆盖：选择器生成 / 标签定位 / 选项采集 / 可填判定 / 字段提取（含 `maxlength` 缺省归一） / 填充计划（含文书超限降级） / 填充执行 / 校验 / 阻断检测 / 状态机 / API 客户端 / 平台识别 / **多步向导（步骤指纹·稳定窗口·文案识别）** / **源码契约与合规红线** / **本地断点续填** / **Token 与服务端会话同步**。
+当前 **234 项全通过**（联调 31 项）。
 
 ### 端到端联调（需服务运行，31 项）
 
@@ -92,17 +92,19 @@ src/
 │   ├── step-controller.js         状态机 IDLE→…→DONE
 │   ├── step-watcher.js            ★ 多步向导：步骤指纹 + 稳定窗口判定换步
 │   ├── session-store.js           ★ 本地断点续填：站点键 + TTL/上限 + 存取适配
-│   └── api-client.js              调用 intelligence-service（fetch 可注入）
+│   ├── token-store.js             ★ 鉴权 Token：归一化 / 新鲜度 / X-Ext-Token 头（密码不落盘）
+│   ├── session-sync.js            ★ 服务端会话同步：统计聚合 + PATCH 载荷映射（纯函数）
+│   └── api-client.js              intelligence 匹配 + 网关鉴权/会话/上报（fetch 可注入）
 ├── background/
-│   └── service-worker.js          跨域请求转发 + 会话状态 + 步骤角标 + popup 消息路由
+│   └── service-worker.js          跨域转发 + 登录/Token 消息 + 401 自动续期 + 会话同步(fail-open) + 步骤角标
 ├── content/
 │   ├── content-script.js          页面编排 + 浮窗 UI + 换步监听
 │   └── panel.css                  浮窗样式（Shadow DOM 隔离）
 └── popup/
-    ├── popup.html / popup.css / popup.js   健康检查 / 扫描 / 填充 / 自动填充开关
+    ├── popup.html / popup.css / popup.js   健康检查 / 扫描 / 填充 / 自动填充开关 / 登录与 Token
 tests/
 ├── fake-dom.js                    最小 DOM 桩
-├── smoke_test.js                  冒烟测试（166 项）
+├── smoke_test.js                  冒烟测试（234 项）
 └── integration_e2e.js             端到端联调（31 项）
 ```
 
@@ -160,16 +162,23 @@ IDLE → SCANNING → FILLING → SAVING → NEXT_STEP → DONE
 
 | 方法 | 路径 | 用途 |
 |---|---|---|
+| POST | `/api/v1/auth/login` | 邮箱密码登录（popup；access 2h + refresh 30d） |
+| POST | `/api/v1/auth/refresh` | 401 时自动续期重放一次 |
 | POST | `/ext/v1/match-fields` | 字段语义匹配（已实现） |
 | GET | `/ext/v1/dictionary` | 词典版本核对（已实现） |
-| POST | `/ext/v1/fill-logs` | 上报字段级结果 ✅ 已实现（网关本地；内容脚本 SAVING 态经 SW 自动上报，失败不阻断） |
+| POST | `/ext/v1/fill-logs` | 上报字段级结果 ✅（带 `X-Ext-Token`；内容脚本 SAVING 态经 SW 自动上报，失败不阻断） |
+| POST | `/ext/v1/sessions` | 创建填写会话（SW 有凭证时自动建） |
+| PATCH | `/ext/v1/sessions/{id}` | 同步步骤与统计（换步 / 上报后 PATCH，fail-open） |
+| POST | `/ext/v1/sessions/{id}/block` | 验证码/风控上报 → blocked（fail-open） |
 | GET | `/health` | 服务健康检查 |
+
+> 鉴权统一 `X-Ext-Token: <JWT>`（网关 `JwtAuthGuard` 双凭证之一）；未登录时会话同步与上报静默跳过，绝不阻断填充。
 
 ## 下一步
 
 | 事项 | 说明 |
 |---|---|
 | 真实页面回归 | 用真实 ApplyWeb / Liaison / Slate 页面扩充样本，校准稳定窗口与指纹策略 |
-| 断点续填（服务端同步） | 本地进度已闭环（`core/session-store.js`：站点键＋7 天 TTL＋20 条上限，恢复只提示不自动写）；服务端会话（网关 `/ext/v1/sessions`）待插件具备鉴权 Token 后同步 |
-| 档案管理 UI | 目前档案通过 `chrome.storage.local` 注入，需接入 `/profile` 接口（同样待插件鉴权 Token UX） |
+| 断点续填（服务端同步） | ✅ 已闭环：popup 登录/粘贴 Token（`core/token-store.js`）→ SW 401 自动 refresh 重放 → 首次匹配建会话、换步 PATCH `step_index`、上报后 PATCH 累计统计、阻断上报 block，全部 fail-open（`core/session-sync.js` 纯映射）；本地进度（`session-store.js`）不变，仍是恢复提示的唯一来源 |
+| 档案管理 UI | Token 已就绪，待做「登录后从 `/api/v1/profile` 拉取档案注入 `cfg.profile`」（现为 chrome.storage.local 手工档案） |
 | TypeScript 迁移 | 视需要引入 Vite(CRXJS) 构建链 |

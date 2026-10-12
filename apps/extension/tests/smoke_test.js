@@ -20,7 +20,16 @@ import {
   StepWatcher, detectStepMeta, fieldsSignature, normalizeUrl,
   renderStepLabel, simpleHash, stepFingerprint,
 } from '../src/core/step-watcher.js';
-import { matchFields } from '../src/core/api-client.js';
+import { blockSession, createSession, login, matchFields, patchSession, refreshAuth, reportLogs } from '../src/core/api-client.js';
+import { CONFIG } from '../src/shared/config.js';
+import {
+  AUTH_KEY, canRefresh, createAuth, fromTokenBundle, isFresh,
+  pickExtHeader, toLoginBody, toRefreshBody,
+} from '../src/core/token-store.js';
+import {
+  LOG_RESULTS, mergeStats, sessionCreatePayload, sessionPatchPayload,
+  shouldSync, statsFromLogs,
+} from '../src/core/session-sync.js';
 import {
   RESUME_MAX_ENTRIES, RESUME_TTL_MS, createRecord, findResumable, formatResumeHint,
   loadStore, pruneStore, saveStore, siteKey, touchRecord,
@@ -559,6 +568,111 @@ group('[11] 本地断点续填（session-store）');
   check('内容脚本引入 session-store', content.includes('session-store.js'));
   check('填充后持久化进度', content.includes('persistProgress'));
   check('恢复只提示不自动写（armed 门禁保留）', content.includes('resumeHint'));
+}
+
+// ============================================================ [12] Token 与服务端会话同步
+group('[12] Token 与服务端会话同步（token-store / session-sync / 网关客户端）');
+{
+  // --- token-store：请求体
+  check('登录体去空白', toLoginBody(' a@b.com ', 'x').email === 'a@b.com');
+  check('刷新体构造', toRefreshBody('rt').refresh_token === 'rt');
+
+  // --- token-store：归一化
+  check('空 token 归一为 null', createAuth({}) === null && createAuth(null) === null);
+  const auth = createAuth({ access_token: 'A', refresh_token: 'R', email: 'e@x.com', expires_at: 9999999999999 });
+  check('登录态归一化', auth.access_token === 'A' && auth.refresh_token === 'R' && auth.pasted === false);
+  check('非法 expires_at 归 0', createAuth({ access_token: 'A', expires_at: -5 }).expires_at === 0);
+
+  // --- token-store：Bundle → 绝对时刻
+  const now = 1000000;
+  const fromBundle = fromTokenBundle({ access_token: 'a', refresh_token: 'r', expires_in: 7200 }, now, 'e@x.com');
+  check('expires_in 换算绝对时刻', fromBundle.expires_at === now + 7200 * 1000);
+  check('Bundle 保留邮箱与 refresh', fromBundle.email === 'e@x.com' && fromBundle.refresh_token === 'r');
+  check('缺 access_token 的 Bundle 归 null', fromTokenBundle({ refresh_token: 'r' }, now) === null);
+
+  // --- token-store：新鲜度（含 30s 提前量）
+  check('未过期为新鲜', isFresh({ access_token: 'a', expires_at: now + 60000 }, now));
+  check('已过期不新鲜', !isFresh({ access_token: 'a', expires_at: now - 1 }, now));
+  check('临期 30s 内提前判过期', !isFresh({ access_token: 'a', expires_at: now + 20000 }, now));
+  check('粘贴 Token（无过期时间）视为可用', isFresh({ access_token: 'a', expires_at: 0 }, now));
+  check('无 token 不新鲜', !isFresh(null, now) && !isFresh({ access_token: '' }, now));
+
+  // --- token-store：刷新能力
+  check('登录态可刷新', canRefresh(auth));
+  check('粘贴态不可刷新', !canRefresh(createAuth({ access_token: 'a', pasted: true })));
+  check('无 refresh 不可刷新', !canRefresh(createAuth({ access_token: 'a' })));
+
+  // --- token-store：请求头
+  check('无凭证不带头', pickExtHeader(null) === null);
+  check('有凭证带 X-Ext-Token', pickExtHeader(auth)['X-Ext-Token'] === 'A');
+
+  // --- session-sync：统计聚合
+  const stats = statsFromLogs([
+    { result: 'filled' }, { result: 'filled' }, { result: 'skipped' }, { result: 'weird' }, {},
+  ]);
+  check('日志计数', stats.total === 5 && stats.filled === 2 && stats.skipped === 2 && stats.failed === 0);
+  check('空/非数组安全', statsFromLogs([]).total === 0 && statsFromLogs(null).total === 0);
+  check('结果枚举齐备', LOG_RESULTS.every((r) => r in statsFromLogs([])));
+  const merged = mergeStats({ total: 2, filled: 2, skipped: 0, failed: 0, low_confidence: 0, manual: 0 },
+    { total: 3, filled: 1, skipped: 2, failed: 0, low_confidence: 0, manual: 0 });
+  check('跨步骤累加', merged.total === 5 && merged.filled === 3 && merged.skipped === 2);
+  check('merge 空入参安全', mergeStats(null, null).total === 0);
+
+  // --- session-sync：载荷映射
+  const create = sessionCreatePayload({ systemCode: 'applyweb', stepIndex: 2.7 });
+  check('创建载荷形状', create.system_code === 'applyweb' && create.step_index === 2);
+  check('创建缺省归零', sessionCreatePayload({}).step_index === 0 && sessionCreatePayload({}).system_code === '');
+  const patch = sessionPatchPayload({ stepIndex: 3, stats });
+  check('PATCH 只带给定键', patch.step_index === 3 && typeof patch.stats === 'object' && !('system_code' in patch));
+  check('PATCH 非法步骤剔除', sessionPatchPayload({ stepIndex: -1 }).step_index === undefined);
+  check('PATCH stats 数组剔除', sessionPatchPayload({ stats: [1, 2] }).stats === undefined);
+  check('空 PATCH 为空对象', Object.keys(sessionPatchPayload({})).length === 0);
+  check('shouldSync 判定', shouldSync(auth) && !shouldSync(null) && !shouldSync(createAuth({})));
+
+  // --- 网关客户端：URL / 方法 / 头
+  let cap = {};
+  const capFetch = async (url, init) => {
+    cap = { url, init };
+    return { ok: true, status: 200, json: async () => ({ code: 0, data: { access_token: 'A', refresh_token: 'R', expires_in: 7200 } }) };
+  };
+  const lr = await login({ email: ' a@b.com ', password: 'pw', gatewayBase: 'http://g:1' }, { fetchImpl: capFetch, timeoutMs: 500 });
+  check('login 打网关 /api/v1/auth/login', lr.ok && cap.url === 'http://g:1/api/v1/auth/login');
+  check('login body 已去空白', JSON.parse(cap.init.body).email === 'a@b.com' && cap.init.method === 'POST');
+
+  await refreshAuth({ refresh_token: 'R', gatewayBase: 'http://g:1' }, { fetchImpl: capFetch, timeoutMs: 500 });
+  check('refresh 打 /api/v1/auth/refresh', cap.url === 'http://g:1/api/v1/auth/refresh' && JSON.parse(cap.init.body).refresh_token === 'R');
+
+  await reportLogs({ logs: [] }, { gatewayBase: 'http://g:1', token: 'A', fetchImpl: capFetch, timeoutMs: 500 });
+  check('fill-logs 带 X-Ext-Token', cap.url === 'http://g:1/ext/v1/fill-logs' && cap.init.headers['X-Ext-Token'] === 'A');
+
+  await reportLogs({ logs: [] }, { gatewayBase: 'http://g:1', fetchImpl: capFetch, timeoutMs: 500 });
+  check('fill-logs 未登录不带头', cap.url.startsWith('http://g:1/') && !('X-Ext-Token' in (cap.init.headers || {})));
+
+  await reportLogs({ logs: [] }, { fetchImpl: capFetch, timeoutMs: 500 });
+  check('fill-logs 默认走网关而非 intelligence', cap.url.startsWith(CONFIG.GATEWAY_BASE));
+
+  await createSession({ system_code: 'slate' }, { gatewayBase: 'http://g:1', token: 'A', fetchImpl: capFetch, timeoutMs: 500 });
+  check('创建会话 POST /ext/v1/sessions', cap.url === 'http://g:1/ext/v1/sessions' && cap.init.method === 'POST' && cap.init.headers['X-Ext-Token'] === 'A');
+
+  await patchSession(7, { step_index: 2 }, { gatewayBase: 'http://g:1', token: 'A', fetchImpl: capFetch, timeoutMs: 500 });
+  check('PATCH 会话带 id', cap.url === 'http://g:1/ext/v1/sessions/7' && cap.init.method === 'PATCH');
+
+  await blockSession(7, '验证码', { gatewayBase: 'http://g:1', token: 'A', fetchImpl: capFetch, timeoutMs: 500 });
+  check('阻断上报 /block', cap.url === 'http://g:1/ext/v1/sessions/7/block' && JSON.parse(cap.init.body).reason === '验证码');
+
+  const unauthFetch = async () => ({ ok: false, status: 401, json: async () => ({}) });
+  const r401 = await createSession({}, { gatewayBase: 'http://g:1', token: 'A', fetchImpl: unauthFetch, timeoutMs: 500 });
+  check('401 携带 status 供刷新重放', !r401.ok && r401.status === 401);
+
+  // --- 源码契约：接线与隐私
+  const sw = readFileSync(new URL('../src/background/service-worker.js', import.meta.url), 'utf8');
+  const popupJs = readFileSync(new URL('../src/popup/popup.js', import.meta.url), 'utf8');
+  check('SW 接入 token-store 与 session-sync', sw.includes('token-store.js') && sw.includes('session-sync.js'));
+  check('SW 401 自动刷新重放', sw.includes('refreshAuth') && sw.includes('authExpired'));
+  check('同步全部 fail-open（catch 吞掉不阻断）', /patchSession\([\s\S]*?\.catch\(\(\) => \{\}\)/.test(sw));
+  check('登录密码不落盘（popup 无 password 入 storage）', !/storage[\s\S]{0,40}password/.test(popupJs));
+  check('密码用后即清', popupJs.includes("$('password').value = ''"));
+  check('登录走网关 login 消息', sw.includes("'ext:login'") && sw.includes("'ext:logout'"));
 }
 
 // ============================================================ 汇总

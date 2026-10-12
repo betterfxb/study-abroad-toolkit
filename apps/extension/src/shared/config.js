@@ -6,6 +6,8 @@
 export const CONFIG = Object.freeze({
   /** 字段匹配服务地址（intelligence-service） */
   INTELLIGENCE_BASE: 'http://localhost:8090',
+  /** 网关地址（鉴权 / fill-logs / 服务端会话） */
+  GATEWAY_BASE: 'http://localhost:8080',
   /** 请求超时（毫秒） */
   REQUEST_TIMEOUT_MS: 15000,
   /** 单次上报的最大字段数 */

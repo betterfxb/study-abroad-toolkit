@@ -30,9 +30,32 @@
   </section>
   <p class="hint note">多步网申：首次需手动点一次「一键填充」，之后每步自动填充（不会代你提交）。</p>
 
+  <section class="auth">
+    <div id="authOut">
+      <label class="label" for="email">登录（填写进度同步到服务端，可选）</label>
+      <input id="email" type="text" placeholder="邮箱" autocomplete="username" />
+      <input id="password" type="password" placeholder="密码（不保存在本机）" autocomplete="current-password" />
+      <div class="btn-row">
+        <button id="login" class="ghost small">登录</button>
+        <button id="showPaste" class="ghost small">粘贴 Token</button>
+      </div>
+      <div id="pasteBox" class="paste" hidden>
+        <input id="token" type="text" placeholder="X-Ext-Token（控制台调试用）" />
+        <button id="saveToken" class="ghost small">保存 Token</button>
+      </div>
+    </div>
+    <div id="authIn" class="row" hidden>
+      <span id="authBadge" class="badge ok">已登录</span>
+      <button id="logout" class="ghost small">退出</button>
+    </div>
+    <p id="authHint" class="hint"></p>
+  </section>
+
   <section class="settings">
     <label class="label" for="baseUrl">服务地址</label>
     <input id="baseUrl" type="text" placeholder="http://localhost:8090" />
+    <label class="label" for="gatewayBase">网关地址（登录 / 进度同步）</label>
+    <input id="gatewayBase" type="text" placeholder="http://localhost:8080" />
     <button id="save" class="ghost small">保存设置</button>
     <p id="saveHint" class="hint"></p>
   </section>

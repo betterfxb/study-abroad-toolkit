@@ -52,14 +52,71 @@ async function toggleAutoFill(enabled) {
 async function loadSettings() {
   const res = await chrome.runtime.sendMessage({ type: 'ext:get-config' });
   if (res?.baseUrl) $('baseUrl').value = res.baseUrl;
+  if (res?.gatewayBase) $('gatewayBase').value = res.gatewayBase;
 }
 
 async function saveSettings() {
   const baseUrl = $('baseUrl').value.trim();
-  await chrome.runtime.sendMessage({ type: 'ext:set-config', baseUrl });
+  const gatewayBase = $('gatewayBase').value.trim();
+  await chrome.runtime.sendMessage({ type: 'ext:set-config', baseUrl, gatewayBase });
   $('saveHint').textContent = '已保存';
   setTimeout(() => { $('saveHint').textContent = ''; }, 1500);
   checkHealth();
+}
+
+// ------------------------------------------------------------ 登录 / Token
+
+function authHint(text, isErr = false) {
+  const el = $('authHint');
+  el.textContent = text || '';
+  el.className = isErr ? 'hint err' : 'hint';
+}
+
+/** 拉取登录态并切换区块（密码输入每次操作后清空，绝不驻留） */
+async function loadAuthState() {
+  const res = await chrome.runtime.sendMessage({ type: 'ext:auth-state' });
+  const data = res?.data || {};
+  $('authOut').hidden = !!data.authed;
+  $('authIn').hidden = !data.authed;
+  if (data.authed) {
+    $('authBadge').textContent = data.pasted ? `Token 有效${data.email ? ' · ' + data.email : ''}` : `已登录${data.email ? ' · ' + data.email : ''}`;
+  }
+}
+
+async function doLogin() {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  if (!email || !password) { authHint('请输入邮箱与密码', true); return; }
+  $('login').disabled = true;
+  authHint('登录中…');
+  const res = await chrome.runtime.sendMessage({ type: 'ext:login', email, password });
+  $('login').disabled = false;
+  $('password').value = ''; // 密码不驻留
+  if (res?.ok) {
+    authHint('登录成功，填写进度将同步到服务端');
+    await loadAuthState();
+  } else {
+    authHint(res?.error || '登录失败', true);
+  }
+}
+
+async function doSaveToken() {
+  const token = $('token').value.trim();
+  if (!token) { authHint('Token 不能为空', true); return; }
+  const res = await chrome.runtime.sendMessage({ type: 'ext:set-token', token });
+  if (res?.ok) {
+    $('token').value = '';
+    authHint('Token 已保存（无自动刷新，失效后请重新粘贴）');
+    await loadAuthState();
+  } else {
+    authHint(res?.error || '保存失败', true);
+  }
+}
+
+async function doLogout() {
+  await chrome.runtime.sendMessage({ type: 'ext:logout' });
+  authHint('已退出');
+  await loadAuthState();
 }
 
 function bind() {
@@ -78,11 +135,21 @@ function bind() {
   $('save').addEventListener('click', saveSettings);
 
   $('auto').addEventListener('change', (e) => { void toggleAutoFill(e.target.checked); });
+
+  $('login').addEventListener('click', doLogin);
+  $('logout').addEventListener('click', doLogout);
+  $('saveToken').addEventListener('click', doSaveToken);
+  $('showPaste').addEventListener('click', () => {
+    const box = $('pasteBox');
+    box.hidden = !box.hidden;
+    if (!box.hidden) $('token').focus();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   bind();
   await loadSettings();
   await loadAutoFill();
+  await loadAuthState();
   checkHealth();
 });
