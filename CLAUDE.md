@@ -11,6 +11,7 @@ AI 驱动的留学申请 + 实习求职工具集（产品形态参考 [求职方
 |---|---|---|
 | 模块一 · 留学网申自动填写 | 浏览器插件识别海外院校表单、多步向导一键填充 | 引擎 + 插件已可用 |
 | 模块二 · 实习信息自动爬取 | 多源聚合公众号/平台/官网，结构化去重后入库与订阅推送 | 全链路已闭环 |
+| 官网 | 营销展示站（零构建静态，P0 首页 + P1 三产品页 + P1.5 内容丰富化 + P2 信任层 + P3 自动化） | 冒烟 48 项全绿 |
 
 **合规红线（不可绕过）**：不破解验证码、**不自动提交**；采集仅公开信息、控制频次、署名来源、不整篇转载。
 
@@ -23,6 +24,7 @@ apps/
   crawler/       FastAPI 采集服务（模块二）
   intelligence/  FastAPI 字段匹配引擎（模块一）
   extension/     Chrome MV3 插件（模块一执行端，零构建）
+  twin/          储能充电站数字孪生独立站（React + three 程序化建模，5174 端口）
 packages/field-dictionary/  跨端共享字段词典（54 语义槽位）
 db/             schema.sql + migrate.py + migrations/（0001_init.sql 建基表、0002_gateway_pg.sql 网关 PG 化）+ tests/pg_migration_check.js
 deploy/         docker-compose.yml
@@ -34,13 +36,14 @@ docs/           规划 → 详设 → PoC 结论
 | 层 | 选型 | 备注 |
 |---|---|---|
 | 控制台 | React 18.3 + Vite 5.4 + TS 5.6 | UnoCSS 0.58 原子层 + 原生语义类共存 |
+| 孪生站 | React 18.3 + Vite 5.4 + `three` 0.186 | 独立应用 `apps/twin`（独立端口可独立部署，静态引入 three，主包约 +600KB） |
 | 插件 | Chrome MV3 + 原生 ESM JS | **零构建**，直接加载目录即可运行 |
 | 网关 | NestJS 11 + `node:sqlite` | 生产切换 PostgreSQL 时替换 `DatabaseService` |
 | AI / 采集 | Python + FastAPI + Celery | 隔离环境见下 |
 | 数据库 | PostgreSQL 16（生产）/ SQLite（本地与测试） | 本机**无 Docker、无 PG** |
 | 对象存储 | S3 兼容（MinIO / 云 OSS） | 预签名目前为登记式，未接真实对象存储 |
 
-**端口（固定，勿改）**：网关 8080 · intelligence 8090 · crawler 8100 · 控制台 5173。
+**端口（固定，勿改）**：网关 8080 · intelligence 8090 · crawler 8100 · 控制台 5173 · 孪生站 5174（strictPort，防漂移）。
 
 **运行时（隔离环境，勿污染全局）**
 - Python：`C:/Users/19560/.workbuddy-ai/binaries/python/envs/default`（已装 fastapi / sqlalchemy / celery / pydantic / httpx / psycopg）
@@ -62,6 +65,10 @@ docs/           规划 → 详设 → PoC 结论
 - 危险操作走 `ConfirmDialog`；忙碌态用**复合键** `${id}:${action}`，禁止「只存行 ID」（会锁整表）。
 - Toast API 只有 `info / ok / err` 三个方法（**无** `success` / `error`）。
 - 多值输入用 `splitList`（`,` `，` `、` 空格），提交**数组**而非字符串。
+
+**孪生站（apps/twin，独立 Vite 应用）**
+- `src/twin/layout.ts` / `twinStore.ts` 为纯逻辑（零依赖、`npm test` 单测），`ChargeScene.tsx` 为 IO 层（一切 DOM/WebGL 只在 `useEffect` 内）；`ChargeTwinTab.tsx` 为 HUD 层（样式见 `src/twin/twin.css` + UnoCSS 原子类）。
+- 自带薄顶栏，无路由无鉴权；以后如需搬回控制台，只需把 `src/twin/` + `Toasts` 拷回并加一条导航。
 
 **插件（apps/extension）**
 - 核心模块不访问全局 `document`，以便 Node 中用最小 DOM 桩测试；MV3 内容脚本用 `chrome.runtime.getURL` + 动态 `import()`。
@@ -88,11 +95,17 @@ npm run dev           # 5173
 npm run build         # tsc --noEmit + vite build
 npm test              # 冒烟 + 渲染
 
+# 孪生站（独立）
+cd apps/twin && npm install
+npm run dev           # 5174（strictPort）
+npm run build         # tsc --noEmit + vite build
+npm test              # 7 项：孪生纯逻辑 + 外壳装配
+
 # 网关
 cd apps/api && npm install
 npm run build && npm start
-npm test                        # 313 项：契约/降级/调度/分布式抢占/限流/管理后台/对象存储
-node test/integration_live.js   # 75 项（需先起 crawler/intelligence）
+npm test                        # 332 项：契约/降级/调度/分布式抢占/限流/管理后台/对象存储
+node test/integration_live.js   # 80 项（需先起 crawler/intelligence）
 node test/multi_instance_live.js# 16 项（真实双进程调度互斥）
 
 # 采集（无 Docker 时）
@@ -101,12 +114,14 @@ DATABASE_URL="sqlite+aiosqlite:///./dev.db" python scripts/seed_dev.py
 DATABASE_URL="sqlite+aiosqlite:///./dev.db" python -m uvicorn app.main:app --port 8100
 
 # 回归测试（零第三方依赖）
-python apps/crawler/tests/smoke_test.py        # 90
-python apps/crawler/tests/e2e_jobs_test.py     # 39
-python apps/intelligence/tests/smoke_test.py   # 61
-node   apps/extension/tests/smoke_test.js      # 166
-node   apps/console/test/smoke_test.js         # 65
-node   apps/console/test/render_test.js        # 10
+python apps/crawler/tests/smoke_test.py        # 95
+python apps/crawler/tests/e2e_jobs_test.py     # 44
+python apps/intelligence/tests/smoke_test.py   # 89
+node   apps/extension/tests/smoke_test.js      # 234
+node   apps/console/test/smoke_test.js         # 71
+node   apps/console/test/render_test.js        # 11
+node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
+node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）
 ```
 
 ## 六、关键决策
@@ -142,6 +157,7 @@ node   apps/console/test/render_test.js        # 10
 - **handlers 回退路径必须传全参**：`h_date` 脏输入回退曾漏传 `field` 致 TypeError（整条匹配 500），脏数据分支要有回归用例。
 - **限流的窗口边界容易算错**：窗口是 `[at-windowMs, at]`，判断「是否已滑过」要用**最后一次写入的命中时刻** + windowMs，不是第一次。
 - **Nest 全局拦截器在 Guards 之后执行**：未认证请求会先被 401 拦下、不会计入限流；想保护登录接口（无守卫）是有效的，想限制未登录访问需改用中间件。
+- **three ≥0.17x 废弃了 `THREE.Clock` 与 `PCFSoftShadowMap`**：计时用 `performance.now()` 手算，阴影用 `PCFShadowMap`——否则控制台刷 deprecation 警告。
 
 **数据与算法**
 - **中文 SimHash 阈值取 8**（英文常用 3 不适用）；短文不用 SimHash，用精确指纹。中文按字符 4-gram。

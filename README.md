@@ -29,6 +29,7 @@ AI 驱动的留学申请与实习求职工具集。产品形态与视觉风格�
 
 ### 工程实现
 - [`apps/console/`](apps/console/) — **React 控制台（工具集首页 / 实习汇总 / 申请进度 / 资料库）**，见 [控制台说明](apps/console/README.md)
+- [`apps/site/`](apps/site/) — **营销官网（零构建静态站，P0 首页 + P1 三产品页 + P1.5 内容丰富化 + P2 信任层 + P3 自动化已可用，`node apps/site/test/smoke.mjs` 48 项）**
 - [`apps/api/`](apps/api/) — **主网关（鉴权 / Profile / 申请 / 订阅 / 对外 API）**，见 [服务说明](apps/api/README.md)
 - [`apps/crawler/`](apps/crawler/) — **模块二采集服务（已可运行）**，见 [服务说明](apps/crawler/README.md)
 - [`apps/intelligence/`](apps/intelligence/) — **模块一字段匹配引擎（已可运行）**，见 [服务说明](apps/intelligence/README.md)
@@ -120,7 +121,7 @@ DATABASE_URL="sqlite+aiosqlite:///./dev.db" python -m uvicorn app.main:app --por
 python apps/crawler/tests/smoke_test.py        # 95 项
 python apps/crawler/tests/e2e_jobs_test.py     # 44 项（SQLite 落地）
 python apps/intelligence/tests/smoke_test.py   # 89 项
-node   apps/extension/tests/smoke_test.js      # 188 项
+node   apps/extension/tests/smoke_test.js      # 234 项
 cd apps/api && npm test                        # 332 项（网关契约 / 降级 / 订阅调度 / 分布式抢占 / 限流 / 管理后台 / 对象存储 / GPA 代理 / 过期下架鉴权 / 填写会话与日志）
 node   apps/console/test/smoke_test.js         # 71 项（控制台：令牌 / 逻辑 / 结构 / 红线 / 订阅调度 / 易用性 / 在线表格 / 一键建订阅 / 体验升级）
 node   apps/console/test/render_test.js        # 11 项（控制台：六 Tab 真实渲染，含新手引导横幅）
@@ -168,10 +169,9 @@ node   apps/console/test/integration_live.js   # 23 项（控制台 ↔ 网关 �
 - [x] 模块一 **文书字数校验**（`wordcount` 纯函数＋pipeline `word_check` 附加＋超限降 review＋插件透传；SOP 默认 1000 词）
 - [x] 模块二 **岗位过期自动下架**（`deadline` 过期批量置 `expired`，Beat 每日 02:05＋`POST /admin/jobs/expire` 手动触发）
 - [x] 模块一 **填写会话与日志服务端闭环**（契约 §4.2/§4.3：网关 `ext/` 本地实现 sessions CRUD＋block＋fill-logs，会话隔离，只存哈希；插件上报链路（SAVING→SW→网关）就此打通）
-- [x] 模块一 **插件本地断点续填**（`session-store`：站点键＋7 天 TTL＋20 条上限，恢复只提示不自动写；服务端同步待插件鉴权 Token UX）
+- [x] 模块一 **插件本地断点续填**（`session-store`：站点键＋7 天 TTL＋20 条上限，恢复只提示不自动写；服务端同步随后续 Token UX 交付✅）
+- [x] 模块一 **插件鉴权 Token UX 与服务端会话同步**（popup 邮箱登录/粘贴 Token＋密码不落盘；SW 401 自动 refresh 重放；fill-logs 改走网关带 `X-Ext-Token`；建会话/换步 PATCH/阻断上报三钩子全 fail-open；冒烟 188→234＋e2e 31＋真机链路 8 项）
 - [x] 控制台体验升级（关键词高亮 / 详情复制投递方式 / 首页三步上手横幅 / 窄屏弹窗与操作区换行滚动）
-- [ ] 模块一 LLM 语义匹配（第三级）— **待 LLM_API_KEY**
-- [ ] 模块一 真实网申页面回归（用真实 ApplyWeb / Liaison / Slate 页面校准稳定窗口与指纹策略）
 - [x] 控制台接入 UnoCSS 原子化（共存原子层：presetUno + 关闭 preflight + tokens.css 令牌映射进 theme，静态内联样式改写为原子类，构建/测试零回归）
 - [x] 首页卡片落点收口（成绩换算新增独立「GPA 换算」Tab 并落地真实加权换算器；院校项目库 / 推荐信管理仍落 apply，相关功能已在其中）
 - [x] 在线表格能力（岗位表：表头点击排序 + 列显隐 + 本页就地筛选；进度表：进度 / 状态行内编辑，复用 updateApplication）
@@ -180,6 +180,11 @@ node   apps/console/test/integration_live.js   # 23 项（控制台 ↔ 网关 �
 - [x] 网关管理后台接口（契约 §6.3：采集源 CRUD / 手动触发 / 健康度 / 降级切换与评估 / 任务列表，全部限管理员，纯代理到 crawler）
 - [x] 对象存储本地驱动（预签名从占位变为真实落盘：上传 / 登记 / 下载 / 删除联动清理，路径穿越防护，`STORAGE_DRIVER` 可切 s3）
 - [x] 网关 PG 迁移 SQL（`db/migrations/0002_gateway_pg.sql` + `db/tests/pg_migration_check.js` 32 项，环境无关先行；含 `SELECT … FOR UPDATE SKIP LOCKED` 改写参考）
+- [x] 官网 P0 骨架 + 炫酷化（`apps/site` 零构建静态站：暗黑 Hero + 动效方案 12 项 + 宽屏留白 + FAQ 手风琴 + 跑马灯 + 跟随光斑，冒烟 20 项）
+- [x] 官网 P1 产品页（`/apply` `/jobs` `/extension` 三线落地页，复用首页组件，冒烟扩至 20 项全绿）
+- [x] 官网 P1.5 内容丰富化（首页数据实力条 + 架构简图 + 使用前后对比；apply 平台矩阵 + 54 槽位分组；jobs 信息源三卡 + 订阅规则示例；extension 更新日志；三产品页相关阅读互荐；数字滚动 + 表格/时间线构件，冒烟 20→28 项全绿）
+- [x] 官网 P2 信任层（`/gpa` 交互换算器 + `/docs` 四章 + `/docs/about` + `/welcome` + `/privacy` + `/terms` + `/pricing` + sitemap.xml + robots.txt + JSON-LD 结构化数据，11 页全量 SEO/红线/断链检查，冒烟 28→44 项全绿）
 - [ ] 网关切换 PostgreSQL 驱动（本机无 PG；届时替换 `DatabaseService` 并按 0002 §5 改写调度抢占）
 - [ ] 对象存储切 S3 / MinIO（S3 驱动为显式占位，需 SDK 与 `STORAGE_S3_*` 凭据）
 - [ ] 模块二真实源连续跑 3 天（待公众号清单 / 三方数据服务凭据）
+- [x] 官网 P3 自动化（`build-jobs.py` 每日快照（Top50+日期戳+3 天降级）+ `sync-tokens.py` 防漂移 + `deploy-site.ps1` 打包（先冒烟后 zip），冒烟 44→48 项全绿）
