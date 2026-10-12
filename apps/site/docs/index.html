@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1120, initial-scale=1.0" />
+  <title>使用手册 - 插件安装 / 字段匹配 / 采集订阅 / 控制台 | 留学生助手</title>
+  <meta name="description" content="留学生助手使用手册：插件安装与使用、54 槽位字段匹配原理、实习采集与订阅推送流程、控制台功能总览，四章快速上手。" />
+  <meta name="keywords" content="留学生助手教程,网申插件使用手册,字段匹配,订阅推送,控制台指南" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="使用手册 - 留学生助手" />
+  <meta property="og:description" content="四章手册：插件安装 / 字段匹配 / 采集订阅 / 控制台总览。" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="theme-color" content="#0e0e10" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif'%3E留%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../assets/tokens.css" />
+  <link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body class="landing-dark">
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-head">
+    <div class="wrap head-in">
+      <a class="logo" href="../index.html">留学生助手</a>
+      <nav class="site-nav" id="siteNav">
+        <a href="#ch1">插件安装</a>
+        <a href="#ch2">字段匹配</a>
+        <a href="#ch3">采集订阅</a>
+        <a href="#ch4">控制台</a>
+      </nav>
+      <div class="head-cta">
+        <a class="btn primary sm" href="http://localhost:5173/" target="_blank" rel="noopener">免费开始使用</a>
+        <button class="menu-btn" id="menuBtn" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-kicker rv" style="--d:0ms">文档 · 四章快速上手</div>
+        <h1 class="rv" style="--d:120ms">使用<span class="grad">手册</span></h1>
+        <p class="hero-sub rv" style="--d:240ms">从插件安装到控制台管理，四章覆盖全部功能。每章约 3 分钟读完，读完即可上手。</p>
+        <div class="hero-tags">
+          <span class="pill rv" style="--d:440ms">零基础友好</span>
+          <span class="pill rv" style="--d:520ms">含截图位</span>
+          <span class="pill gold rv" style="--d:600ms">不自动提交 · 人工复核</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="ch1">
+      <div class="wrap">
+        <div class="eyebrow rv-line">第一章</div>
+        <h2 class="rv-line">插件安装与使用</h2>
+        <div class="pain-list">
+          <li class="rv rv-left" style="--d:0ms"><b>① 安装</b> —— Chrome 商店搜索「留学网申助手」一键添加；或从 GitHub 下载 zip，在 <code>chrome://extensions</code> 开启「开发者模式」后加载已解压目录（零构建，无需任何打包工具）。</li>
+          <li class="rv rv-left" style="--d:100ms"><b>② 同步资料</b> —— 先在控制台完善教育 / 标化 / 经历资料，插件自动同步 54 槽位词典。</li>
+          <li class="rv rv-left" style="--d:200ms"><b>③ 打开网申页</b> —— 插件自动识别表单，弹出填充向导，逐字段展示预填值，敏感字段标红提醒。</li>
+          <li class="rv rv-left" style="--d:300ms"><b>④ 人工复核</b> —— 每个字段可修改 / 跳过，确认后点「确认并继续」；插件绝不代替你点「下一步」或「提交」。</li>
+          <li class="rv rv-left" style="--d:400ms"><b>⑤ 断点续填</b> —— 多步向导自动记录步骤，中断后可恢复；本地缓存 7 天有效。</li>
+        </div>
+        <p class="founder">合规红线：不破解验证码、不自动提交——所有提交动作由本人复核后亲手完成。<span>—— 留学生助手开发团队</span></p>
+        <div class="related">
+          <a href="../extension/index.html">插件详情页 →</a>
+          <a href="../apply/index.html">网申自动填写 →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="ch2">
+      <div class="wrap">
+        <div class="eyebrow rv-line">第二章</div>
+        <h2 class="rv-line">字段匹配原理</h2>
+        <p class="sec-sub">插件把页面表单字段映射到 54 个语义槽位，识别率 94.2%（精确 98.0%）。匹配分三级，逐级放宽：</p>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="card dark rv rv-up" style="--d:0ms">
+            <h3>第一级 · 精确匹配</h3>
+            <div class="desc">字段 label 与词典词条完全一致（如 "First Name" → 姓名），零误判，优先命中。</div>
+            <div class="meta"><span>零成本</span><span class="go">→</span></div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:90ms">
+            <h3>第二级 · 别名匹配</h3>
+            <div class="desc">同义词与常见变体（"E-mail" / "Email address" → 邮箱），覆盖平台差异写法。</div>
+            <div class="meta"><span>词典驱动</span><span class="go">→</span></div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:180ms">
+            <h3>第三级 · 模糊匹配</h3>
+            <div class="desc">低置信度走相似度兜底，仍不确定则标出留给你手填，不猜、不错填。</div>
+            <div class="meta"><span>宁缺勿错</span><span class="go">→</span></div>
+          </div>
+        </div>
+        <p class="note">标签匹配采用行首锚定 + 紧跟分隔符规则，避免「岗位职责：xxx」被误判成字段名；GPA 换算与后端阶梯同一事实源，见 <a href="../gpa/index.html">GPA 换算器</a>。</p>
+        <div class="related">
+          <a href="../gpa/index.html">GPA 换算器 →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="ch3">
+      <div class="wrap">
+        <div class="eyebrow rv-line">第三章</div>
+        <h2 class="rv-line">采集与订阅推送</h2>
+        <div class="pain-list">
+          <li class="rv rv-left" style="--d:0ms"><b>① 建订阅规则</b> —— 在控制台输入关键词（AI、SDE）、城市（北京、上海）、岗位类型（实习 / 全职）、频率（每日）；</li>
+          <li class="rv rv-left" style="--d:100ms"><b>② 多源采集</b> —— 采集服务按控制频次抓取公众号 / 招聘平台 / 企业官网公开信息，署名来源、不整篇转载；</li>
+          <li class="rv rv-left" style="--d:200ms"><b>③ 去重入库</b> —— SimHash + 指纹去重，同岗位多来源只保留一条，坏数据逐条隔离不污染整批；</li>
+          <li class="rv rv-left" style="--d:300ms"><b>④ 定时推送</b> —— 调度器扫描到期订阅，按渠道推送新匹配岗位，附原文链接；去重落在数据库唯一约束。</li>
+        </div>
+        <p class="note">权利人发现内容可随时联系下架，我们提供通道并优先处理；过期岗位自动下架，DDL 倒计时自动提醒。</p>
+        <div class="related">
+          <a href="../jobs/index.html">实习信息聚合 →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="ch4">
+      <div class="wrap">
+        <div class="eyebrow rv-line">第四章</div>
+        <h2 class="rv-line">控制台功能总览</h2>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="card dark rv rv-up" style="--d:0ms">
+            <h3>首页 / 岗位</h3>
+            <div class="desc">新手引导、上游服务健康检查；岗位列表支持分面筛选、排序、列显隐、CSV 导出与一键建订阅。</div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:90ms">
+            <h3>订阅 / 申请进度</h3>
+            <div class="desc">订阅规则可视化配置（含自动执行与调度预设）、推送记录；申请进度看板支持行内编辑状态与 DDL 倒计时。</div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:180ms">
+            <h3>成绩换算 / 资料库</h3>
+            <div class="desc">百分制 / 5 分制 / 英制 → 4.0 本地换算；资料库管理推荐信、文书与证明材料，敏感字段本地优先。</div>
+          </div>
+        </div>
+        <p class="note">需要鉴权的请求自动带 token、401 自动刷新；危险操作二次确认，列表页防抖 + 竞态保护。</p>
+        <div class="related">
+          <a href="about/index.html">关于我们 →</a>
+          <a href="../pricing/index.html">定价说明 →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="wrap">
+        <div class="cta-panel rv rv-fade">
+          <h2>读完了？去实际用一把</h2>
+          <p>控制台注册 1 分钟，先建一条实习订阅试试。</p>
+          <a class="btn primary lg" href="http://localhost:5173/" target="_blank" rel="noopener">打开控制台</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap foot-matrix">
+      <div class="foot-col">
+        <b>留学生助手</b>
+        <span class="src">AI 驱动，载你走完留学申请与实习求职</span>
+      </div>
+      <div class="foot-col">
+        <b>产品线</b>
+        <a href="../apply/index.html">网申自动填写</a>
+        <a href="../jobs/index.html">实习信息聚合</a>
+        <a href="../extension/index.html">浏览器插件</a>
+        <a href="http://localhost:5173/" target="_blank" rel="noopener">控制台</a>
+      </div>
+      <div class="foot-col">
+        <b>资源</b>
+        <a href="index.html">使用手册</a>
+        <a href="about/index.html">关于我们</a>
+        <a href="../privacy/index.html">隐私政策</a>
+        <a href="../terms/index.html">用户协议</a>
+      </div>
+      <div class="foot-base">
+        <button class="motion-toggle" id="motionToggle" aria-pressed="true">减少动态效果：关</button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+</body>
+</html>

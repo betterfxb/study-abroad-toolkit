@@ -55,4 +55,13 @@
 
   /* 布局 */
   --wrap: 1120px;
+
+  /* 官网暗黑 landing 专用（控制台保持浅色，新增变量不影响现有渲染） */
+  --ink: #0e0e10;
+  --ink-soft: #1a1a1f;
+  --ink-line: #2a2a32;
+  --ink-text: #e8e8ec;
+  --ink-dim: #a1a1aa;
+  /* 官网内容柱：landing 在宽屏下 1120 显窄，加宽到 1280（仅官网用） */
+  --wrap-wide: 1280px;
 }

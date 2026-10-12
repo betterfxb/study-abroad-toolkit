@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1120, initial-scale=1.0" />
+  <title>GPA 换算器 4.0 制 - 百分制 / 5 分制 / 加权绩点在线换算 | 留学生助手</title>
+  <meta name="description" content="免费在线 GPA 换算器：百分制、5 分制、4.0 制一键换算，支持多课程加权 GPA 计算与英制学位等级对照，附国内留学申请常用阶梯换算参照表。成绩不上传，浏览器本地计算。" />
+  <meta name="keywords" content="GPA 换算,4.0 绩点,百分制换算,5分制,加权 GPA,留学成绩换算" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GPA 换算器 4.0 制 - 留学生助手" />
+  <meta property="og:description" content="百分制 / 5 分制 / 加权 GPA 在线换算，附 4.0 阶梯参照表与英制等级对照。" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="theme-color" content="#0e0e10" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif'%3E留%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../assets/tokens.css" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "GPA 换算器 4.0 制",
+    "url": "http://localhost:5181/gpa/",
+    "applicationCategory": "EducationApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+    "description": "免费在线 GPA 换算器：百分制、5 分制、4.0 制一键换算，支持多课程加权 GPA 计算与英制学位等级对照。浏览器本地计算，成绩不上传。"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "这个换算结果能直接用于申请吗？", "acceptedAnswer": { "@type": "Answer", "text": "本站采用国内留学申请常用阶梯，作横向参考与初步估算；各院校官方换算规则可能不同，最终以目标项目要求为准。" } },
+      { "@type": "Question", "name": "WES 认证换算和这里一样吗？", "acceptedAnswer": { "@type": "Answer", "text": "不一定。WES 有独立的成绩换算口径，通常与本表存在差异；如目标院校要求 WES 认证，请以 WES 官方换算结果为准。" } },
+      { "@type": "Question", "name": "重修课程怎么算？", "acceptedAnswer": { "@type": "Answer", "text": "不同学校政策不同：有的覆盖原成绩，有的两者并计。填入你成绩单最终呈现的成绩即可，并在申请材料中按学校要求说明。" } },
+      { "@type": "Question", "name": "5 分制换算是线性的吗？", "acceptedAnswer": { "@type": "Answer", "text": "本工具 5 分制 → 4.0 采用线性映射（÷5×4），适合快速估算；部分院校对 5 分制有自己的阶梯表，请以目标院校公布口径为准。" } },
+      { "@type": "Question", "name": "我的成绩会上传吗？", "acceptedAnswer": { "@type": "Answer", "text": "不会。本页所有计算均在浏览器本地完成，不向任何服务器发送成绩数据。" } }
+    ]
+  }
+  </script>
+</head>
+<body class="landing-dark">
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-head">
+    <div class="wrap head-in">
+      <a class="logo" href="../index.html">留学生助手</a>
+      <nav class="site-nav" id="siteNav">
+        <a href="#calc">快速换算</a>
+        <a href="#weighted">加权 GPA</a>
+        <a href="#table">参照表</a>
+        <a href="#faq">常见问题</a>
+      </nav>
+      <div class="head-cta">
+        <a class="btn primary sm" href="http://localhost:5173/" target="_blank" rel="noopener">免费开始使用</a>
+        <button class="menu-btn" id="menuBtn" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-kicker rv" style="--d:0ms">在线工具 · 纯前端 · 成绩不上传</div>
+        <h1 class="rv" style="--d:120ms">GPA 换算 <span class="grad">4.0 制</span>，一秒出结果</h1>
+        <p class="hero-sub rv" style="--d:240ms">百分制、5 分制、4.0 制互相换算；支持多课程加权 GPA 与英制学位等级对照。计算全部在你的浏览器内完成，成绩不上传服务器。</p>
+        <div class="hero-tags">
+          <span class="pill rv" style="--d:440ms">阶梯法</span>
+          <span class="pill rv" style="--d:520ms">加权计算</span>
+          <span class="pill gold rv" style="--d:600ms">估算值 · 以官方换算为准</span>
+        </div>
+
+        <div class="calc-box" id="calc">
+          <div class="calc-modes" role="tablist">
+            <button class="mode-btn active" data-mode="pct" type="button">百分制 → 4.0</button>
+            <button class="mode-btn" data-mode="five" type="button">5 分制 → 4.0</button>
+            <button class="mode-btn" data-mode="four" type="button">4.0 制校验</button>
+          </div>
+          <div class="calc-row">
+            <label for="gpaInput">成绩</label>
+            <input id="gpaInput" type="number" inputmode="decimal" placeholder="例如 87" min="0" step="0.1" />
+            <button class="btn primary" id="calcBtn" type="button">换算</button>
+          </div>
+          <div class="calc-out" id="calcOut">
+            <div class="out-num">—</div>
+            <div class="out-label">4.0 制 GPA（估算值，以官方换算为准）</div>
+          </div>
+          <div class="calc-meta" id="calcMeta">阶梯法：≥90→4.0，≥85→3.7，≥82→3.3，≥78→3.0，≥75→2.7，≥72→2.3，≥68→2.0，≥64→1.5，≥60→1.0，&lt;60→0</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="weighted">
+      <div class="wrap">
+        <div class="eyebrow rv-line">01 · 加权 GPA</div>
+        <h2 class="rv-line">多课程加权计算</h2>
+        <p class="sec-sub">加权 GPA = Σ(绩点 × 学分) ÷ Σ(学分)，零学分课程自动忽略。逐行填写学分与百分制成绩即可。</p>
+        <div class="calc-box rv rv-fade">
+          <table class="tbl" id="courseTable">
+            <thead>
+              <tr><th style="width:40%">课程</th><th style="width:24%">学分</th><th style="width:24%">百分制成绩</th><th style="width:12%">绩点</th></tr>
+            </thead>
+            <tbody id="courseBody">
+              <tr><td><input class="c-name" value="高等数学" /></td><td><input class="c-cred" type="number" value="4" min="0" step="0.5" /></td><td><input class="c-score" type="number" value="92" min="0" max="100" /></td><td class="c-pt">4.0</td></tr>
+              <tr><td><input class="c-name" value="线性代数" /></td><td><input class="c-cred" type="number" value="3" min="0" step="0.5" /></td><td><input class="c-score" type="number" value="87" min="0" max="100" /></td><td class="c-pt">3.7</td></tr>
+              <tr><td><input class="c-name" value="大学英语" /></td><td><input class="c-cred" type="number" value="2" min="0" step="0.5" /></td><td><input class="c-score" type="number" value="83" min="0" max="100" /></td><td class="c-pt">3.3</td></tr>
+            </tbody>
+          </table>
+          <div class="calc-actions">
+            <button class="btn" id="addRow" type="button">+ 添加课程</button>
+            <button class="btn" id="resetRows" type="button">重置示例</button>
+          </div>
+          <div class="result-grid">
+            <div class="result-cell"><b id="wGpa">3.7</b><span>加权 GPA（4.0）</span></div>
+            <div class="result-cell"><b id="wAvg">88.5</b><span>加权百分制均分</span></div>
+            <div class="result-cell"><b id="wUk">2:1 (二等一)</b><span>英制学位等级</span></div>
+            <div class="result-cell"><b id="wCred">9</b><span>总学分</span></div>
+          </div>
+          <p class="note">英制等级按加权均分判断：≥70 First / ≥60 2:1 / ≥50 2:2 / ≥40 Third；结果为估算值，各院校官方算法可能不同。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="table">
+      <div class="wrap">
+        <div class="eyebrow rv-line">02 · 参照表</div>
+        <h2 class="rv-line">百分制 → 4.0 阶梯对照</h2>
+        <p class="sec-sub">国内留学申请常用近似阶梯，与本站成绩换算工具同口径；仅作横向参考，以目标项目要求为准。</p>
+        <div class="tbl-wrap rv rv-fade">
+          <table class="tbl">
+            <thead><tr><th>百分制区间</th><th>GPA（4.0）</th><th>英制等级</th></tr></thead>
+            <tbody>
+              <tr><td>90–100</td><td class="ok">4.0</td><td>First</td></tr>
+              <tr><td>85–89</td><td class="ok">3.7</td><td>2:1</td></tr>
+              <tr><td>82–84</td><td>3.3</td><td>2:1</td></tr>
+              <tr><td>78–81</td><td>3.0</td><td>2:1</td></tr>
+              <tr><td>75–77</td><td>2.7</td><td>2:2</td></tr>
+              <tr><td>72–74</td><td>2.3</td><td>2:2</td></tr>
+              <tr><td>68–71</td><td>2.0</td><td>2:2</td></tr>
+              <tr><td>64–67</td><td>1.5</td><td>Third</td></tr>
+              <tr><td>60–63</td><td>1.0</td><td>Third</td></tr>
+              <tr><td>&lt;60</td><td class="warn">0</td><td>Fail</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid" style="margin-top:16px; grid-template-columns: repeat(3, 1fr);">
+          <div class="card dark rv rv-up"><h3>5 分制换算</h3><div class="desc">线性映射：4.0 制 = 5 分制 ÷ 5 × 4（如 4.5 → 3.6）。方法标记 scale_linear。</div></div>
+          <div class="card dark rv rv-up" style="--d:90ms"><h3>换算方法差异</h3><div class="desc">阶梯法（标准 4.0）、WES 认证、北大 4.0 算法结果均不同；申请时以目标院校公布口径为准。</div></div>
+          <div class="card dark rv rv-up" style="--d:180ms"><h3>本工具口径</h3><div class="desc">百分制阶梯与后端匹配引擎单一事实源同口径，前端本地计算，成绩数据不出浏览器。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="wrap">
+        <div class="eyebrow rv-line">03 · 常见问题</div>
+        <h2 class="rv-line">GPA 换算常见问题</h2>
+        <div class="faq-list">
+          <details class="rv rv-fade" style="--d:0ms">
+            <summary>这个换算结果能直接用于申请吗？</summary>
+            <p>本站采用国内留学申请常用阶梯，作横向参考与初步估算；各院校官方换算规则可能不同（如 WES 认证、学校自有算法），最终以目标项目要求为准。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:80ms">
+            <summary>WES 认证换算和这里一样吗？</summary>
+            <p>不一定。WES 有独立的成绩换算口径，通常与本表存在差异；如目标院校要求 WES 认证，请以 WES 官方换算结果为准。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:160ms">
+            <summary>重修课程怎么算？</summary>
+            <p>不同学校政策不同：有的覆盖原成绩，有的两者并计。填入你成绩单最终呈现的成绩即可，并在申请材料中按学校要求说明。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:240ms">
+            <summary>5 分制换算是线性的吗？</summary>
+            <p>本工具 5 分制 → 4.0 采用线性映射（÷5×4），适合快速估算；部分院校对 5 分制有自己的阶梯表，请以目标院校公布口径为准。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:320ms">
+            <summary>我的成绩会上传吗？</summary>
+            <p>不会。本页所有计算均在浏览器本地完成，不向任何服务器发送成绩数据。</p>
+          </details>
+        </div>
+        <div class="related">
+          <a href="../apply/index.html">网申自动填写 →</a>
+          <a href="../index.html">返回首页 →</a>
+        </div>
+        <p class="founder">本工具只做换算；网申场景由插件辅助填充——只填充、不自动提交，提交由本人复核后完成。<span>—— 留学生助手开发团队</span></p>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="wrap">
+        <div class="cta-panel rv rv-fade">
+          <h2>换算完，直接填进申请表</h2>
+          <p>在控制台维护一次教育经历，插件在网申页自动复用。</p>
+          <a class="btn primary lg" href="http://localhost:5173/" target="_blank" rel="noopener">去控制台完善资料</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap foot-matrix">
+      <div class="foot-col">
+        <b>留学生助手</b>
+        <span class="src">AI 驱动，载你走完留学申请与实习求职</span>
+      </div>
+      <div class="foot-col">
+        <b>产品线</b>
+        <a href="../apply/index.html">网申自动填写</a>
+        <a href="../jobs/index.html">实习信息聚合</a>
+        <a href="../extension/index.html">浏览器插件</a>
+        <a href="http://localhost:5173/" target="_blank" rel="noopener">控制台</a>
+      </div>
+      <div class="foot-col">
+        <b>资源</b>
+        <a href="../docs/index.html">使用手册</a>
+        <a href="../docs/about/index.html">关于我们</a>
+        <a href="../privacy/index.html">隐私政策</a>
+        <a href="../terms/index.html">用户协议</a>
+      </div>
+      <div class="foot-base">
+        <button class="motion-toggle" id="motionToggle" aria-pressed="true">减少动态效果：关</button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script src="../assets/gpa.js"></script>
+</body>
+</html>

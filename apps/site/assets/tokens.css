@@ -1,0 +1,67 @@
+/**
+ * 设计令牌 —— 与 docs/02-详细设计/04-UI原型.html 保持一致。
+ * 任何视觉改动都应先改这里，避免颜色/圆角散落在组件里。
+ */
+:root {
+  /* 主色 */
+  --blue: #2563eb;
+  --blue-dark: #1d4ed8;
+  --blue-light: #eff6ff;
+
+  /* 中性色 */
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --line: #e5e9f0;
+  --line-soft: #f1f5f9;
+
+  /* 文字 */
+  --t1: #0f172a;
+  --t2: #475569;
+  --t3: #94a3b8;
+
+  /* 辅助色 */
+  --gold: #d4af37;
+  --gold-bg: #fdf7e3;
+  --gold-fg: #8a6d1b;
+
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --green-fg: #047857;
+
+  --orange: #ea580c;
+  --orange-bg: #fff7ed;
+
+  --red: #ef4444;
+  --red-bg: #fef2f2;
+  --red-fg: #b91c1c;
+
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+
+  --pink: #db2777;
+  --pink-bg: #fdf2f8;
+
+  --amber-fg: #b45309;
+
+  /* 圆角 */
+  --r-lg: 16px;
+  --r-md: 10px;
+  --r-sm: 8px;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
+
+  /* 布局 */
+  --wrap: 1120px;
+
+  /* 官网暗黑 landing 专用（控制台保持浅色，新增变量不影响现有渲染） */
+  --ink: #0e0e10;
+  --ink-soft: #1a1a1f;
+  --ink-line: #2a2a32;
+  --ink-text: #e8e8ec;
+  --ink-dim: #a1a1aa;
+  /* 官网内容柱：landing 在宽屏下 1120 显窄，加宽到 1280（仅官网用） */
+  --wrap-wide: 1280px;
+}

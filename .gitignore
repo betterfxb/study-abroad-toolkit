@@ -23,3 +23,8 @@ apps/crawler/inbox/
 data/
 *.sqlite3
 *.db
+
+# 运行时产物 / 测试缓存
+.playwright-mcp/
+apps/api/storage/
+deploy/out/

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1120, initial-scale=1.0" />
+  <title>实习信息聚合 - 留学生助手</title>
+  <meta name="description" content="多源聚合公众号/平台/官网实习信息，去重入库，关键词订阅每日推送。实时岗位快照，截止日自动提醒。" />
+  <meta name="keywords" content="实习信息,实习聚合,实习订阅,岗位推送,实习DDL提醒" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="实习信息聚合 - 留学生助手" />
+  <meta property="og:description" content="多源聚合公众号/平台/官网实习信息，去重入库，关键词订阅每日推送。" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="theme-color" content="#0e0e10" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif'%3E留%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../assets/tokens.css" />
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "实习信息从哪来？会侵权吗？", "acceptedAnswer": { "@type": "Answer", "text": "只采集公开信息，控制频次、署名来源、不整篇转载，并提供权利人下架通道；岗位默认只展示在招状态，过期自动下架。" } },
+      { "@type": "Question", "name": "支持哪些信息源？", "acceptedAnswer": { "@type": "Answer", "text": "优先覆盖主流招聘平台、企业官网招聘页、高价值公众号；三方数据服务接入待配置，接入后覆盖面进一步扩大。" } },
+      { "@type": "Question", "name": "推送频率能调吗？", "acceptedAnswer": { "@type": "Answer", "text": "可以。每条订阅支持自定义调度频率（小时/天/周），也可以手动触发立即执行一次。默认每日一次。" } }
+    ]
+  }
+  </script>
+</head>
+<body class="landing-dark">
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-head">
+    <div class="wrap head-in">
+      <a class="logo" href="../index.html">留学生助手</a>
+      <nav class="site-nav" id="siteNav">
+        <a href="#features">功能</a>
+        <a href="#snapshot">今日快照</a>
+        <a href="#subscribe">订阅推送</a>
+        <a href="#faq">常见问题</a>
+      </nav>
+      <div class="head-cta">
+        <a class="btn primary sm" href="http://localhost:5173/" target="_blank" rel="noopener">免费开始使用</a>
+        <button class="menu-btn" id="menuBtn" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-in">
+        <div class="hero-copy">
+          <div class="hero-kicker rv" style="--d:0ms">产品线二 · 实习信息自动爬取</div>
+          <h1 class="rv" style="--d:120ms">别再每天刷几十个公众号<br />让<span class="grad">AI</span>帮你盯着</h1>
+          <p class="hero-sub rv" style="--d:240ms">多源聚合公众号/平台/官网实习信息，去重入库，关键词订阅每日推送。重要DDL 不再错过。</p>
+          <div class="hero-cta rv breathe" style="--d:360ms">
+            <a class="btn primary lg" href="http://localhost:5173/" target="_blank" rel="noopener">立即订阅岗位</a>
+            <a class="btn ghost lg" href="#snapshot">看看今日快照</a>
+          </div>
+          <div class="hero-tags">
+            <span class="pill rv" style="--d:440ms">多源聚合</span>
+            <span class="pill rv" style="--d:520ms">智能去重</span>
+            <span class="pill rv" style="--d:600ms">每日推送</span>
+            <span class="pill gold rv" style="--d:680ms">不自动提交 · 署名来源</span>
+          </div>
+        </div>
+        <div class="hero-visual rv rv-fade" style="--d:300ms" aria-hidden="true">
+          <div class="mock">
+            <div class="mock-bar"><i></i><i></i><i></i><span>localhost:5173/#/jobs</span></div>
+            <div class="mock-row"><b>数据分析实习生</b><span class="badge green">剩 12 天</span></div>
+            <div class="mock-row"><b>产品运营实习生</b><span class="badge orange">剩 5 天</span></div>
+            <div class="mock-row"><b>交互设计实习生</b><span class="badge green">剩 20 天</span></div>
+            <div class="mock-foot"><span class="mock-btn">一键订阅该岗位</span><span class="mock-btn ghost">复制投递方式</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="eyebrow rv-line">01 · 核心能力</div>
+        <h2 class="rv-line">四层能力，从采集到推送</h2>
+        <div class="grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="card dark rv rv-up" style="--d:0ms">
+            <h3>多源采集</h3>
+            <div class="desc">公众号/招聘平台/企业官网多源采集，控制频次、署名来源、不整篇转载。</div>
+            <div class="meta"><span>合规采集</span><span class="go">→</span></div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:90ms">
+            <h3>智能去重</h3>
+            <div class="desc">SimHash + 指纹去重，同岗位多来源只保留一条，信息不重复不遗漏。</div>
+            <div class="meta"><span>入库即去重</span><span class="go">→</span></div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:180ms">
+            <h3>关键词订阅</h3>
+            <div class="desc">按公司/城市/岗位/标签自由组合订阅规则，匹配引擎自动筛选，每日定时推送。</div>
+            <div class="meta"><span>规则可配</span><span class="go">→</span></div>
+          </div>
+          <div class="card dark rv rv-up" style="--d:270ms">
+            <h3>DDL 倒计时</h3>
+            <div class="desc">截止日自动计算剩余天数，过期岗位自动下架，不再手动记录。</div>
+            <div class="meta"><span>自动提醒</span><span class="go">→</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="snapshot">
+      <div class="wrap">
+        <div class="eyebrow rv-line">02 · 今日快照</div>
+        <h2 class="rv-line">热门岗位 Top 5</h2>
+        <p class="sec-sub">每日自动更新，完整列表（支持筛选/排序/导出）请访问控制台。</p>
+        <div class="snapshot-bar" id="snapshotStamp">每日构建生成快照（scripts/build-jobs.py）</div>
+        <div class="snapshot-warn" id="snapshotWarn" hidden></div>
+        <div class="pain-list" id="snapshotLive">
+          <li class="rv rv-left" style="--d:0ms"><b>中金公司 · 量化研究实习生</b> —— 北京 · 硕士 · 券商/量化/金融 · 截止 11-03 · 来源：实习信息速递</li>
+          <li class="rv rv-left" style="--d:100ms"><b>字节跳动 · 数据分析实习生</b> —— 上海 · 本科 · 互联网/数据分析/转正 · 截止 10-21 · 来源：校招内推君</li>
+          <li class="rv rv-left" style="--d:200ms"><b>腾讯 · 产品运营实习生</b> —— 深圳 · 本科 · 互联网/运营 · 截止 11-18 · 来源：大学生就业情报站</li>
+          <li class="rv rv-left" style="--d:300ms"><b>阿里巴巴 · 算法工程实习生</b> —— 杭州 · 硕士 · 互联网/算法/转正 · 截止 11-28 · 来源：校招内推君</li>
+          <li class="rv rv-left" style="--d:400ms"><b>麦肯锡 · 商业分析实习生</b> —— 北京 · 硕士 · 咨询/商业分析 · 截止 10-27 · 来源：实习信息速递</li>
+        </div>
+        <p class="note">快照只含公司/岗位/城市/薪资/截止＋原文链接，署名来源、不存全文，与采集口径一致。完整列表（支持分面筛选、CSV 导出）请访问控制台。</p>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="wrap">
+        <div class="eyebrow rv-line">03 · 信息源</div>
+        <h2 class="rv-line">三类信息源，集中一个列表</h2>
+        <p class="sec-sub">控制频次、署名来源、不整篇转载——合规红线写进采集策略。</p>
+        <div class="src-grid rv rv-fade">
+          <div class="src-card">
+            <div class="icon" aria-hidden="true">📱</div>
+            <h3>公众号</h3>
+            <p>高价值求职号日更推文，抽取结构化岗位卡片，署名来源附原文链接。</p>
+          </div>
+          <div class="src-card">
+            <div class="icon" aria-hidden="true">💼</div>
+            <h3>招聘平台</h3>
+            <p>主流平台实习/校招频道，SimHash 去重后入库，同岗位多来源只留一条。</p>
+          </div>
+          <div class="src-card">
+            <div class="icon" aria-hidden="true">🏢</div>
+            <h3>企业官网</h3>
+            <p>目标公司招聘页直接监控，DDL 变动同步更新，过期自动下架。</p>
+          </div>
+        </div>
+        <p class="note">权利人发现内容可随时联系下架，我们提供通道并优先处理。</p>
+      </div>
+    </section>
+
+    <section id="subscribe">
+      <div class="wrap">
+        <div class="eyebrow rv-line">04 · 订阅推送</div>
+        <h2 class="rv-line">三步设置，自动跟进</h2>
+        <div class="pain-list">
+          <li class="rv rv-left" style="--d:0ms"><b>① 建订阅规则</b> —— 输入关键词（如 AI、SDE）、城市（如 北京、上海）、岗位类型（实习/全职）；</li>
+          <li class="rv rv-left" style="--d:100ms"><b>② 匹配引擎筛选</b> —— 新入库岗位自动与规则匹配，命中即记录，去重入库；</li>
+          <li class="rv rv-left" style="--d:200ms"><b>③ 每日推送</b> —— 定时任务扫描到期订阅，邮件/企微/Webhook 推送新匹配岗位，附原文链接。</li>
+        </div>
+        <div class="rule-demo rv rv-fade">
+<span class="cmt">// 订阅规则示例（控制台可视化配置，规则可随时调整）</span><br>
+{<br>
+&nbsp;&nbsp;<span class="key">"keywords"</span>: [<span class="str">"AI"</span>, <span class="str">"大模型"</span>, <span class="str">"SDE"</span>],<br>
+&nbsp;&nbsp;<span class="key">"cities"</span>: [<span class="str">"北京"</span>, <span class="str">"上海"</span>, <span class="str">"深圳"</span>],<br>
+&nbsp;&nbsp;<span class="key">"job_types"</span>: [<span class="str">"实习"</span>, <span class="str">"校招"</span>],<br>
+&nbsp;&nbsp;<span class="key">"frequency"</span>: <span class="str">"daily"</span>,<br>
+&nbsp;&nbsp;<span class="key">"channels"</span>: [<span class="str">"email"</span>, <span class="str">"wechat_work"</span>]<br>
+}
+        </div>
+        <p class="founder">推送去重落在数据库唯一约束（subscription_id + job_id），并发场景不重复推送；调度器失败也推进下次执行时间，不造成热循环。<span>—— 留学生助手开发团队</span></p>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="wrap">
+        <div class="eyebrow rv-line">05 · 常见问题</div>
+        <h2 class="rv-line">你可能想问</h2>
+        <div class="faq-list">
+          <details class="rv rv-fade" style="--d:0ms">
+            <summary>实习信息从哪来？会侵权吗？</summary>
+            <p>只采集公开信息，控制频次、署名来源、不整篇转载，并提供权利人下架通道；岗位默认只展示在招状态，过期自动下架。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:80ms">
+            <summary>支持哪些信息源？</summary>
+            <p>优先覆盖主流招聘平台、企业官网招聘页、高价值公众号；三方数据服务接入待配置，接入后覆盖面进一步扩大。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:160ms">
+            <summary>推送频率能调吗？</summary>
+            <p>可以。每条订阅支持自定义调度频率（小时/天/周），也可以手动触发立即执行一次。默认每日一次。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:240ms">
+            <summary>数据会过期吗？</summary>
+            <p>会。截止日过期的岗位自动下架（状态置 expired），列表默认只展示在招岗位；快照页也会标注更新日期。</p>
+          </details>
+          <details class="rv rv-fade" style="--d:320ms">
+            <summary>现在免费吗？</summary>
+            <p>目前全部功能免费使用；未来若推出付费档，会提前公示并保留免费基础版。</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="wrap">
+        <div class="cta-panel rv rv-fade">
+          <h2>别再手动刷岗位了</h2>
+          <p>注册 1 分钟，建一条订阅，今晚就有第一批推送。</p>
+          <a class="btn primary lg" href="http://localhost:5173/" target="_blank" rel="noopener">立即订阅岗位</a>
+          <div class="related">
+            <a href="../apply/index.html">网申自动填写 →</a>
+            <a href="../extension/index.html">浏览器插件详情 →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap foot-matrix">
+      <div class="foot-col">
+        <b>留学生助手</b>
+        <span class="src">AI 驱动，载你走完留学申请与实习求职</span>
+      </div>
+      <div class="foot-col">
+        <b>产品线</b>
+        <a href="../apply/index.html">网申自动填写</a>
+        <a href="../jobs/index.html">实习信息聚合</a>
+        <a href="../extension/index.html">浏览器插件</a>
+      </div>
+      <div class="foot-col">
+        <b>资源</b>
+        <a href="#faq">常见问题</a>
+        <a href="#subscribe">订阅指南</a>
+        <a href="../gpa/index.html">GPA 换算器</a>
+        <a href="../docs/index.html">使用手册</a>
+        <a href="../privacy/index.html">隐私政策</a>
+        <a href="../terms/index.html">用户协议</a>
+      </div>
+      <div class="foot-base">
+        <button class="motion-toggle" id="motionToggle" aria-pressed="true">减少动态效果：关</button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script src="../assets/jobs-snapshot.js"></script>
+</body>
+</html>

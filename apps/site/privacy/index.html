@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1120, initial-scale=1.0" />
+  <title>隐私政策 - 留学生助手</title>
+  <meta name="description" content="留学生助手隐私政策：收集范围最小化、敏感字段本地优先不上云、填充日志只存哈希、采集仅公开信息、可随时删除账号与数据。" />
+  <meta name="keywords" content="隐私政策,数据安全,留学生助手" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="隐私政策 - 留学生助手" />
+  <meta property="og:description" content="收集范围最小化、敏感字段本地优先、日志只存哈希、可随时删除数据。" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="theme-color" content="#0e0e10" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif'%3E留%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../assets/tokens.css" />
+  <link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body class="landing-dark">
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-head">
+    <div class="wrap head-in">
+      <a class="logo" href="../index.html">留学生助手</a>
+      <nav class="site-nav" id="siteNav">
+        <a href="#scope">收集范围</a>
+        <a href="#protect">保护措施</a>
+        <a href="#rights">你的权利</a>
+      </nav>
+      <div class="head-cta">
+        <a class="btn primary sm" href="http://localhost:5173/" target="_blank" rel="noopener">免费开始使用</a>
+        <button class="menu-btn" id="menuBtn" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="crumbs"><a href="../index.html">首页</a><span>/</span>隐私政策</div>
+        <div class="hero-kicker rv" style="--d:0ms">法律 · 生效日 2026-10-12</div>
+        <h1 class="rv" style="--d:120ms">隐私<span class="grad">政策</span></h1>
+        <p class="hero-sub rv" style="--d:240ms">一页说清我们收什么、不收什么、怎么保护、你怎么控制。核心原则：收集最小化、敏感字段本地优先、日志去标识化。</p>
+      </div>
+    </section>
+
+    <section id="scope">
+      <div class="wrap">
+        <div class="eyebrow rv-line">01 · 收集范围</div>
+        <h2 class="rv-line">我们收集什么</h2>
+        <div class="tbl-wrap rv rv-fade">
+          <table class="tbl">
+            <thead><tr><th>数据类别</th><th>用途</th><th>存储位置</th></tr></thead>
+            <tbody>
+              <tr><td>账号信息（邮箱）</td><td>登录与推送渠道</td><td>服务端（加密存储）</td></tr>
+              <tr><td>申请资料（教育/标化/经历）</td><td>插件填充与进度管理</td><td>服务端，敏感字段本地优先</td></tr>
+              <tr><td>订阅规则与推送记录</td><td>岗位匹配与去重</td><td>服务端</td></tr>
+              <tr><td>插件填充日志</td><td>识别质量改进</td><td>服务端，<b>只存哈希不存原文</b></td></tr>
+              <tr><td>本页浏览（localStorage）</td><td>动效偏好、UTM 归因</td><td>你的浏览器本地</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">我们不收集：护照号 / 成绩单等敏感字段原文（本地优先）、你的完整浏览历史、与服务无关的设备画像。</p>
+        <p class="founder">插件只填充、不自动提交——提交由本人复核后完成；因此我们也不保存你未确认提交的表单原文。<span>—— 留学生助手开发团队</span></p>
+      </div>
+    </section>
+
+    <section id="protect">
+      <div class="wrap">
+        <div class="eyebrow rv-line">02 · 保护措施</div>
+        <h2 class="rv-line">怎么保护</h2>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="card dark rv rv-up" style="--d:0ms"><h3>传输与存储</h3><div class="desc">全站 HTTPS；口令单向哈希存储；数据库访问最小权限。</div></div>
+          <div class="card dark rv rv-up" style="--d:90ms"><h3>去标识化日志</h3><div class="desc">填充与匹配日志只存哈希与统计量，不存表单原文，可回溯问题但不暴露内容。</div></div>
+          <div class="card dark rv rv-up" style="--d:180ms"><h3>前端本地优先</h3><div class="desc">插件敏感字段与成绩换算在浏览器本地完成，成绩数据不出你的设备。</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rights">
+      <div class="wrap">
+        <div class="eyebrow rv-line">03 · 你的权利</div>
+        <h2 class="rv-line">你随时可以</h2>
+        <div class="pain-list">
+          <li class="rv rv-left" style="--d:0ms"><b>访问与导出</b> —— 在控制台查看并导出你的申请资料与订阅记录；</li>
+          <li class="rv rv-left" style="--d:100ms"><b>更正与删除</b> —— 随时修改资料；删除账号将同步删除服务端相关数据；</li>
+          <li class="rv rv-left" style="--d:200ms"><b>撤回同意</b> —— 停用订阅、卸载插件即停止对应处理；</li>
+          <li class="rv rv-left" style="--d:300ms"><b>内容下架</b> —— 权利人发现采集内容可随时联系下架，我们优先处理。</li>
+        </div>
+        <div class="related">
+          <a href="../terms/index.html">用户协议 →</a>
+          <a href="../docs/about/index.html">联系我们 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap foot-matrix">
+      <div class="foot-col">
+        <b>留学生助手</b>
+        <span class="src">AI 驱动，载你走完留学申请与实习求职</span>
+      </div>
+      <div class="foot-col">
+        <b>产品线</b>
+        <a href="../apply/index.html">网申自动填写</a>
+        <a href="../jobs/index.html">实习信息聚合</a>
+        <a href="../extension/index.html">浏览器插件</a>
+        <a href="http://localhost:5173/" target="_blank" rel="noopener">控制台</a>
+      </div>
+      <div class="foot-col">
+        <b>资源</b>
+        <a href="../docs/index.html">使用手册</a>
+        <a href="../docs/about/index.html">关于我们</a>
+        <a href="index.html">隐私政策</a>
+        <a href="../terms/index.html">用户协议</a>
+      </div>
+      <div class="foot-base">
+        <button class="motion-toggle" id="motionToggle" aria-pressed="true">减少动态效果：关</button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+</body>
+</html>
