@@ -42,15 +42,15 @@ uvicorn app.main:app --port 8090
 
 ## 测试
 
-### 冒烟测试（零依赖，234 项）
+### 冒烟测试（零依赖，254 项）
 
 ```bash
 cd apps/extension
 node tests/smoke_test.js
 ```
 
-覆盖：选择器生成 / 标签定位 / 选项采集 / 可填判定 / 字段提取（含 `maxlength` 缺省归一） / 填充计划（含文书超限降级） / 填充执行 / 校验 / 阻断检测 / 状态机 / API 客户端 / 平台识别 / **多步向导（步骤指纹·稳定窗口·文案识别）** / **源码契约与合规红线** / **本地断点续填** / **Token 与服务端会话同步**。
-当前 **234 项全通过**（联调 31 项）。
+覆盖：选择器生成 / 标签定位 / 选项采集 / 可填判定 / 字段提取（含 `maxlength` 缺省归一） / 填充计划（含文书超限降级） / 填充执行 / 校验 / 阻断检测 / 状态机 / API 客户端 / 平台识别 / **多步向导（步骤指纹·稳定窗口·文案识别）** / **源码契约与合规红线** / **本地断点续填** / **Token 与服务端会话同步** / **档案拉取（GET /profile · 空档案保护）**。
+当前 **254 项全通过**（联调 31 项；档案拉取真机链路 13 项）。
 
 ### 端到端联调（需服务运行，31 项）
 
@@ -94,7 +94,8 @@ src/
 │   ├── session-store.js           ★ 本地断点续填：站点键 + TTL/上限 + 存取适配
 │   ├── token-store.js             ★ 鉴权 Token：归一化 / 新鲜度 / X-Ext-Token 头（密码不落盘）
 │   ├── session-sync.js            ★ 服务端会话同步：统计聚合 + PATCH 载荷映射（纯函数）
-│   └── api-client.js              intelligence 匹配 + 网关鉴权/会话/上报（fetch 可注入）
+│   ├── profile-sync.js            ★ 档案拉取：内容判定 + 可注入 storage 落盘（空档案不覆盖本地）
+│   └── api-client.js              intelligence 匹配 + 网关鉴权/会话/上报/档案拉取（fetch 可注入）
 ├── background/
 │   └── service-worker.js          跨域转发 + 登录/Token 消息 + 401 自动续期 + 会话同步(fail-open) + 步骤角标
 ├── content/
@@ -104,7 +105,7 @@ src/
     ├── popup.html / popup.css / popup.js   健康检查 / 扫描 / 填充 / 自动填充开关 / 登录与 Token
 tests/
 ├── fake-dom.js                    最小 DOM 桩
-├── smoke_test.js                  冒烟测试（234 项）
+├── smoke_test.js                  冒烟测试（254 项）
 └── integration_e2e.js             端到端联调（31 项）
 ```
 
@@ -180,5 +181,5 @@ IDLE → SCANNING → FILLING → SAVING → NEXT_STEP → DONE
 |---|---|
 | 真实页面回归 | 用真实 ApplyWeb / Liaison / Slate 页面扩充样本，校准稳定窗口与指纹策略 |
 | 断点续填（服务端同步） | ✅ 已闭环：popup 登录/粘贴 Token（`core/token-store.js`）→ SW 401 自动 refresh 重放 → 首次匹配建会话、换步 PATCH `step_index`、上报后 PATCH 累计统计、阻断上报 block，全部 fail-open（`core/session-sync.js` 纯映射）；本地进度（`session-store.js`）不变，仍是恢复提示的唯一来源 |
-| 档案管理 UI | Token 已就绪，待做「登录后从 `/api/v1/profile` 拉取档案注入 `cfg.profile`」（现为 chrome.storage.local 手工档案） |
+| 档案管理 UI | ✅ 已闭环：登录/粘贴 Token 后自动 `GET /api/v1/profile` 拉取注入 `cfg.profile`（空档案不覆盖本机手填档案），popup 可手动「同步档案」 |
 | TypeScript 迁移 | 视需要引入 Vite(CRXJS) 构建链 |

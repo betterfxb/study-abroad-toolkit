@@ -12,9 +12,10 @@
 
 import { MSG } from '../shared/constants.js';
 import { CONFIG } from '../shared/config.js';
-import { health, matchFields, reportLogs, login as apiLogin, refreshAuth, createSession, patchSession, blockSession } from '../core/api-client.js';
+import { health, matchFields, reportLogs, login as apiLogin, refreshAuth, createSession, patchSession, blockSession, fetchProfile } from '../core/api-client.js';
 import { AUTH_KEY, createAuth, fromTokenBundle, canRefresh } from '../core/token-store.js';
 import { statsFromLogs, mergeStats, sessionCreatePayload, sessionPatchPayload, shouldSync } from '../core/session-sync.js';
+import { hasProfileContent, saveProfileIfNonEmpty } from '../core/profile-sync.js';
 
 /** 内存态会话（SW 可能被回收，关键状态另存 chrome.storage.session） */
 let currentSession = null;
@@ -78,6 +79,23 @@ async function withAuthedCall(fn) {
 /** 无凭证时的静默跳过（未登录不阻断、不打扰） */
 function skipped() {
   return Promise.resolve({ ok: false, skipped: true, error: '未登录' });
+}
+
+/**
+ * 拉取服务端档案并落盘（401 自动续期重放；**有内容才覆盖本地**，空档案保留手填档案）。
+ * 登录/粘贴 Token 后自动触发（fail-open），popup 亦可手动调用（ext:sync-profile）。
+ * @returns {Promise<{ok:boolean, skipped?:boolean, updated?:boolean, reason?:string, error?:string}>}
+ */
+async function syncProfile() {
+  const res = await withAuthedCall((token, cfg) =>
+    fetchProfile({ token, gatewayBase: cfg.gatewayBase }));
+  if (!res.ok) return res;
+  try {
+    const saved = await saveProfileIfNonEmpty(res.data, chrome.storage.local);
+    return { ok: true, updated: saved.saved, reason: saved.reason };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
 }
 
 /** 确保服务端会话存在（有凭证时创建一次；幂等） */
@@ -240,6 +258,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         const auth = fromTokenBundle(res.data, Date.now(), String(message.email || '').trim());
         if (!auth) return { ok: false, error: '登录响应缺少 access_token' };
         await setAuth(auth);
+        syncProfile().catch(() => {}); // 档案自动同步（fail-open，不拖慢登录）
         return { ok: true, data: { email: auth.email, expires_at: auth.expires_at } };
       })
       .then(sendResponse)
@@ -250,7 +269,17 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (type === 'ext:set-token') {
     const auth = createAuth({ access_token: String(message.token || '').trim(), pasted: true });
     if (!auth) { sendResponse({ ok: false, error: 'Token 不能为空' }); return true; }
-    setAuth(auth).then(() => sendResponse({ ok: true, data: { pasted: true } })).catch((e) => sendResponse({ ok: false, error: String(e) }));
+    setAuth(auth)
+      .then(() => {
+        syncProfile().catch(() => {}); // 粘贴态同样自动拉档案（fail-open）
+        sendResponse({ ok: true, data: { pasted: true } });
+      })
+      .catch((e) => sendResponse({ ok: false, error: String(e) }));
+    return true;
+  }
+
+  if (type === 'ext:sync-profile') {
+    syncProfile().then(sendResponse).catch((e) => sendResponse({ ok: false, error: String(e) }));
     return true;
   }
 
@@ -260,9 +289,18 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (type === 'ext:auth-state') {
-    getAuth().then((auth) => {
+    getAuth().then(async (auth) => {
       if (!auth) return { ok: true, data: { authed: false } };
-      return { ok: true, data: { authed: true, email: auth.email, pasted: auth.pasted === true } };
+      const stored = await chrome.storage.local.get(['profile']);
+      return {
+        ok: true,
+        data: {
+          authed: true,
+          email: auth.email,
+          pasted: auth.pasted === true,
+          profile: hasProfileContent(stored.profile),
+        },
+      };
     }).then(sendResponse).catch(() => sendResponse({ ok: true, data: { authed: false } }));
     return true;
   }

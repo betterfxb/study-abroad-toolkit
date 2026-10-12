@@ -20,7 +20,7 @@ import {
   StepWatcher, detectStepMeta, fieldsSignature, normalizeUrl,
   renderStepLabel, simpleHash, stepFingerprint,
 } from '../src/core/step-watcher.js';
-import { blockSession, createSession, login, matchFields, patchSession, refreshAuth, reportLogs } from '../src/core/api-client.js';
+import { blockSession, createSession, fetchProfile, login, matchFields, patchSession, refreshAuth, reportLogs } from '../src/core/api-client.js';
 import { CONFIG } from '../src/shared/config.js';
 import {
   AUTH_KEY, canRefresh, createAuth, fromTokenBundle, isFresh,
@@ -34,6 +34,7 @@ import {
   RESUME_MAX_ENTRIES, RESUME_TTL_MS, createRecord, findResumable, formatResumeHint,
   loadStore, pruneStore, saveStore, siteKey, touchRecord,
 } from '../src/core/session-store.js';
+import { hasProfileContent, saveProfileIfNonEmpty } from '../src/core/profile-sync.js';
 import { FakeElement, makePage } from './fake-dom.js';
 
 // ============================================================ 测试框架
@@ -673,6 +674,56 @@ group('[12] Token 与服务端会话同步（token-store / session-sync / 网关
   check('登录密码不落盘（popup 无 password 入 storage）', !/storage[\s\S]{0,40}password/.test(popupJs));
   check('密码用后即清', popupJs.includes("$('password').value = ''"));
   check('登录走网关 login 消息', sw.includes("'ext:login'") && sw.includes("'ext:logout'"));
+}
+
+// ============================================================ [13] 档案拉取
+group('[13] 档案拉取（profile-sync / GET /api/v1/profile）');
+{
+  // --- hasProfileContent：覆盖判定（只有可填充内容才覆盖本地）
+  check('null/字符串/数组不算内容', !hasProfileContent(null) && !hasProfileContent('x') && !hasProfileContent([1]));
+  check('空对象不算内容', !hasProfileContent({}));
+  check('basic_info 全空白串不算内容', !hasProfileContent({ basic_info: { email: '  ', phone: '' } }));
+  check('basic_info 有值算内容', hasProfileContent({ basic_info: { email: 'a@b.c' } }));
+  check('education 数组算内容', hasProfileContent({ education: [{ school: 'X' }] }));
+  check('全空数组不算内容', !hasProfileContent({ education: [], tests: [], experiences: [], addresses: [] }));
+  check('tests/addresses 均算内容', hasProfileContent({ tests: [{}] }) && hasProfileContent({ addresses: [{}] }));
+  check('documents/preferences 不算（材料列表≠可填值）', !hasProfileContent({ documents: [{ id: 1 }], preferences: { x: 'y' } }));
+
+  // --- saveProfileIfNonEmpty：有内容才落盘
+  const writes = [];
+  const fakeStorage = { set: async (items) => { writes.push(items); } };
+  const full = { basic_info: { email: 'a@b.c' } };
+  const r1 = await saveProfileIfNonEmpty(full, fakeStorage);
+  check('有内容落盘并原样传档', r1.saved === true && writes.length === 1 && writes[0].profile === full);
+  const r2 = await saveProfileIfNonEmpty({ basic_info: {} }, fakeStorage);
+  check('空档案不落盘（保护手填档案）', r2.saved === false && r2.reason === 'empty' && writes.length === 1);
+  const r3 = await saveProfileIfNonEmpty(full, null);
+  check('无 storage 安全返回', r3.saved === false && r3.reason === 'no-storage');
+
+  // --- fetchProfile：URL / 方法 / 头
+  let cap = {};
+  const capFetch = async (url, init) => {
+    cap = { url, init };
+    return { ok: true, status: 200, json: async () => ({ code: 0, data: full }) };
+  };
+  const pr = await fetchProfile({ gatewayBase: 'http://g:1', token: 'A', fetchImpl: capFetch, timeoutMs: 500 });
+  check('GET /api/v1/profile 带 X-Ext-Token', pr.ok && pr.data.basic_info.email === 'a@b.c'
+    && cap.url === 'http://g:1/api/v1/profile' && cap.init.method === 'GET'
+    && cap.init.headers['X-Ext-Token'] === 'A');
+  await fetchProfile({ gatewayBase: 'http://g:1', fetchImpl: capFetch, timeoutMs: 500 });
+  check('未登录不带 Token 头', cap.url === 'http://g:1/api/v1/profile' && !('X-Ext-Token' in (cap.init.headers || {})));
+  await fetchProfile({ fetchImpl: capFetch, timeoutMs: 500 });
+  check('默认打网关而非 intelligence', cap.url.startsWith(CONFIG.GATEWAY_BASE + '/api/v1/profile'));
+
+  // --- 源码契约：接线
+  const sw = readFileSync(new URL('../src/background/service-worker.js', import.meta.url), 'utf8');
+  const popupJs = readFileSync(new URL('../src/popup/popup.js', import.meta.url), 'utf8');
+  check('SW 接入 profile-sync 与 fetchProfile', sw.includes('profile-sync.js') && sw.includes('fetchProfile'));
+  check('登录后自动同步档案（fail-open）', /await setAuth\(auth\);[\s\S]{0,80}syncProfile\(\)\.catch/.test(sw));
+  check('ext:sync-profile 手动同步消息', sw.includes("'ext:sync-profile'") && popupJs.includes("'ext:sync-profile'"));
+  check('auth-state 汇报档案同步状态', sw.includes('profile: hasProfileContent'));
+  check('popup 提供同步档案按钮与动作', popupJs.includes('doSyncProfile'));
+  check('matchFields 注入本地档案（cfg.profile 路径）', sw.includes('profile: cfg.profile'));
 }
 
 // ============================================================ 汇总

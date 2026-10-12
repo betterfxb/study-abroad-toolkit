@@ -152,3 +152,16 @@ export function blockSession(id, reason, options = {}) {
     timeoutMs: options.timeoutMs,
   });
 }
+
+// ------------------------------------------------------------- 档案拉取
+
+/** 拉取结构化档案（契约 §2 GET /api/v1/profile；守卫同时认 X-Ext-Token 与 Bearer） */
+export function fetchProfile(options = {}) {
+  const base = options.gatewayBase || CONFIG.GATEWAY_BASE;
+  return requestJson(`${base}/api/v1/profile`, {
+    method: 'GET',
+    headers: extAuth(options),
+    fetchImpl: options.fetchImpl,
+    timeoutMs: options.timeoutMs || 8000,
+  });
+}

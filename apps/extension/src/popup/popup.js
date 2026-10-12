@@ -79,7 +79,10 @@ async function loadAuthState() {
   $('authOut').hidden = !!data.authed;
   $('authIn').hidden = !data.authed;
   if (data.authed) {
-    $('authBadge').textContent = data.pasted ? `Token 有效${data.email ? ' · ' + data.email : ''}` : `已登录${data.email ? ' · ' + data.email : ''}`;
+    const mode = data.pasted ? 'Token 有效' : '已登录';
+    const mail = data.email ? ' · ' + data.email : '';
+    const prof = data.profile ? ' · 档案已同步' : ' · 档案未同步';
+    $('authBadge').textContent = `${mode}${mail}${prof}`;
   }
 }
 
@@ -93,11 +96,28 @@ async function doLogin() {
   $('login').disabled = false;
   $('password').value = ''; // 密码不驻留
   if (res?.ok) {
-    authHint('登录成功，填写进度将同步到服务端');
+    authHint('登录成功，进度与档案将自动同步到服务端');
     await loadAuthState();
   } else {
     authHint(res?.error || '登录失败', true);
   }
+}
+
+/** 手动从服务端拉取档案（契约 §2 GET /profile；空档案保留本机手填档案） */
+async function doSyncProfile() {
+  const btn = $('syncProfile');
+  btn.disabled = true;
+  authHint('正在同步档案…');
+  const res = await chrome.runtime.sendMessage({ type: 'ext:sync-profile' });
+  btn.disabled = false;
+  if (!res?.ok) {
+    authHint(res?.skipped ? '未登录' : (res?.error || '档案同步失败'), !res?.skipped);
+  } else if (res.updated) {
+    authHint('档案已从服务端同步，填充将使用该档案');
+  } else {
+    authHint('服务端档案为空，保留本机档案');
+  }
+  await loadAuthState();
 }
 
 async function doSaveToken() {
@@ -139,6 +159,7 @@ function bind() {
   $('login').addEventListener('click', doLogin);
   $('logout').addEventListener('click', doLogout);
   $('saveToken').addEventListener('click', doSaveToken);
+  $('syncProfile').addEventListener('click', doSyncProfile);
   $('showPaste').addEventListener('click', () => {
     const box = $('pasteBox');
     box.hidden = !box.hidden;
