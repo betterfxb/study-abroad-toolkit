@@ -7,6 +7,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { DatePicker, Input, Select } from 'antd';
+import dayjs, { type Dayjs } from 'dayjs';
 import {
   ApiError, api, type DocItem, type ResumeSummary,
 } from '../lib/api';
@@ -236,10 +238,15 @@ function DocsPanel() {
         申请材料
         <span className="sub">共 {items.length} 份</span>
         <span style={{ marginLeft: 'auto' }}>
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="">全部类型</option>
-            {Object.entries(DOC_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
+          <Select
+            style={{ width: 140 }}
+            value={filter || undefined}
+            onChange={(nv) => setFilter(nv ?? '')}
+            options={[
+              { value: '', label: '全部类型' },
+              ...Object.entries(DOC_TYPES).map(([k, v]) => ({ value: k, label: v })),
+            ]}
+          />
         </span>
       </div>
 
@@ -274,23 +281,25 @@ function DocsPanel() {
       <div className="form-grid">
         <div className="field">
           <label>类型</label>
-          <select value={form.doc_type} onChange={(e) => setForm({ ...form, doc_type: e.target.value })}>
-            {Object.entries(DOC_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
+          <Select
+            value={form.doc_type}
+            onChange={(v) => setForm({ ...form, doc_type: v })}
+            options={Object.entries(DOC_TYPES).map(([k, v]) => ({ value: k, label: v }))}
+          />
         </div>
         <div className="field">
           <label>文件名 *</label>
-          <input placeholder="张三-CV.pdf" value={form.file_name}
+          <Input placeholder="张三-CV.pdf" value={form.file_name}
             onChange={(e) => setForm({ ...form, file_name: e.target.value })} />
         </div>
         <div className="field">
           <label>文件大小（字节，可选）</label>
-          <input placeholder="204800" value={form.file_size}
+          <Input placeholder="204800" value={form.file_size}
             onChange={(e) => setForm({ ...form, file_size: e.target.value })} />
         </div>
         <div className="field">
           <label>存储键（可选，留空自动生成）</label>
-          <input placeholder="由对象存储返回的 file_key" value={form.file_key}
+          <Input placeholder="由对象存储返回的 file_key" value={form.file_key}
             onChange={(e) => setForm({ ...form, file_key: e.target.value })} />
         </div>
       </div>
@@ -348,11 +357,11 @@ function ResumePanel() {
         <div className="panel-title">简历解析<span className="sub">粘贴纯文本，自动抽取教育 / 经历 / 技能</span></div>
         <div className="field" style={{ marginBottom: 12 }}>
           <label>简历名称</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} />
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="field">
           <label>简历正文</label>
-          <textarea
+          <Input.TextArea
             style={{ minHeight: 180 }}
             placeholder="粘贴简历纯文本，例如：&#10;教育背景：某某大学 计算机科学与技术 本科 2021-2025 GPA 3.8/4.0&#10;实习经历：某公司 数据分析实习生 2024.06-2024.09 …"
             value={text}
@@ -412,16 +421,30 @@ function F(props: {
   placeholder?: string;
 }) {
   const { label, v, on, type = 'text', options, placeholder } = props;
+  const toDayjs = (s?: string): Dayjs | null => {
+    if (!s) return null;
+    const d = dayjs(s);
+    return d.isValid() ? d : null;
+  };
   return (
     <div className="field">
       <label>{label}</label>
       {type === 'select' ? (
-        <select value={v || ''} onChange={(e) => on(e.target.value)}>
-          {(options || []).map((o) => <option key={o} value={o}>{o || '未填写'}</option>)}
-        </select>
+        <Select
+          value={v || undefined}
+          onChange={(nv) => on(nv ?? '')}
+          options={(options || []).map((o) => ({ value: o, label: o || '未填写' }))}
+          placeholder="未填写"
+        />
+      ) : type === 'date' ? (
+        <DatePicker
+          value={toDayjs(v)}
+          onChange={(d: Dayjs | null) => on(d ? d.format('YYYY-MM-DD') : '')}
+          style={{ width: '100%' }}
+          placeholder="选择日期"
+        />
       ) : (
-        <input
-          type={type}
+        <Input
           value={v || ''}
           placeholder={placeholder}
           onChange={(e) => on(e.target.value)}

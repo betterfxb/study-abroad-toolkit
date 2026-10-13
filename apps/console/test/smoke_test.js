@@ -792,6 +792,43 @@ test('ProfileTab 提供期望工作城市（preferences.preferred_cities）', ()
   ok(/匹配度评分/.test(src), '申请偏好说明未提匹配度');
 });
 
+// ================================================================ 12. 组件库接入（Ant Design 5）
+test('组件库接入：ConfigProvider 与主题令牌', () => {
+  const src = read('src/App.tsx');
+  ok(src.includes("from 'antd'"), 'App.tsx 未引入 antd');
+  ok(/ConfigProvider/.test(src), '缺少 ConfigProvider');
+  ok(/colorPrimary:\s*'#2563EB'/.test(src), '主题主色未对齐 #2563EB');
+  ok(/locale=\{zhCN\}/.test(src), '未配置 zhCN 语言包');
+  ok(/borderRadius:\s*10/.test(src), '圆角未对齐令牌（10）');
+});
+
+test('组件库接入：表单控件与弹层统一走 antd', () => {
+  const files = [
+    'src/components/JobsTab.tsx',
+    'src/components/SubscriptionsTab.tsx',
+    'src/components/ApplyTab.tsx',
+    'src/components/ProfileTab.tsx',
+    'src/components/AuthModal.tsx',
+    'src/components/ConfirmDialog.tsx',
+    'src/components/GpaTab.tsx',
+  ];
+  for (const f of files) {
+    const src = read(f);
+    ok(!/<select[\s>]/.test(src), `${f} 残留裸 <select>`);
+    ok(!/<textarea[\s>]/.test(src), `${f} 残留裸 <textarea>`);
+    ok(!/<input[^>]*type="date"/.test(src), `${f} 残留原生 date 输入`);
+    ok(!/<input[^>]*type="range"/.test(src), `${f} 残留原生 range 输入`);
+    ok(!/className="modal-mask"/.test(src), `${f} 残留手写 .modal-mask 弹层`);
+  }
+});
+
+test('组件库接入：global.css 不再有会命中 antd 内部节点的元素级规则', () => {
+  // 先剥掉注释，避免注释里提到的示例文本被当成规则
+  const css = read('src/styles/global.css').replace(/\/\*[\s\S]*?\*\//g, '');
+  ok(!/\.filters\s+(input|select|textarea)/.test(css), '.filters 元素级规则未清理');
+  ok(!/\.field\s+(input|select|textarea)/.test(css), '.field 元素级规则未清理');
+});
+
 // ================================================================ 汇总
 console.log(`\n${'-'.repeat(52)}`);
 console.log(`通过 ${pass} 项，失败 ${fail} 项`);

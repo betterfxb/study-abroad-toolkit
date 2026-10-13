@@ -13,6 +13,8 @@
     "test:live": "node test/integration_live.js"
   },
   "dependencies": {
+    "antd": "^6.6.6",
+    "dayjs": "^1.11.23",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

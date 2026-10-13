@@ -13,6 +13,7 @@
  */
 
 import { useMemo, useState } from 'react';
+import { Checkbox, Input, Modal, Select } from 'antd';
 import {
   ApiError, api, jobsExportUrl, matchJobPayload,
   type Facets, type Job, type MatchScore, type PageResult,
@@ -163,34 +164,57 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
         </div>
 
         <div className="filters">
-          <input
+          <Input
+            style={{ minWidth: 260 }}
+            allowClear
             placeholder="搜索公司 / 岗位关键词，如：数据分析"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
-          <select value={city} onChange={(e) => setCity(e.target.value)}>
-            <option value="">全部城市</option>
-            {facets.data?.cities.map((c) => (
-              <option key={c.value} value={c.value}>{c.value}（{c.count}）</option>
-            ))}
-          </select>
-          <select value={education} onChange={(e) => setEducation(e.target.value)}>
-            <option value="">全部学历</option>
-            {facets.data?.educations.map((c) => (
-              <option key={c.value} value={c.value}>{c.value}（{c.count}）</option>
-            ))}
-          </select>
-          <select value={minConf} onChange={(e) => setMinConf(e.target.value)}>
-            {CONF_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="active">仅在招</option>
-            <option value="expired">已过期</option>
-            <option value="all">全部状态</option>
-          </select>
-          <select value={sort} onChange={(e) => setSort(e.target.value)}>
-            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
+          <Select
+            style={{ minWidth: 150 }}
+            value={city}
+            onChange={(v) => setCity(v)}
+            options={[
+              { value: '', label: '全部城市' },
+              ...(facets.data?.cities.map((c) => ({
+                value: c.value, label: `${c.value}（${c.count}）`,
+              })) || []),
+            ]}
+          />
+          <Select
+            style={{ minWidth: 140 }}
+            value={education}
+            onChange={(v) => setEducation(v)}
+            options={[
+              { value: '', label: '全部学历' },
+              ...(facets.data?.educations.map((c) => ({
+                value: c.value, label: `${c.value}（${c.count}）`,
+              })) || []),
+            ]}
+          />
+          <Select
+            style={{ minWidth: 130 }}
+            value={minConf}
+            onChange={(v) => setMinConf(v)}
+            options={CONF_OPTIONS}
+          />
+          <Select
+            style={{ minWidth: 120 }}
+            value={status}
+            onChange={(v) => setStatus(v)}
+            options={[
+              { value: 'active', label: '仅在招' },
+              { value: 'expired', label: '已过期' },
+              { value: 'all', label: '全部状态' },
+            ]}
+          />
+          <Select
+            style={{ minWidth: 140 }}
+            value={sort}
+            onChange={(v) => setSort(v)}
+            options={SORT_OPTIONS}
+          />
         </div>
 
         <div className="stat">
@@ -204,14 +228,13 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
         {colMenu && (
           <div className="flex flex-wrap gap-[8px] mt-[10px]">
             {Object.keys(COL_LABELS).map((k) => (
-              <label key={k} className="flex items-center gap-[4px] text-[13px] cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={visible[k]}
-                  onChange={() => setVisible((v) => ({ ...v, [k]: !v[k] }))}
-                />
+              <Checkbox
+                key={k}
+                checked={visible[k]}
+                onChange={() => setVisible((v) => ({ ...v, [k]: !v[k] }))}
+              >
                 {COL_LABELS[k]}
-              </label>
+              </Checkbox>
             ))}
           </div>
         )}
@@ -249,8 +272,9 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
                     {visible.company && (
                       <th className="cursor-pointer select-none" onClick={() => onHeaderSort('company')}>
                         {COL_LABELS.company}{sortIndicator('company')}
-                        <input
-                          className="w-full mt-[4px] text-[12px]"
+                        <Input
+                          size="small"
+                          style={{ marginTop: 4, width: '100%' }}
                           placeholder="筛选"
                           value={colFilters.company}
                           onClick={(e) => e.stopPropagation()}
@@ -262,8 +286,9 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
                     {visible.city && (
                       <th className="cursor-pointer select-none" onClick={() => onHeaderSort('city')}>
                         {COL_LABELS.city}{sortIndicator('city')}
-                        <input
-                          className="w-full mt-[4px] text-[12px]"
+                        <Input
+                          size="small"
+                          style={{ marginTop: 4, width: '100%' }}
                           placeholder="筛选"
                           value={colFilters.city}
                           onClick={(e) => e.stopPropagation()}
@@ -546,91 +571,87 @@ function JobDetail({
 
   const dl = deadlineText(job.deadline);
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">
-          岗位详情
-          <button className="x" onClick={onClose}>×</button>
-        </div>
-        <div className="modal-b">
-          <div className="panel-title mb-[10px]">
-            <Hl text={job.title || '—'} kw={kw} />
-            <span className="sub"><Hl text={job.company || '—'} kw={kw} /></span>
-          </div>
-
-          <div className="stat">
-            <span>城市 <b>{job.city || '—'}</b></span>
-            <span>薪资 <b className="money">{fmtSalary(job.salary)}</b></span>
-            <span>时长 <b>{job.duration || '—'}</b></span>
-            <span>截止 <b>{fmtDate(job.deadline)}</b> <span className={`badge ${dl.tone}`}>{dl.text}</span></span>
-          </div>
-
-          <MatchPanel score={score} pending={matchPending} user={user} onNeedAuth={onNeedAuth} />
-
-          <div className="form-grid">
-            <div className="field">
-              <label>学历要求</label>
-              <div>{job.education_req || '不限'}</div>
-            </div>
-            <div className="field">
-              <label>专业要求</label>
-              <div>{job.major_req || '不限'}</div>
-            </div>
-            <div className="field">
-              <label>留用机会</label>
-              <div>{job.retain_chance || '—'}</div>
-            </div>
-            <div className="field">
-              <label>置信度</label>
-              <div>
-                <span className={`badge ${confidenceTone(job.confidence)}`}>
-                  {fmtConfidence(job.confidence)}
-                </span>
-              </div>
-            </div>
-            <div className="field full">
-              <label>投递方式</label>
-              <div className="whitespace-pre-wrap">{job.apply_method || '—'}</div>
-            </div>
-            {job.tags?.length ? (
-              <div className="field full">
-                <label>标签</label>
-                <div>{job.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
-              </div>
-            ) : null}
-          </div>
-
-          <div className="note mt-[16px]">
-            来源：{job.article?.account_name || '—'} · {job.article?.title || '—'} ·
-            {' '}发布时间 {fmtDate(job.article?.published_at)}
-          </div>
-        </div>
-
-        <div className="note mt-[16px]">
-          想持续跟踪这类岗位？点「一键订阅」，系统会按当前公司 / 城市 / 标签预填规则，
-          每天 09:00 自动匹配并推送同类新职位。
-        </div>
-
-        <div className="modal-f">
-          {job.article?.url && (
-            <a className="btn" href={job.article.url} target="_blank" rel="noopener noreferrer">
-              查看原文
-            </a>
-          )}
-          {job.apply_url && (
-            <a className="btn primary" href={job.apply_url} target="_blank" rel="noopener noreferrer">
-              前往投递
-            </a>
-          )}
-          <button className="btn" onClick={buildSub} disabled={creating || created}>
-            {created ? '已订阅 ✓' : creating ? '创建中…' : '一键订阅该岗位'}
-          </button>
-          <button className="btn" onClick={copyApply} disabled={!job.apply_method?.trim()}>
-            {copied ? '已复制 ✓' : '复制投递方式'}
-          </button>
-          <button className="btn" onClick={onClose}>关闭</button>
-        </div>
+    <Modal
+      open
+      title="岗位详情"
+      width={720}
+      onCancel={onClose}
+      footer={[
+        job.article?.url && (
+          <a key="src" className="btn" href={job.article.url} target="_blank" rel="noopener noreferrer">
+            查看原文
+          </a>
+        ),
+        job.apply_url && (
+          <a key="apply" className="btn primary" href={job.apply_url} target="_blank" rel="noopener noreferrer">
+            前往投递
+          </a>
+        ),
+        <button key="sub" className="btn" onClick={buildSub} disabled={creating || created}>
+          {created ? '已订阅 ✓' : creating ? '创建中…' : '一键订阅该岗位'}
+        </button>,
+        <button key="copy" className="btn" onClick={copyApply} disabled={!job.apply_method?.trim()}>
+          {copied ? '已复制 ✓' : '复制投递方式'}
+        </button>,
+        <button key="close" className="btn" onClick={onClose}>关闭</button>,
+      ].filter(Boolean)}
+    >
+      <div className="panel-title mb-[10px]">
+        <Hl text={job.title || '—'} kw={kw} />
+        <span className="sub"><Hl text={job.company || '—'} kw={kw} /></span>
       </div>
-    </div>
+
+      <div className="stat">
+        <span>城市 <b>{job.city || '—'}</b></span>
+        <span>薪资 <b className="money">{fmtSalary(job.salary)}</b></span>
+        <span>时长 <b>{job.duration || '—'}</b></span>
+        <span>截止 <b>{fmtDate(job.deadline)}</b> <span className={`badge ${dl.tone}`}>{dl.text}</span></span>
+      </div>
+
+      <MatchPanel score={score} pending={matchPending} user={user} onNeedAuth={onNeedAuth} />
+
+      <div className="form-grid">
+        <div className="field">
+          <label>学历要求</label>
+          <div>{job.education_req || '不限'}</div>
+        </div>
+        <div className="field">
+          <label>专业要求</label>
+          <div>{job.major_req || '不限'}</div>
+        </div>
+        <div className="field">
+          <label>留用机会</label>
+          <div>{job.retain_chance || '—'}</div>
+        </div>
+        <div className="field">
+          <label>置信度</label>
+          <div>
+            <span className={`badge ${confidenceTone(job.confidence)}`}>
+              {fmtConfidence(job.confidence)}
+            </span>
+          </div>
+        </div>
+        <div className="field full">
+          <label>投递方式</label>
+          <div className="whitespace-pre-wrap">{job.apply_method || '—'}</div>
+        </div>
+        {job.tags?.length ? (
+          <div className="field full">
+            <label>标签</label>
+            <div>{job.tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="note mt-[16px]">
+        来源：{job.article?.account_name || '—'} · {job.article?.title || '—'} ·
+        {' '}发布时间 {fmtDate(job.article?.published_at)}
+      </div>
+
+      <div className="note mt-[16px]">
+        想持续跟踪这类岗位？点「一键订阅」，系统会按当前公司 / 城市 / 标签预填规则，
+        每天 09:00 自动匹配并推送同类新职位。
+      </div>
+    </Modal>
   );
 }

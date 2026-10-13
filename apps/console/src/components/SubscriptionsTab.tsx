@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { Input, Modal, Select, Switch } from 'antd';
 import {
   ApiError, api, type DeliveryItem, type DeliveryStats, type PreviewResult,
   type RunResult, type Subscription,
@@ -280,12 +281,17 @@ export function SubscriptionsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
           推送记录
           <span className="sub">共 {deliveryTotal} 条</span>
           <span className="ml-auto">
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="">全部状态</option>
-              {Object.entries(DELIVERY_STATUS).map(([k, v]) => (
-                <option key={k} value={k}>{v.text}</option>
-              ))}
-            </select>
+            <Select
+              style={{ minWidth: 120 }}
+              value={statusFilter}
+              onChange={(v) => setStatusFilter(v)}
+              options={[
+                { value: '', label: '全部状态' },
+                ...Object.entries(DELIVERY_STATUS).map(([k, v]) => (
+                  { value: k, label: v.text }
+                )),
+              ]}
+            />
           </span>
         </div>
 
@@ -445,119 +451,122 @@ function SubscriptionModal({
   };
 
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">
-          {isNew ? '新建订阅' : '编辑订阅'}
-          <button className="x" onClick={onClose}>×</button>
+    <Modal
+      open
+      title={isNew ? '新建订阅' : '编辑订阅'}
+      width={720}
+      onCancel={onClose}
+      footer={[
+        <button key="cancel" className="btn" onClick={onClose}>取消</button>,
+        <button key="save" className="btn primary" onClick={() => void save()} disabled={busy}>
+          {busy ? '保存中…' : '保存'}
+        </button>,
+      ]}
+    >
+      <div className="form-grid">
+        <div className="field full">
+          <label>订阅名称 *</label>
+          <Input
+            placeholder="如：北京数据分析实习"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
         </div>
-        <div className="modal-b">
-          <div className="form-grid">
-            <div className="field full">
-              <label>订阅名称 *</label>
-              <input
-                placeholder="如：北京数据分析实习"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </div>
-            <div className="field">
-              <label>关键词（顿号 / 逗号 / 空格分隔）</label>
-              <input
-                placeholder="数据分析、SQL"
-                value={form.keywords}
-                onChange={(e) => setForm({ ...form, keywords: e.target.value })}
-              />
-              <Chips values={splitList(form.keywords)} empty="留空表示不过滤关键词" />
-            </div>
-            <div className="field">
-              <label>城市（顿号 / 逗号 / 空格分隔）</label>
-              <input
-                placeholder="北京、上海"
-                value={form.cities}
-                onChange={(e) => setForm({ ...form, cities: e.target.value })}
-              />
-              <Chips values={splitList(form.cities)} empty="留空表示不限城市" />
-            </div>
-            <div className="field">
-              <label>学历要求</label>
-              <select
-                value={form.education}
-                onChange={(e) => setForm({ ...form, education: e.target.value })}
-              >
-                {EDU_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-            </div>
-            <div className="field">
-              <label>关键词匹配模式</label>
-              <select
-                value={form.require_all_keywords ? 'all' : 'any'}
-                onChange={(e) => setForm({ ...form, require_all_keywords: e.target.value === 'all' })}
-              >
-                <option value="any">任一命中（宽召回）</option>
-                <option value="all">全部命中（精确）</option>
-              </select>
-            </div>
-            <div className="field">
-              <label>推送渠道</label>
-              <select
-                value={form.channel}
-                onChange={(e) => setForm({ ...form, channel: e.target.value })}
-              >
-                <option value="email">邮件（排队待发）</option>
-                <option value="wechat">企业微信机器人</option>
-                <option value="webhook">Webhook</option>
-              </select>
-            </div>
-            <div className="field">
-              <label>自动执行</label>
-              <select
-                value={form.schedule}
-                onChange={(e) => setForm({ ...form, schedule: e.target.value })}
-              >
-                {scheduleOptions(form.schedule).map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>启用</label>
-              <select
-                value={form.enabled ? '1' : '0'}
-                onChange={(e) => setForm({ ...form, enabled: e.target.value === '1' })}
-              >
-                <option value="1">启用</option>
-                <option value="0">停用</option>
-              </select>
-            </div>
-            {needUrl && (
-              <div className="field full">
-                <label>回调地址 *（{CHANNEL_TEXT[form.channel]}）</label>
-                <input
-                  placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
-                  value={form.webhook_url}
-                  onChange={(e) => setForm({ ...form, webhook_url: e.target.value })}
-                />
-              </div>
-            )}
+        <div className="field">
+          <label>关键词（顿号 / 逗号 / 空格分隔）</label>
+          <Input
+            placeholder="数据分析、SQL"
+            value={form.keywords}
+            onChange={(e) => setForm({ ...form, keywords: e.target.value })}
+          />
+          <Chips values={splitList(form.keywords)} empty="留空表示不过滤关键词" />
+        </div>
+        <div className="field">
+          <label>城市（顿号 / 逗号 / 空格分隔）</label>
+          <Input
+            placeholder="北京、上海"
+            value={form.cities}
+            onChange={(e) => setForm({ ...form, cities: e.target.value })}
+          />
+          <Chips values={splitList(form.cities)} empty="留空表示不限城市" />
+        </div>
+        <div className="field">
+          <label>学历要求</label>
+          <Select
+            style={{ width: '100%' }}
+            value={form.education}
+            onChange={(v) => setForm({ ...form, education: v })}
+            options={EDU_OPTIONS.map((o) => ({
+              value: o.value, label: o.label,
+            }))}
+          />
+        </div>
+        <div className="field">
+          <label>关键词匹配模式</label>
+          <Select
+            style={{ width: '100%' }}
+            value={form.require_all_keywords ? 'all' : 'any'}
+            onChange={(v) => setForm({ ...form, require_all_keywords: v === 'all' })}
+            options={[
+              { value: 'any', label: '任一命中（宽召回）' },
+              { value: 'all', label: '全部命中（精确）' },
+            ]}
+          />
+        </div>
+        <div className="field">
+          <label>推送渠道</label>
+          <Select
+            style={{ width: '100%' }}
+            value={form.channel}
+            onChange={(v) => setForm({ ...form, channel: v })}
+            options={[
+              { value: 'email', label: '邮件（排队待发）' },
+              { value: 'wechat', label: '企业微信机器人' },
+              { value: 'webhook', label: 'Webhook' },
+            ]}
+          />
+        </div>
+        <div className="field">
+          <label>自动执行</label>
+          <Select
+            style={{ width: '100%' }}
+            value={form.schedule}
+            onChange={(v) => setForm({ ...form, schedule: v })}
+            options={scheduleOptions(form.schedule).map((o) => ({
+              value: o.value, label: o.label,
+            }))}
+          />
+        </div>
+        <div className="field">
+          <label>启用</label>
+          <div className="flex items-center gap-[8px] mt-[6px]">
+            <Switch
+              checked={form.enabled}
+              onChange={(checked) => setForm({ ...form, enabled: checked })}
+            />
+            <span className="text-[13px] text-[#64748b]">{form.enabled ? '启用' : '停用'}</span>
           </div>
-          {err && <div className="note text-red-fg">{err}</div>}
-          <p className="note">
-            匹配规则：关键词默认任一命中即召回（按命中率评分）；城市与学历为附加筛选，留空表示不限。
-          </p>
-          <p className="note">
-            自动执行：按所选频率在后台定时跑匹配并推送，只推送<b>未推送过</b>的新岗位；
-            选「不自动执行」则只在你点「立即执行」时运行。时区为北京时间。
-          </p>
         </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onClose}>取消</button>
-          <button className="btn primary" onClick={() => void save()} disabled={busy}>
-            {busy ? '保存中…' : '保存'}
-          </button>
-        </div>
+        {needUrl && (
+          <div className="field full">
+            <label>回调地址 *（{CHANNEL_TEXT[form.channel]}）</label>
+            <Input
+              placeholder="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=..."
+              value={form.webhook_url}
+              onChange={(e) => setForm({ ...form, webhook_url: e.target.value })}
+            />
+          </div>
+        )}
       </div>
-    </div>
+      {err && <div className="note text-red-fg">{err}</div>}
+      <p className="note">
+        匹配规则：关键词默认任一命中即召回（按命中率评分）；城市与学历为附加筛选，留空表示不限。
+      </p>
+      <p className="note">
+        自动执行：按所选频率在后台定时跑匹配并推送，只推送<b>未推送过</b>的新岗位；
+        选「不自动执行」则只在你点「立即执行」时运行。时区为北京时间。
+      </p>
+    </Modal>
   );
 }
 
@@ -572,60 +581,57 @@ interface PreviewModalProps {
 
 function PreviewModal({ result, onClose, onRun, runBusy }: PreviewModalProps) {
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">
-          匹配预览 · {result.subscription.name}
-          <button className="x" onClick={onClose}>×</button>
-        </div>
-        <div className="modal-b">
-          <div className="stat">
-            <span>近 <b>{result.window_days}</b> 天扫描 <b>{result.scanned}</b> 条</span>
-            <span>命中 <b>{result.matched}</b> 条</span>
-          </div>
-
-          {result.items.length === 0 ? (
-            <div className="empty">当前条件下没有匹配到岗位，试试放宽关键词或城市。</div>
-          ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>公司与岗位</th>
-                  <th>城市</th>
-                  <th>薪资</th>
-                  <th>相关度</th>
-                  <th>匹配说明</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.items.slice(0, 20).map((j) => (
-                  <tr key={j.id}>
-                    <td>
-                      <div className="co">{j.company || '—'}</div>
-                      <div>{j.title || '—'}</div>
-                    </td>
-                    <td>{j.city || '—'}</td>
-                    <td className="money">{j.salary || '面议'}</td>
-                    <td><span className="badge blue">{fmtConfidence(j.match_score)}</span></td>
-                    <td className="src">{j.match_reason}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-          <p className="note">
-            预览只做匹配计算，不会产生推送记录。规则合适的话直接点「立即推送」即可，
-            系统会跳过已推送过的岗位。
-          </p>
-        </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onClose}>关闭</button>
-          <button className="btn primary" onClick={() => onRun()} disabled={runBusy}>
-            {runBusy ? '推送中…' : '立即推送'}
-          </button>
-        </div>
+    <Modal
+      open
+      title={`匹配预览 · ${result.subscription.name}`}
+      width={720}
+      onCancel={onClose}
+      footer={[
+        <button key="close" className="btn" onClick={onClose}>关闭</button>,
+        <button key="run" className="btn primary" onClick={() => onRun()} disabled={runBusy}>
+          {runBusy ? '推送中…' : '立即推送'}
+        </button>,
+      ]}
+    >
+      <div className="stat">
+        <span>近 <b>{result.window_days}</b> 天扫描 <b>{result.scanned}</b> 条</span>
+        <span>命中 <b>{result.matched}</b> 条</span>
       </div>
-    </div>
+
+      {result.items.length === 0 ? (
+        <div className="empty">当前条件下没有匹配到岗位，试试放宽关键词或城市。</div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>公司与岗位</th>
+              <th>城市</th>
+              <th>薪资</th>
+              <th>相关度</th>
+              <th>匹配说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            {result.items.slice(0, 20).map((j) => (
+              <tr key={j.id}>
+                <td>
+                  <div className="co">{j.company || '—'}</div>
+                  <div>{j.title || '—'}</div>
+                </td>
+                <td>{j.city || '—'}</td>
+                <td className="money">{j.salary || '面议'}</td>
+                <td><span className="badge blue">{fmtConfidence(j.match_score)}</span></td>
+                <td className="src">{j.match_reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <p className="note">
+        预览只做匹配计算，不会产生推送记录。规则合适的话直接点「立即推送」即可，
+        系统会跳过已推送过的岗位。
+      </p>
+    </Modal>
   );
 }
 

@@ -6,6 +6,8 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DatePicker, Input, Modal, Select, Slider } from 'antd';
+import dayjs from 'dayjs';
 import {
   ApiError, api, type Application, type Institution, type PageResult, type Recommender,
 } from '../lib/api';
@@ -99,17 +101,24 @@ export function ApplyTab({ onNeedAuth }: { onNeedAuth: () => void }) {
         </div>
 
         <div className="filters">
-          <input
+          <Input
+            style={{ minWidth: 200 }}
+            allowClear
             placeholder="搜索院校 / 项目"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
           />
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="all">全部状态</option>
-            {APPLICATION_STATUS_ORDER.map((s) => (
-              <option key={s} value={s}>{APPLICATION_STATUS[s].text}</option>
-            ))}
-          </select>
+          <Select
+            style={{ minWidth: 130 }}
+            value={status}
+            onChange={(v) => setStatus(v)}
+            options={[
+              { value: 'all', label: '全部状态' },
+              ...APPLICATION_STATUS_ORDER.map((s) => ({
+                value: s, label: APPLICATION_STATUS[s].text,
+              })),
+            ]}
+          />
           <button className="btn sm" onClick={req.reload} disabled={req.pending}>
             {req.pending ? '刷新中…' : '刷新'}
           </button>
@@ -165,16 +174,16 @@ export function ApplyTab({ onNeedAuth }: { onNeedAuth: () => void }) {
                       <td>{a.platform || '—'}</td>
                       <td>
                         {editCell?.id === a.id && editCell.field === 'status' ? (
-                          <select
+                          <Select
                             autoFocus
+                            style={{ width: 120 }}
                             value={draft}
-                            onChange={(e) => { setDraft(e.target.value); commitInline(a, 'status', e.target.value); }}
+                            onChange={(v) => { setDraft(v); commitInline(a, 'status', v); }}
                             onBlur={() => setEditCell(null)}
-                          >
-                            {APPLICATION_STATUS_ORDER.map((s) => (
-                              <option key={s} value={s}>{APPLICATION_STATUS[s].text}</option>
-                            ))}
-                          </select>
+                            options={APPLICATION_STATUS_ORDER.map((s) => ({
+                              value: s, label: APPLICATION_STATUS[s].text,
+                            }))}
+                          />
                         ) : (
                           <span
                             className={`badge ${st.tone} cursor-pointer`}
@@ -187,9 +196,9 @@ export function ApplyTab({ onNeedAuth }: { onNeedAuth: () => void }) {
                       </td>
                       <td>
                         {editCell?.id === a.id && editCell.field === 'progress' ? (
-                          <input
+                          <Input
                             type="number" min={0} max={100} autoFocus
-                            className="w-[80px]"
+                            style={{ width: 80 }}
                             value={draft}
                             onChange={(e) => setDraft(e.target.value)}
                             onBlur={() => commitInline(a, 'progress', draft)}
@@ -305,56 +314,64 @@ function ApplicationModal({ onClose, onSaved }: { onClose: () => void; onSaved: 
   };
 
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">新建申请<button className="x" onClick={onClose}>×</button></div>
-        <div className="modal-b">
-          <div className="form-grid">
-            <div className="field full">
-              <label>从院校项目库选择（可选，自动带出信息）</label>
-              <select value={institutionId} onChange={(e) => pick(e.target.value)}>
-                <option value="">手动填写</option>
-                {institutions.map((i) => (
-                  <option key={i.id} value={i.id}>{i.name} · {i.program}（{i.platform}）</option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>院校名称 *</label>
-              <input value={form.institution_name}
-                onChange={(e) => setForm({ ...form, institution_name: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>项目</label>
-              <input value={form.program}
-                onChange={(e) => setForm({ ...form, program: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>申请平台</label>
-              <input placeholder="ApplyWeb / Liaison / Slate" value={form.platform}
-                onChange={(e) => setForm({ ...form, platform: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>截止日期</label>
-              <input type="date" value={form.deadline}
-                onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
-            </div>
-            <div className="field full">
-              <label>备注</label>
-              <textarea value={form.notes}
-                onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-            </div>
-          </div>
-          {err && <div className="note text-red-fg">{err}</div>}
+    <Modal
+      open
+      title="新建申请"
+      width={720}
+      onCancel={onClose}
+      footer={[
+        <button key="cancel" className="btn" onClick={onClose}>取消</button>,
+        <button key="save" className="btn primary" onClick={() => void save()} disabled={busy}>
+          {busy ? '保存中…' : '创建'}
+        </button>,
+      ]}
+    >
+      <div className="form-grid">
+        <div className="field full">
+          <label>从院校项目库选择（可选，自动带出信息）</label>
+          <Select
+            style={{ width: '100%' }}
+            value={institutionId || undefined}
+            onChange={(v) => pick(v ?? '')}
+            options={[
+              { value: '', label: '手动填写' },
+              ...institutions.map((i) => ({
+                value: String(i.id), label: `${i.name} · ${i.program}（${i.platform}）`,
+              })),
+            ]}
+          />
         </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onClose}>取消</button>
-          <button className="btn primary" onClick={() => void save()} disabled={busy}>
-            {busy ? '保存中…' : '创建'}
-          </button>
+        <div className="field">
+          <label>院校名称 *</label>
+          <Input value={form.institution_name}
+            onChange={(e) => setForm({ ...form, institution_name: e.target.value })} />
+        </div>
+        <div className="field">
+          <label>项目</label>
+          <Input value={form.program}
+            onChange={(e) => setForm({ ...form, program: e.target.value })} />
+        </div>
+        <div className="field">
+          <label>申请平台</label>
+          <Input placeholder="ApplyWeb / Liaison / Slate" value={form.platform}
+            onChange={(e) => setForm({ ...form, platform: e.target.value })} />
+        </div>
+        <div className="field">
+          <label>截止日期</label>
+          <DatePicker
+            style={{ width: '100%' }}
+            value={form.deadline ? dayjs(form.deadline) : null}
+            onChange={(d) => setForm({ ...form, deadline: d ? d.format('YYYY-MM-DD') : '' })}
+          />
+        </div>
+        <div className="field full">
+          <label>备注</label>
+          <Input.TextArea rows={3} value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })} />
         </div>
       </div>
-    </div>
+      {err && <div className="note text-red-fg">{err}</div>}
+    </Modal>
   );
 }
 
@@ -380,37 +397,39 @@ function UpdateModal({ app, onClose, onSaved }: { app: Application; onClose: () 
   };
 
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">更新进度 · {app.institution_name}<button className="x" onClick={onClose}>×</button></div>
-        <div className="modal-b">
-          <div className="field mb-[12px]">
-            <label>状态</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              {APPLICATION_STATUS_ORDER.map((s) => (
-                <option key={s} value={s}>{APPLICATION_STATUS[s].text}</option>
-              ))}
-            </select>
-          </div>
-          <div className="field mb-[12px]">
-            <label>进度：{progress}%</label>
-            <input type="range" min={0} max={100} step={5} value={progress}
-              onChange={(e) => setProgress(Number(e.target.value))} />
-          </div>
-          <div className="field">
-            <label>备注</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
-          </div>
-          {err && <div className="note text-red-fg">{err}</div>}
-        </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onClose}>取消</button>
-          <button className="btn primary" onClick={() => void save()} disabled={busy}>
-            {busy ? '保存中…' : '保存'}
-          </button>
-        </div>
+    <Modal
+      open
+      title={`更新进度 · ${app.institution_name}`}
+      onCancel={onClose}
+      footer={[
+        <button key="cancel" className="btn" onClick={onClose}>取消</button>,
+        <button key="save" className="btn primary" onClick={() => void save()} disabled={busy}>
+          {busy ? '保存中…' : '保存'}
+        </button>,
+      ]}
+    >
+      <div className="field mb-[12px]">
+        <label>状态</label>
+        <Select
+          style={{ width: '100%' }}
+          value={status}
+          onChange={(v) => setStatus(v)}
+          options={APPLICATION_STATUS_ORDER.map((s) => ({
+            value: s, label: APPLICATION_STATUS[s].text,
+          }))}
+        />
       </div>
-    </div>
+      <div className="field mb-[12px]">
+        <label>进度：{progress}%</label>
+        <Slider min={0} max={100} step={5} value={progress}
+          onChange={(v) => setProgress(v)} />
+      </div>
+      <div className="field">
+        <label>备注</label>
+        <Input.TextArea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
+      </div>
+      {err && <div className="note text-red-fg">{err}</div>}
+    </Modal>
   );
 }
 
@@ -463,80 +482,77 @@ function RecommenderModal({ app, onClose }: { app: Application; onClose: () => v
   };
 
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">
-          推荐信管理 · {app.institution_name}
-          <button className="x" onClick={onClose}>×</button>
+    <Modal
+      open
+      title={`推荐信管理 · ${app.institution_name}`}
+      width={720}
+      onCancel={onClose}
+      footer={[
+        <button key="close" className="btn" onClick={onClose}>关闭</button>,
+        <button key="add" className="btn primary" onClick={() => void add()} disabled={busy}>
+          {busy ? '添加中…' : '添加推荐人'}
+        </button>,
+      ]}
+    >
+      {loading && <div className="loading"><span className="spinner" />加载中…</div>}
+
+      {!loading && items.length === 0 && (
+        <div className="empty py-[20px]">暂无推荐人，请在下方登记。</div>
+      )}
+
+      {!loading && items.length > 0 && (
+        <table>
+          <thead>
+            <tr><th>姓名</th><th>职称 / 单位</th><th>邮箱</th><th>状态</th><th>操作</th></tr>
+          </thead>
+          <tbody>
+            {items.map((r) => {
+              const st = statusMeta(RECOMMENDER_STATUS, r.status);
+              return (
+                <tr key={r.id}>
+                  <td className="co">{r.name}</td>
+                  <td>{[r.title, r.org].filter(Boolean).join(' · ') || '—'}</td>
+                  <td className="src">{r.email || '—'}</td>
+                  <td><span className={`badge ${st.tone}`}>{st.text}</span></td>
+                  <td>
+                    {r.status === 'pending' ? (
+                      <button className="btn sm" onClick={() => void invite(r.id)}>标记已邀请</button>
+                    ) : (
+                      <span className="src">{fmtDate(r.invited_at)}</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+
+      <div className="panel-title mt-[20px]">登记新推荐人</div>
+      <div className="form-grid">
+        <div className="field">
+          <label>姓名 *</label>
+          <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
-        <div className="modal-b">
-          {loading && <div className="loading"><span className="spinner" />加载中…</div>}
-
-          {!loading && items.length === 0 && (
-            <div className="empty py-[20px]">暂无推荐人，请在下方登记。</div>
-          )}
-
-          {!loading && items.length > 0 && (
-            <table>
-              <thead>
-                <tr><th>姓名</th><th>职称 / 单位</th><th>邮箱</th><th>状态</th><th>操作</th></tr>
-              </thead>
-              <tbody>
-                {items.map((r) => {
-                  const st = statusMeta(RECOMMENDER_STATUS, r.status);
-                  return (
-                    <tr key={r.id}>
-                      <td className="co">{r.name}</td>
-                      <td>{[r.title, r.org].filter(Boolean).join(' · ') || '—'}</td>
-                      <td className="src">{r.email || '—'}</td>
-                      <td><span className={`badge ${st.tone}`}>{st.text}</span></td>
-                      <td>
-                        {r.status === 'pending' ? (
-                          <button className="btn sm" onClick={() => void invite(r.id)}>标记已邀请</button>
-                        ) : (
-                          <span className="src">{fmtDate(r.invited_at)}</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-
-          <div className="panel-title mt-[20px]">登记新推荐人</div>
-          <div className="form-grid">
-            <div className="field">
-              <label>姓名 *</label>
-              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>邮箱</label>
-              <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>职称</label>
-              <input placeholder="教授 / 副教授 / 主管" value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>单位</label>
-              <input value={form.org} onChange={(e) => setForm({ ...form, org: e.target.value })} />
-            </div>
-          </div>
-
-          <p className="note">
-            合规说明：本功能仅登记推荐人信息并跟踪状态，实际邀请与提交由你在院校申请系统内自行完成。
-          </p>
+        <div className="field">
+          <label>邮箱</label>
+          <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onClose}>关闭</button>
-          <button className="btn primary" onClick={() => void add()} disabled={busy}>
-            {busy ? '添加中…' : '添加推荐人'}
-          </button>
+        <div className="field">
+          <label>职称</label>
+          <Input placeholder="教授 / 副教授 / 主管" value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        </div>
+        <div className="field">
+          <label>单位</label>
+          <Input value={form.org} onChange={(e) => setForm({ ...form, org: e.target.value })} />
         </div>
       </div>
-    </div>
+
+      <p className="note">
+        合规说明：本功能仅登记推荐人信息并跟踪状态，实际邀请与提交由你在院校申请系统内自行完成。
+      </p>
+    </Modal>
   );
 }
 
@@ -559,38 +575,38 @@ function InstitutionModal({ onClose }: { onClose: () => void }) {
   }, [authed, keyword]);
 
   return (
-    <div className="modal-mask" onClick={onClose}>
-      <div className="modal wide" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">院校项目库<button className="x" onClick={onClose}>×</button></div>
-        <div className="modal-b">
-          <div className="filters">
-            <input placeholder="搜索院校 / 项目" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-          </div>
-          {loading && <div className="loading"><span className="spinner" />加载中…</div>}
-          {!loading && data.length === 0 && <div className="empty">未找到匹配的院校项目。</div>}
-          {!loading && data.length > 0 && (
-            <table>
-              <thead>
-                <tr><th>院校</th><th>国家</th><th>项目</th><th>平台</th><th>截止</th></tr>
-              </thead>
-              <tbody>
-                {data.map((i) => (
-                  <tr key={i.id}>
-                    <td className="co">{i.name}</td>
-                    <td>{i.country}</td>
-                    <td>{i.program}</td>
-                    <td>{i.platform}</td>
-                    <td>{fmtDate(i.deadline)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onClose}>关闭</button>
-        </div>
+    <Modal
+      open
+      title="院校项目库"
+      width={720}
+      onCancel={onClose}
+      footer={[
+        <button key="close" className="btn" onClick={onClose}>关闭</button>,
+      ]}
+    >
+      <div className="filters">
+        <Input allowClear placeholder="搜索院校 / 项目" value={keyword} onChange={(e) => setKeyword(e.target.value)} />
       </div>
-    </div>
+      {loading && <div className="loading"><span className="spinner" />加载中…</div>}
+      {!loading && data.length === 0 && <div className="empty">未找到匹配的院校项目。</div>}
+      {!loading && data.length > 0 && (
+        <table>
+          <thead>
+            <tr><th>院校</th><th>国家</th><th>项目</th><th>平台</th><th>截止</th></tr>
+          </thead>
+          <tbody>
+            {data.map((i) => (
+              <tr key={i.id}>
+                <td className="co">{i.name}</td>
+                <td>{i.country}</td>
+                <td>{i.program}</td>
+                <td>{i.platform}</td>
+                <td>{fmtDate(i.deadline)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </Modal>
   );
 }

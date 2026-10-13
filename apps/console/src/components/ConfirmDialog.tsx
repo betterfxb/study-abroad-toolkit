@@ -1,11 +1,10 @@
 /**
  * 通用二次确认弹窗 —— 删除等不可逆操作前拦一道。
- *
- * 之前「删除订阅」是点一下直接删掉且无任何拦截，误触即丢数据；
- * 这里统一成受控组件，样式复用既有 .modal* 类，不引入新依赖。
+ * antd Modal 实现，对外 API 不变（title/text/okText/danger/onCancel/onConfirm）。
  */
 
 import { useEffect, useState } from 'react';
+import { Modal } from 'antd';
 
 export interface ConfirmOptions {
   title: string;
@@ -27,7 +26,7 @@ export function ConfirmDialog({
 }: Props) {
   const [busy, setBusy] = useState(false);
 
-  // Esc 关闭，与既有弹窗习惯一致
+  // Esc 关闭（antd Modal 自带，busy 时拦截）
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !busy) onCancel();
@@ -46,22 +45,25 @@ export function ConfirmDialog({
   };
 
   return (
-    <div className="modal-mask" onClick={() => { if (!busy) onCancel(); }}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-h">
-          {title}
-          <button className="x" onClick={onCancel} disabled={busy}>×</button>
-        </div>
-        <div className="modal-b">
-          <div style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.7 }}>{text}</div>
-        </div>
-        <div className="modal-f">
-          <button className="btn" onClick={onCancel} disabled={busy}>取消</button>
-          <button className={`btn ${danger ? 'danger' : 'primary'}`} onClick={() => void go()} disabled={busy}>
-            {busy ? '处理中…' : okText}
-          </button>
-        </div>
-      </div>
-    </div>
+    <Modal
+      open
+      title={title}
+      onCancel={() => { if (!busy) onCancel(); }}
+      maskClosable={!busy}
+      keyboard={!busy}
+      footer={[
+        <button key="cancel" className="btn" onClick={onCancel} disabled={busy}>取消</button>,
+        <button
+          key="ok"
+          className={`btn ${danger ? 'danger' : 'primary'}`}
+          onClick={() => void go()}
+          disabled={busy}
+        >
+          {busy ? '处理中…' : okText}
+        </button>,
+      ]}
+    >
+      <div style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.7 }}>{text}</div>
+    </Modal>
   );
 }

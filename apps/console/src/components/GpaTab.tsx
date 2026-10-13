@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { Input } from 'antd';
 import { GPA_REFERENCE, weightedGpa, type GpaCourseInput } from '../lib/gpa';
 
 interface Row {
@@ -44,21 +45,21 @@ export function GpaTab() {
         {rows.map((r) => (
           <div className="field full" key={r.id}>
             <div className="flex gap-[8px] items-center">
-              <input
-                className="flex-1"
+              <Input
+                style={{ flex: 1 }}
                 placeholder="课程名（可选）"
                 value={r.name}
                 onChange={(e) => update(r.id, { name: e.target.value })}
               />
-              <input
-                className="w-[80px]"
+              <Input
+                style={{ width: 88 }}
                 placeholder="学分"
                 inputMode="decimal"
                 value={r.credits}
                 onChange={(e) => update(r.id, { credits: e.target.value })}
               />
-              <input
-                className="w-[96px]"
+              <Input
+                style={{ width: 104 }}
                 placeholder="百分制"
                 inputMode="decimal"
                 value={r.score}

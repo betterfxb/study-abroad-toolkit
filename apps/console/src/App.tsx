@@ -3,6 +3,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import { AuthModal } from './components/AuthModal';
 import { ApplyTab } from './components/ApplyTab';
 import { GpaTab } from './components/GpaTab';
@@ -62,10 +64,21 @@ function Shell() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <Shell />
-      </ToastProvider>
-    </AuthProvider>
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        token: {
+          colorPrimary: '#2563EB',
+          borderRadius: 10,
+          fontSize: 14,
+        },
+      }}
+    >
+      <AuthProvider>
+        <ToastProvider>
+          <Shell />
+        </ToastProvider>
+      </AuthProvider>
+    </ConfigProvider>
   );
 }

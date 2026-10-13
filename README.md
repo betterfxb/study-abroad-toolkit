@@ -123,7 +123,7 @@ python apps/crawler/tests/e2e_jobs_test.py     # 44 项（SQLite 落地）
 python apps/intelligence/tests/smoke_test.py   # 89 项
 node   apps/extension/tests/smoke_test.js      # 254 项
 cd apps/api && npm test                        # 382 项（网关契约 / 降级 / 订阅调度 / 分布式抢占 / 限流 / 管理后台 / 对象存储 / GPA 代理 / 过期下架鉴权 / 填写会话与日志 / 岗位匹配评分）
-node   apps/console/test/smoke_test.js         # 77 项（控制台：令牌 / 逻辑 / 结构 / 红线 / 订阅调度 / 易用性 / 在线表格 / 一键建订阅 / 体验升级 / 岗位匹配评分）
+node   apps/console/test/smoke_test.js         # 80 项（控制台：令牌 / 逻辑 / 结构 / 红线 / 订阅调度 / 易用性 / 在线表格 / 一键建订阅 / 体验升级 / 岗位匹配评分 / 组件库接入）
 node   apps/console/test/render_test.js        # 11 项（控制台：六 Tab 真实渲染，含新手引导横幅）
 
 # 端到端联调（需先启动对应服务）

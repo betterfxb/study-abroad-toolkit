@@ -36,7 +36,7 @@ docs/           规划 → 详设 → PoC 结论
 
 | 层 | 选型 | 备注 |
 |---|---|---|
-| 控制台 | React 18.3 + Vite 5.4 + TS 5.6 | UnoCSS 0.58 原子层 + 原生语义类共存 |
+| 控制台 | React 18.3 + Vite 5.4 + TS 5.6 | UnoCSS 0.58 原子层 + 原生语义类共存；Ant Design 5 表单控件与弹层 |
 | 孪生站 | React 18.3 + Vite 5.4 + `three` 0.186 | 独立应用 `apps/twin`（独立端口可独立部署，静态引入 three，主包约 +600KB） |
 | 插件 | Chrome MV3 + 原生 ESM JS | **零构建**，直接加载目录即可运行 |
 | 网关 | NestJS 11 + `node:sqlite` | 生产切换 PostgreSQL 时替换 `DatabaseService` |
@@ -58,8 +58,10 @@ docs/           规划 → 详设 → PoC 结论
 - 表单/规则类功能，**界面提示文案必须与后端解析规则一致**（见「顿号」教训）。
 
 **控制台（apps/console）**
-- 设计令牌唯一来源 `src/styles/tokens.css`（主色 `#2563EB`、金 `#D4AF37`、圆角 16/10/8、内容宽 1120）。组件内**不写死颜色**。
+- 设计令牌唯一来源 `src/styles/tokens.css`（主色 `#2563EB`、金 `#D4AF37`、圆角 16/10/8、内容宽 **1280**）。组件内**不写死颜色**。
 - 样式两条腿：既有语义类（`.panel` `.btn` `.badge`…）不动；**新增样式优先用 UnoCSS 原子类**。像素值必须用任意值语法 `mt-[14px]`（≠ Tailwind 的 `mt-14`）；动态宽度（进度条 / 骨架屏百分比）保留内联。
+- **表单控件与弹层统一用 Ant Design 5**（`ConfigProvider` 在 `App.tsx`：`locale=zhCN`、`colorPrimary:'#2563EB'`、`borderRadius:10`）。新表单一律 `Input/Select/DatePicker/Slider/Switch/Input.TextArea`，弹层用 `Modal`（footer 自带 `.btn` 按钮）；**禁止再写裸 `<input>/<select>/<textarea>` 与手写 `.modal-mask`**。Select 空值语义：保留显式 `value:''` 选项（如「全部城市」），不改查询行为。
+- `global.css` **不得**写 `.filters input / .field input` 之类元素级规则——会命中 antd 内部节点；`.filters` 只保留 flex 布局。
 - `virtual:uno.css` **只在 `main.tsx` 引入**（测试不打包 main，故零回归）。
 - 需要鉴权的请求统一走 `useAuth().authed(fn)`（自动带 token、401 自动刷新并重放、单飞）。
 - 列表页三件套：**防抖**（`useDebounced`）+ **竞态保护**（`useRequest`，seq 只认最后一次）+ **筛选变化渲染期回第 1 页**。
@@ -119,7 +121,7 @@ python apps/crawler/tests/smoke_test.py        # 95
 python apps/crawler/tests/e2e_jobs_test.py     # 44
 python apps/intelligence/tests/smoke_test.py   # 89
 node   apps/extension/tests/smoke_test.js      # 254
-node   apps/console/test/smoke_test.js         # 77
+node   apps/console/test/smoke_test.js         # 80
 node   apps/console/test/render_test.js        # 11
 node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
 node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）
