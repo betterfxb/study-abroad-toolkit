@@ -1311,6 +1311,189 @@ async function main() {
     check('blocked 可回到 running', resume.json.data.status === 'running');
   }
 
+  // ------------------------------------------------------------ [22] 岗位匹配度评分
+  group('[22] 岗位匹配度评分（功能 B · POST /api/v1/match/jobs + 纯函数）');
+  {
+    // ---------- 纯函数：切词 / 学历秩 / 权重 ----------
+    const PM = require('../dist/match/profile-match.js');
+    check('splitList 中英逗号/顿号/空白切分',
+      JSON.stringify(PM.splitList('a，b、c d')) === JSON.stringify(['a', 'b', 'c', 'd']));
+    check('splitList 空串与非字符串给空数组',
+      PM.splitList('').length === 0 && PM.splitList(null).length === 0);
+    check('degreeRank 中英映射',
+      PM.degreeRank('硕士') === 4 && PM.degreeRank('本科') === 3 && PM.degreeRank('博士') === 5
+      && PM.degreeRank('高中') === 1 && PM.degreeRank('大专') === 2);
+    check('degreeRank PhD 识别 / 未知值 null',
+      PM.degreeRank('PhD') === 5 && PM.degreeRank('MBA') === null && PM.degreeRank('') === null);
+    const wsum = Object.values(PM.WEIGHTS).reduce((s, v) => s + v, 0);
+    check('五维权重合计 = 1', Math.abs(wsum - 1) < 1e-9);
+
+    // ---------- 纯函数：打分主流程 ----------
+    const profFull = {
+      education: { degree: '硕士', major: '计算机科学与技术' },
+      preferences: { preferred_cities: '北京, 上海', target_majors: '数据分析' },
+      experiences: [{ role: '数据分析实习生', org: 'ACME' }],
+    };
+    const jobHit = {
+      id: 101, title: '数据分析实习生', city: '北京', education_req: '本科及以上',
+      major_req: '计算机相关专业', confidence: 0.85, tags: '数据分析 Python', desc: '负责业务数据分析与报表',
+    };
+    const r1 = PM.scoreJobMatch(profFull, jobHit);
+    check('全维命中打高分', r1.score >= 80 && r1.tier === '高匹配');
+    check('factors 五维齐全', r1.factors.length === 5
+      && r1.factors.map((f) => f.key).join(',') === 'education,major,keywords,city,data');
+    check('无差距时 gaps 为空', Array.isArray(r1.gaps) && r1.gaps.length === 0);
+    check('score 为 0-100 整数', Number.isInteger(r1.score) && r1.score >= 0 && r1.score <= 100);
+
+    const rEmpty = PM.scoreJobMatch({}, { id: 1, confidence: 0.9 });
+    check('空档案判「档案信息不足」得 0 分', rEmpty.score === 0
+      && rEmpty.reason.includes('档案信息不足') && rEmpty.gaps.some((g) => g.includes('完善学历')));
+    const rNoProfSignal = PM.scoreJobMatch({ basic_info: {} }, { id: 1, confidence: 0.9 });
+    check('仅有无关档案内容同样判不足', rNoProfSignal.score === 0 && rNoProfSignal.tier === '低');
+
+    const rCityMiss = PM.scoreJobMatch(profFull, { id: 2, education_req: '硕士', city: '武汉', confidence: null });
+    check('城市 miss 产生差距描述', rCityMiss.gaps.some((g) => g.includes('岗位在武汉') && g.includes('北京')));
+    check('置信度缺失时数据维 na 并剔出分母',
+      rCityMiss.factors.find((f) => f.key === 'data').status === 'na');
+
+    // 学历维
+    check('岗位学历「不限」→ neutral 放行',
+      PM.scoreJobMatch(profFull, { id: 3, education_req: '不限' }).factors.find((f) => f.key === 'education').status === 'neutral');
+    check('岗位缺学历要求 → neutral',
+      PM.scoreJobMatch(profFull, { id: 4 }).factors.find((f) => f.key === 'education').status === 'neutral');
+    check('档案缺学历 → na（不双扣）',
+      PM.scoreJobMatch({ preferences: { target_majors: '数据分析' } }, { id: 5, education_req: '本科' })
+        .factors.find((f) => f.key === 'education').status === 'na');
+    check('档案硕士满足「本科及以上」',
+      PM.scoreJobMatch(profFull, { id: 6, education_req: '本科及以上' }).factors.find((f) => f.key === 'education').status === 'hit');
+    check('「本科、硕士均可」按最宽口径 hit',
+      PM.scoreJobMatch(profFull, { id: 7, education_req: '本科、硕士均可' }).factors.find((f) => f.key === 'education').status === 'hit');
+    const rEduMiss = PM.scoreJobMatch(profFull, { id: 8, education_req: '博士' });
+    check('学历不足 → miss + gap',
+      rEduMiss.factors.find((f) => f.key === 'education').status === 'miss'
+      && rEduMiss.gaps.some((g) => g.includes('岗位要求博士')));
+    const rShape = PM.scoreJobMatch({ education: [{ degree: '硕士', major: '计算机' }] }, { id: 9, education_req: '本科' });
+    check('教育数组形状与对象等价', rShape.factors.find((f) => f.key === 'education').status === 'hit');
+
+    // 专业维（顿号多值 / 后缀降噪）
+    const majorStatus = (req) => PM.scoreJobMatch(profFull, { id: 10, major_req: req })
+      .factors.find((f) => f.key === 'major').status;
+    check('专业顿号多值任一命中即 hit', majorStatus('金融、数学、计算机') === 'hit');
+    check('「X相关专业」剥后缀命中', majorStatus('计算机相关专业') === 'hit');
+    check('「不限」→ neutral', majorStatus('不限') === 'neutral');
+    check('「专业优先」无实义 → neutral', majorStatus('专业优先') === 'neutral');
+    const rMajorMiss = PM.scoreJobMatch(profFull, { id: 11, major_req: '临床医学' });
+    check('专业不符 → miss + gap', rMajorMiss.factors.find((f) => f.key === 'major').status === 'miss'
+      && rMajorMiss.gaps.some((g) => g.includes('临床医学')));
+    check('档案缺专业 → na',
+      PM.scoreJobMatch({ education: [{ degree: '本科' }] }, { id: 12, major_req: '临床医学' })
+        .factors.find((f) => f.key === 'major').status === 'na');
+
+    // 关键词维
+    const kw0 = PM.scoreJobMatch(profFull, { id: 13, desc: '量子区块链岗' });
+    check('关键词 0 命中 → miss 但不产生 gap',
+      kw0.factors.find((f) => f.key === 'keywords').status === 'miss'
+      && !kw0.gaps.some((g) => g.includes('关键词')));
+    check('关键词无信号 → na',
+      PM.scoreJobMatch({}, { id: 14, desc: '数据分析' }).factors.find((f) => f.key === 'keywords').status === 'na');
+
+    // 数据质量维
+    const d90 = PM.scoreJobMatch(profFull, { id: 15, confidence: 0.9 }).factors.find((f) => f.key === 'data');
+    check('置信度 0.9 → 数据质量 90%', d90.status === 'hit' && d90.note === '数据质量 90%');
+    const dOver = PM.scoreJobMatch(profFull, { id: 16, confidence: 1.5 }).factors.find((f) => f.key === 'data');
+    check('置信度越界钳制到 100%', dOver.got === 1 && dOver.note === '数据质量 100%');
+
+    // 归一化与工具
+    check('tierOf 阈值 80/60/40',
+      PM.tierOf(80) === '高匹配' && PM.tierOf(60) === '中等' && PM.tierOf(40) === '较低' && PM.tierOf(39) === '低');
+    const many = PM.scoreJobs(profFull, [{ id: 7 }, { id: 3 }, { id: 9 }]);
+    check('scoreJobs 保序等长', many.length === 3 && many.map((m) => m.id).join(',') === '7,3,9');
+    const optCity = PM.scoreJobMatch(
+      { education: { degree: '本科', major: '计算机' } },
+      { id: 20, city: '上海', education_req: '本科' },
+      { cities: ['上海'] },
+    );
+    check('opts.cities（订阅兜底）参与城市维', optCity.factors.find((f) => f.key === 'city').status === 'hit');
+    const optCityMiss = PM.scoreJobMatch(
+      { education: { degree: '本科', major: '计算机' } },
+      { id: 21, city: '北京', education_req: '本科' },
+      { cities: ['上海'] },
+    );
+    check('兜底城市不符仍记差距', optCityMiss.gaps.some((g) => g.includes('期望城市为上海')));
+
+    const { defaultRateLimitRules } = require('../dist/common/rate-limit');
+    const matchRule = defaultRateLimitRules().find((r) => r.name === 'match');
+    check('限流规则登记 match（/api/v1/match/ · 按用户）',
+      !!matchRule && matchRule.prefix === '/api/v1/match/' && matchRule.byUser === true && matchRule.limit === 60);
+
+    // ---------- HTTP 契约 ----------
+    const noAuth = await api('POST', '/api/v1/match/jobs', { body: { jobs: [{ id: 1 }] } });
+    check('未登录 → 401/1002', noAuth.status === 401 && noAuth.json.code === 1002);
+
+    const regM = await api('POST', '/api/v1/auth/register', {
+      body: { email: `match-${Date.now()}@t.com`, password: 'pw123456' },
+    });
+    const tkM = regM.json.data && regM.json.data.access_token;
+    check('评分用户注册成功', !!tkM);
+
+    const put = await api('PUT', '/api/v1/profile', {
+      token: tkM,
+      body: {
+        education: [{ degree: '硕士', major: '计算机科学与技术' }],
+        preferences: { target_majors: '数据分析' },
+        experiences: [{ role: '数据分析实习生', org: 'ACME' }],
+      },
+    });
+    check('写入档案（数组形状）', put.status === 200);
+
+    const sc = await api('POST', '/api/v1/match/jobs', {
+      token: tkM,
+      body: { jobs: [jobHit, { id: 102, title: '前端', city: '武汉', education_req: '本科', major_req: '不限', confidence: null }] },
+    });
+    check('批量打分成功', sc.status === 201 && sc.json.code === 0);
+    check('返回数量与顺序一致', sc.json.data.scores.length === 2
+      && sc.json.data.scores[0].id === 101 && sc.json.data.scores[1].id === 102);
+    check('每条含 score/tier/reason/factors/gaps',
+      sc.json.data.scores.every((s) => Number.isInteger(s.score) && typeof s.tier === 'string'
+        && typeof s.reason === 'string' && s.factors.length === 5 && Array.isArray(s.gaps)));
+    check('高匹配岗位 tier 为高匹配', sc.json.data.scores[0].score >= 80 && sc.json.data.scores[0].tier === '高匹配');
+
+    const emptyJobs = await api('POST', '/api/v1/match/jobs', { token: tkM, body: { jobs: [] } });
+    check('空 jobs → 1001', emptyJobs.json.code === 1001);
+    const notArray = await api('POST', '/api/v1/match/jobs', { token: tkM, body: { jobs: 'x' } });
+    check('jobs 非数组 → 1001', notArray.json.code === 1001);
+    const badId = await api('POST', '/api/v1/match/jobs', { token: tkM, body: { jobs: [{ id: 'nope' }] } });
+    check('job id 非数值 → 1001', badId.json.code === 1001);
+    const tooMany = await api('POST', '/api/v1/match/jobs', {
+      token: tkM, body: { jobs: Array.from({ length: 101 }, (_, i) => ({ id: i })) },
+    });
+    check('超过 100 条 → 1001', tooMany.json.code === 1001);
+
+    // 跨用户隔离：分数只来自调用者本人档案
+    const regB = await api('POST', '/api/v1/auth/register', {
+      body: { email: `matchb-${Date.now()}@t.com`, password: 'pw123456' },
+    });
+    const tkB2 = regB.json.data && regB.json.data.access_token;
+    const scB = await api('POST', '/api/v1/match/jobs', { token: tkB2, body: { jobs: [jobHit] } });
+    check('空档案用户拿 0 分（不受他人档案影响）',
+      scB.json.data.scores[0].score === 0 && scB.json.data.scores[0].reason.includes('档案信息不足'));
+
+    // 订阅城市兜底：档案不设期望城市，仅靠启用订阅的 cities 命中
+    const putNoCity = await api('PUT', '/api/v1/profile', {
+      token: tkM, body: { education: [{ degree: '硕士', major: '计算机科学与技术' }] },
+    });
+    check('改写档案去掉城市偏好', putNoCity.status === 200);
+    const sub = await api('POST', '/api/v1/subscriptions', {
+      token: tkM, body: { name: '深圳岗', keywords: ['数据分析'], cities: ['深圳'] },
+    });
+    check('创建订阅（含城市）', sub.json.code === 0);
+    const scCity = await api('POST', '/api/v1/match/jobs', {
+      token: tkM, body: { jobs: [{ id: 30, city: '深圳', education_req: '硕士', major_req: '不限', confidence: 0.9 }] },
+    });
+    const cityFactor = scCity.json.data.scores[0].factors.find((f) => f.key === 'city');
+    check('启用订阅的城市兜底命中', cityFactor.status === 'hit' && cityFactor.note.includes('深圳'));
+  }
+
   await app.close();
 
   console.log('\n' + '='.repeat(64));

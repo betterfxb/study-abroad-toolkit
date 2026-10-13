@@ -56,6 +56,7 @@ export function defaultRateLimitRules(): RateLimitRule[] {
     { name: 'admin', prefix: '/api/v1/admin/', windowMs: MINUTE, limit: 60, byUser: true },
     { name: 'scheduler', prefix: '/api/v1/scheduler/', windowMs: MINUTE, limit: 30, byUser: true },
     { name: 'resume-parse', prefix: '/api/v1/resumes/parse', windowMs: MINUTE, limit: 20, byUser: true },
+    { name: 'match', prefix: '/api/v1/match/', windowMs: MINUTE, limit: 60, byUser: true },
     { name: 'default', prefix: '/', windowMs: MINUTE, limit: defaultLimit },
   ];
 }

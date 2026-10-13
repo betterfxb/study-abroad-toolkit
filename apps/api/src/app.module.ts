@@ -17,6 +17,7 @@ import { DatabaseModule } from './db/database.module';
 import { DocumentsModule } from './documents/documents.module';
 import { ExtModule } from './ext/ext.module';
 import { HealthController } from './health.controller';
+import { MatchModule } from './match/match.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ProfileModule } from './profile/profile.module';
 import { ProxyModule } from './proxy/proxy.module';
@@ -35,6 +36,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     NotificationsModule,
     SchedulerModule,
     ExtModule,
+    MatchModule,
     ProxyModule,
   ],
   controllers: [HealthController],
