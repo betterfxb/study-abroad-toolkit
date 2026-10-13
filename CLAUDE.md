@@ -26,6 +26,7 @@ apps/
   extension/     Chrome MV3 插件（模块一执行端，零构建）
   twin/          储能充电站数字孪生独立站（React + three 程序化建模，5174 端口）
 packages/field-dictionary/  跨端共享字段词典（54 语义槽位）
+dashboard-prototype/  跨境电商数据大屏 HTML 原型（`index.html` + `server.js` 静态预览 8899）+ `ozon/` Seller API 接入框架（零依赖，凭据走 `.env`，已在根 gitignore）
 db/             schema.sql + migrate.py + migrations/（0001_init.sql 建基表、0002_gateway_pg.sql 网关 PG 化）+ tests/pg_migration_check.js
 deploy/         docker-compose.yml
 docs/           规划 → 详设 → PoC 结论
@@ -122,6 +123,8 @@ node   apps/console/test/smoke_test.js         # 77
 node   apps/console/test/render_test.js        # 11
 node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
 node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）
+node   dashboard-prototype/ozon/test.js        # 17（Ozon 接入：config/client/adapter 纯逻辑 + mock fetch）
+node   dashboard-prototype/ozon/probe.js       # 凭据连通自检（`.env` 缺 Client-Id 时 exit 2 并打印补齐步骤）
 ```
 
 ## 六、关键决策
@@ -145,6 +148,8 @@ node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装
 - **联调前先确认端口上的进程是本轮构建**（曾因旧进程残留导致「字段不存在」的假象）。
 - **会话默认 `node` 是 nvm v20.5.0**：跑 TS 类型擦除 / `node:sqlite` 必须用受管 Node22 绝对路径（`C:\Users\19560\.workbuddy-ai\binaries\node\versions\22.22.2-3\node.exe`）；`npm test` 会取 PATH 的 node 而失败，直接调 node22。Python 同理用 `binaries\python\envs\default\Scripts\python.exe`。
 - Windows 时钟粒度约 15ms：用时间戳做 Map 键需带上实例标识。
+- **PowerShell 5.1 给 curl.exe 传 JSON body 引号会被吃**（单引号包裹也丢引号），Ozon 报 `code 3 invalid character`；必须写临时文件后 `--data @file`。
+- **Ozon Seller API 要求双头 `Client-Id`（正整数）+ `Api-Key`（UUID）**：缺 Client-Id 时服务端在校验 Api-Key 之前就 400，无法单独验证密钥有效性；两件凭据缺一不可。
 
 **框架**
 - NestJS 11 默认 Express 5：中间件路由 `'*'` 失效，必须写 `'{*splat}'`。
