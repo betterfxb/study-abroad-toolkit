@@ -151,7 +151,10 @@ function InfoPanel() {
       </div>
 
       <div className="panel">
-        <div className="panel-title">申请偏好<span className="sub">决定推荐院校与岗位的排序</span></div>
+        <div className="panel-title">
+          申请偏好
+          <span className="sub">决定推荐院校与岗位的排序、匹配度评分</span>
+        </div>
         <div className="form-grid">
           <F label="目标国家/地区" v={pf.target_countries} on={(v) => set('preferences', 'target_countries', v)}
             placeholder="美国, 英国, 新加坡" />
@@ -160,6 +163,8 @@ function InfoPanel() {
             options={['', '授课型硕士', '研究型硕士', '博士']} />
           <F label="入学季" v={pf.intake} on={(v) => set('preferences', 'intake', v)}
             placeholder="2027 Fall" />
+          <F label="期望工作城市" v={pf.preferred_cities} on={(v) => set('preferences', 'preferred_cities', v)}
+            placeholder="北京, 上海, 深圳" />
         </div>
       </div>
 

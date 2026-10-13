@@ -87,6 +87,13 @@ try {
   if (!tsLoadError) tsLoadError = e.message;
 }
 
+let apiLib = null;
+try {
+  apiLib = await import(new URL('../src/lib/api.ts', import.meta.url).href);
+} catch (e) {
+  if (!tsLoadError) tsLoadError = e.message;
+}
+
 // ================================================================ 1. 设计令牌
 group('1. 设计令牌与样式契约');
 
@@ -712,6 +719,77 @@ test('窄屏：弹窗与面板操作区可换行滚动', () => {
   ok(/\.modal-b\s*\{[^}]*overflow:\s*auto/.test(css), '.modal-b 不可滚');
   ok(/\.panel-title\s*\{[^}]*flex-wrap:\s*wrap/.test(css), '.panel-title 未换行');
   ok(/\.panel-actions\s*\{[^}]*flex-wrap:\s*wrap/.test(css), '.panel-actions 未换行');
+});
+
+// ================================================================ 11. 功能 B · 岗位匹配度
+group('11. 岗位匹配度（功能 B · 评分列 / 详情评估 / 档案城市）');
+
+test('matchTone 四档色阶与网关 tier 阈值一致', () => {
+  ok(fmt, 'format 模块未加载');
+  eq(fmt.matchTone(80), 'green', '80 分');
+  eq(fmt.matchTone(100), 'green', '100 分');
+  eq(fmt.matchTone(79), 'blue', '79 分');
+  eq(fmt.matchTone(60), 'blue', '60 分');
+  eq(fmt.matchTone(59), 'orange', '59 分');
+  eq(fmt.matchTone(40), 'orange', '40 分');
+  eq(fmt.matchTone(39), 'red', '39 分');
+  eq(fmt.matchTone(0), 'red', '0 分');
+  eq(fmt.matchTone(NaN), 'gray', '非法值');
+});
+
+test('api.ts 暴露 matchJobs 端点与评分类型', () => {
+  const src = read('src/lib/api.ts');
+  ok(/matchJobs:\s*\(token/.test(src), '缺少 matchJobs 方法');
+  ok(src.includes("'/api/v1/match/jobs'"), '缺少评分端点路径');
+  ok(/interface MatchScore/.test(src), '缺少 MatchScore 类型');
+  ok(/interface MatchFactor/.test(src), '缺少 MatchFactor 类型');
+  ok(/function matchJobPayload/.test(src), '缺少 matchJobPayload 纯函数');
+});
+
+test('matchJobPayload 只带评分所需字段', () => {
+  ok(apiLib && apiLib.matchJobPayload, 'api.ts 未加载');
+  const job = {
+    id: 7, company: '字节跳动', title: '数据分析实习', city: '北京',
+    salary: '300/天', duration: '3 个月', education_req: '本科', major_req: '统计学',
+    retain_chance: '有', apply_method: '邮件', deadline: '2026-12-01', confidence: 0.9,
+    status: 'active', tags: ['互联网'],
+    article: { id: 1, title: '字节招聘', account_name: '实习速递', url: 'https://x', published_at: '' },
+  };
+  const p = apiLib.matchJobPayload(job);
+  eq(p.id, 7, 'id');
+  eq(p.city, '北京', 'city');
+  eq(p.major_req, '统计学', 'major_req');
+  eq(p.tags, ['互联网'], 'tags');
+  eq(p.article, { title: '字节招聘', account_name: '实习速递' }, 'article 子集');
+  ok(!('apply_method' in p), '不应携带 apply_method');
+  ok(!('status' in p), '不应携带 status');
+});
+
+test('JobsTab 装配评分列（列定义 / 单元格 / 详情评估块）', () => {
+  const src = read('src/components/JobsTab.tsx');
+  ok(/match:\s*'匹配度'/.test(src), '缺少匹配度列标签');
+  ok(/match: true/.test(src), '匹配度列默认可见');
+  ok(/MatchCell/.test(src), '缺少 MatchCell 单元格');
+  ok(/MatchPanel/.test(src), '缺少详情 MatchPanel');
+  ok(/matchMap\s*=\s*useRequest/.test(src), '缺少评分 useRequest');
+  ok(/api\.matchJobs\(t,\s*items\.map\(matchJobPayload\)\)/.test(src), '未按页批量打分');
+  ok(/matchTone\(score\.score\)/.test(src), '未接入 matchTone 色阶');
+  ok(!/onHeaderSort\('match'\)/.test(src), '评分列是客户端指标，不应参与服务端排序');
+  ok(/登录查看匹配度/.test(src), '未登录缺少登录引导');
+  ok(/FACTOR_STATUS/.test(src), '详情缺少因子状态映射');
+});
+
+test('评分请求 fail-open：失败静默降级、未登录不发请求', () => {
+  const src = read('src/components/JobsTab.tsx');
+  ok(/if \(!user \|\| !items\?\.length\) return \{\}/.test(src), '未登录应直接返回空表');
+  ok(/catch \{\s*return \{\};\s*\}/.test(src), '评分失败应静默降级为空表');
+});
+
+test('ProfileTab 提供期望工作城市（preferences.preferred_cities）', () => {
+  const src = read('src/components/ProfileTab.tsx');
+  ok(/期望工作城市/.test(src), '缺少期望工作城市标签');
+  ok(/'preferred_cities'/.test(src), '未写入 preferred_cities');
+  ok(/匹配度评分/.test(src), '申请偏好说明未提匹配度');
 });
 
 // ================================================================ 汇总

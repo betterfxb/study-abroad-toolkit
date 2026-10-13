@@ -122,8 +122,8 @@ python apps/crawler/tests/smoke_test.py        # 95 项
 python apps/crawler/tests/e2e_jobs_test.py     # 44 项（SQLite 落地）
 python apps/intelligence/tests/smoke_test.py   # 89 项
 node   apps/extension/tests/smoke_test.js      # 254 项
-cd apps/api && npm test                        # 332 项（网关契约 / 降级 / 订阅调度 / 分布式抢占 / 限流 / 管理后台 / 对象存储 / GPA 代理 / 过期下架鉴权 / 填写会话与日志）
-node   apps/console/test/smoke_test.js         # 71 项（控制台：令牌 / 逻辑 / 结构 / 红线 / 订阅调度 / 易用性 / 在线表格 / 一键建订阅 / 体验升级）
+cd apps/api && npm test                        # 382 项（网关契约 / 降级 / 订阅调度 / 分布式抢占 / 限流 / 管理后台 / 对象存储 / GPA 代理 / 过期下架鉴权 / 填写会话与日志 / 岗位匹配评分）
+node   apps/console/test/smoke_test.js         # 77 项（控制台：令牌 / 逻辑 / 结构 / 红线 / 订阅调度 / 易用性 / 在线表格 / 一键建订阅 / 体验升级 / 岗位匹配评分）
 node   apps/console/test/render_test.js        # 11 项（控制台：六 Tab 真实渲染，含新手引导横幅）
 
 # 端到端联调（需先启动对应服务）
@@ -189,3 +189,4 @@ node   apps/console/test/integration_live.js   # 23 项（控制台 ↔ 网关 �
 - [ ] 模块二真实源连续跑 3 天（待公众号清单 / 三方数据服务凭据）
 - [x] 官网 P3 自动化（`build-jobs.py` 每日快照（Top50+日期戳+3 天降级）+ `sync-tokens.py` 防漂移 + `deploy-site.ps1` 打包（先冒烟后 zip），冒烟 44→48 项全绿）
 - [x] 模块一 **插件档案拉取**（`profile-sync`：登录/粘贴 Token 后自动 `GET /api/v1/profile` 注入 `cfg.profile`，空档案不覆盖本机手填档案；popup 手动「同步档案」+ 徽标状态；冒烟 234→254＋真机链路 13 项）
+- [x] **功能 B 岗位匹配度评分**（网关 `POST /api/v1/match/jobs` 五维加权纯函数：学历 0.30 / 专业 0.25 / 关键词 0.20 / 城市 0.15 / 数据质量 0.10，`na` 剔分母；控制台岗位列表「匹配度」列 + 详情「匹配度评估」五因子与 gaps + 档案「期望工作城市」→ `preferences.preferred_cities`；订阅城市兜底、未登录 fail-open；契约 §6.5，e2e 332→382、控制台冒烟 71→77）

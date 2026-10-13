@@ -165,6 +165,16 @@ export function confidenceTone(v?: number | null): StatusMeta['tone'] {
   return 'gray';
 }
 
+/** 匹配度色阶（0-100，与网关 tier 阈值一致）：>=80 绿 / >=60 蓝 / >=40 橙 / 其余红 */
+export function matchTone(score: number): StatusMeta['tone'] {
+  const n = Number(score);
+  if (!Number.isFinite(n)) return 'gray';
+  if (n >= 80) return 'green';
+  if (n >= 60) return 'blue';
+  if (n >= 40) return 'orange';
+  return 'red';
+}
+
 /** 薪资展示：空值统一为「面议」 */
 export function fmtSalary(v?: string | null): string {
   const s = (v || '').trim();

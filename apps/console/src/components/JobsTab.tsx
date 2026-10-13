@@ -14,11 +14,12 @@
 
 import { useMemo, useState } from 'react';
 import {
-  ApiError, api, jobsExportUrl, type Facets, type Job, type PageResult,
+  ApiError, api, jobsExportUrl, matchJobPayload,
+  type Facets, type Job, type MatchScore, type PageResult,
 } from '../lib/api';
 import {
   JOB_STATUS, buildQuery, confidenceTone, deadlineText, fmtConfidence, fmtDate, fmtSalary,
-  highlightParts, shortText, statusMeta,
+  highlightParts, matchTone, shortText, statusMeta,
 } from '../lib/format';
 import { useDebounced, useRequest } from '../lib/useRequest';
 import { useAuth, type AuthState, type AuthUser } from '../lib/auth';
@@ -55,14 +56,14 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
 
   // —— 在线表格能力（P1）：列显隐 + 表头点击排序 + 本页就地筛选 ——
   const [visible, setVisible] = useState<Record<string, boolean>>({
-    company: true, city: true, salary: true, education: true,
+    company: true, match: true, city: true, salary: true, education: true,
     retain: true, deadline: true, confidence: true, source: true,
   });
   const [colFilters, setColFilters] = useState<{ company: string; city: string }>({ company: '', city: '' });
   const [colMenu, setColMenu] = useState(false);
 
   const COL_LABELS: Record<string, string> = {
-    company: '公司与岗位', city: '城市', salary: '薪资', education: '学历',
+    company: '公司与岗位', match: '匹配度', city: '城市', salary: '薪资', education: '学历',
     retain: '留用', deadline: '截止', confidence: '置信度', source: '来源',
   };
   const onHeaderSort = (field: string) => {
@@ -105,6 +106,21 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
 
   const data = jobs.data;
   const totalPages = data ? Math.max(1, Math.ceil(data.total / (data.size || SIZE))) : 1;
+
+  // —— 功能 B · 匹配度：登录后按本人档案为当前页岗位批量打分 ——
+  // 评分失败静默降级为空表（fail-open，绝不影响列表浏览）；数据/登录态变化即重取。
+  const matchMap = useRequest<Record<number, MatchScore>>(async () => {
+    const items = data?.items;
+    if (!user || !items?.length) return {};
+    try {
+      const res = await authed((t) => api.matchJobs(t, items.map(matchJobPayload)));
+      const map: Record<number, MatchScore> = {};
+      for (const s of res.scores) map[s.id] = s;
+      return map;
+    } catch {
+      return {};
+    }
+  }, [data, user?.userId ?? 0]);
 
   // 本页就地筛选（客户端，仅作用于当前已加载页；与服务端筛选互补）
   const displayItems = useMemo(() => {
@@ -242,6 +258,7 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
                         />
                       </th>
                     )}
+                    {visible.match && <th>匹配度</th>}
                     {visible.city && (
                       <th className="cursor-pointer select-none" onClick={() => onHeaderSort('city')}>
                         {COL_LABELS.city}{sortIndicator('city')}
@@ -285,6 +302,15 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
                                 {j.tags.slice(0, 3).map((t) => <span key={t} className="tag">{t}</span>)}
                               </div>
                             ) : null}
+                          </td>
+                        )}
+                        {visible.match && (
+                          <td>
+                            <MatchCell
+                              score={matchMap.data?.[j.id]}
+                              hasUser={!!user}
+                              pending={matchMap.pending && matchMap.data === null}
+                            />
                           </td>
                         )}
                         {visible.city && <td><Hl text={j.city || '—'} kw={debouncedKw} /></td>}
@@ -331,6 +357,8 @@ export function JobsTab({ onNeedAuth }: { onNeedAuth: () => void }) {
         <JobDetail
           job={detailJob}
           kw={debouncedKw}
+          score={matchMap.data?.[detailJob.id]}
+          matchPending={matchMap.pending}
           onClose={() => setDetailJob(null)}
           onNeedAuth={onNeedAuth}
           user={user}
@@ -355,6 +383,27 @@ function Hl({ text, kw }: { text?: string | null; kw: string }) {
   );
 }
 
+/** 匹配度单元格：未登录引导 / 评分徽标（title 带 tier 与依据）/ 加载与降级态 */
+function MatchCell({ score, hasUser, pending }: {
+  score?: MatchScore;
+  hasUser: boolean;
+  pending: boolean;
+}) {
+  if (score) {
+    return (
+      <span
+        className={`badge ${matchTone(score.score)}`}
+        title={`${score.tier} · ${score.reason}`}
+      >
+        {score.score}
+      </span>
+    );
+  }
+  if (!hasUser) return <span className="badge gray" title="登录并完善档案后，按你的档案评估匹配度">—</span>;
+  if (pending) return <span className="text-[12px] text-[#94a3b8]">…</span>;
+  return <span className="badge gray" title="评分暂不可用，稍后刷新重试">—</span>;
+}
+
 /** 骨架行：宽度刻意做成不等宽，视觉上更像真实内容 */
 function SkeletonRows({ rows = 6 }: { rows?: number }) {
   return (
@@ -373,11 +422,75 @@ function SkeletonRows({ rows = 6 }: { rows?: number }) {
   );
 }
 
+/** 因子状态 → 展示文案与色调（与网关 profile-match.ts 的 FactorStatus 对齐） */
+const FACTOR_STATUS: Record<string, { text: string; tone: 'gray' | 'blue' | 'green' | 'orange' | 'red' }> = {
+  hit: { text: '命中', tone: 'green' },
+  partial: { text: '部分命中', tone: 'orange' },
+  miss: { text: '未命中', tone: 'red' },
+  neutral: { text: '中立', tone: 'gray' },
+  na: { text: '无信号', tone: 'gray' },
+};
+
+/** 详情内匹配度评估块：总分 + 五维因子 + 差距；未登录时给登录引导 */
+function MatchPanel({ score, pending, user, onNeedAuth }: {
+  score?: MatchScore;
+  pending: boolean;
+  user: AuthUser | null;
+  onNeedAuth: () => void;
+}) {
+  if (!user) {
+    return (
+      <div className="note mt-[14px]">
+        登录并完善档案后，这里会给出与你条件的匹配度评估（学历 / 专业 / 关键词 / 城市 / 数据质量）。
+        <button className="btn sm ml-[8px]" onClick={onNeedAuth}>登录查看匹配度</button>
+      </div>
+    );
+  }
+  if (!score) {
+    return (
+      <div className="note mt-[14px]">
+        {pending ? '正在按你的档案评估匹配度…' : '匹配度暂不可用，稍后刷新重试。'}
+      </div>
+    );
+  }
+  return (
+    <div className="panel mt-[14px]">
+      <div className="panel-title">
+        匹配度评估
+        <span className="sub">{score.reason}</span>
+      </div>
+      <div className="flex items-center gap-[10px] mb-[10px]">
+        <span className={`badge ${matchTone(score.score)}`}>{score.score} 分</span>
+        <b>{score.tier}</b>
+      </div>
+      <div className="form-grid">
+        {score.factors.map((f) => {
+          const meta = FACTOR_STATUS[f.status] || { text: f.status, tone: 'gray' as const };
+          return (
+            <div className="field" key={f.key}>
+              <label>{f.label}</label>
+              <div className="flex items-center gap-[6px] text-[13px] flex-wrap">
+                <span className={`badge ${meta.tone}`}>{meta.text}</span>
+                <span className="text-[#64748b]">{f.note}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {score.gaps.length > 0 && (
+        <div className="note mt-[8px]">差距：{score.gaps.join('；')}</div>
+      )}
+    </div>
+  );
+}
+
 function JobDetail({
-  job, kw, onClose, onNeedAuth, user, authed,
+  job, kw, score, matchPending, onClose, onNeedAuth, user, authed,
 }: {
   job: Job;
   kw: string;
+  score?: MatchScore;
+  matchPending: boolean;
   onClose: () => void;
   onNeedAuth: () => void;
   user: AuthUser | null;
@@ -451,6 +564,8 @@ function JobDetail({
             <span>时长 <b>{job.duration || '—'}</b></span>
             <span>截止 <b>{fmtDate(job.deadline)}</b> <span className={`badge ${dl.tone}`}>{dl.text}</span></span>
           </div>
+
+          <MatchPanel score={score} pending={matchPending} user={user} onNeedAuth={onNeedAuth} />
 
           <div className="form-grid">
             <div className="field">

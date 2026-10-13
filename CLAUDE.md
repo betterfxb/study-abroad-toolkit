@@ -104,7 +104,7 @@ npm test              # 7 项：孪生纯逻辑 + 外壳装配
 # 网关
 cd apps/api && npm install
 npm run build && npm start
-npm test                        # 332 项：契约/降级/调度/分布式抢占/限流/管理后台/对象存储
+npm test                        # 382 项：契约/降级/调度/分布式抢占/限流/管理后台/对象存储/岗位匹配评分
 node test/integration_live.js   # 80 项（需先起 crawler/intelligence）
 node test/multi_instance_live.js# 16 项（真实双进程调度互斥）
 
@@ -118,7 +118,7 @@ python apps/crawler/tests/smoke_test.py        # 95
 python apps/crawler/tests/e2e_jobs_test.py     # 44
 python apps/intelligence/tests/smoke_test.py   # 89
 node   apps/extension/tests/smoke_test.js      # 254
-node   apps/console/test/smoke_test.js         # 71
+node   apps/console/test/smoke_test.js         # 77
 node   apps/console/test/render_test.js        # 11
 node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
 node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）
@@ -143,6 +143,7 @@ node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装
 - `node:sqlite` + WAL 在 Windows 多进程打开会让一方连接**永久只读**，重试无效、必须重开连接。故 Windows 默认 `journal_mode=delete`，非 Windows 用 `wal`（`SQLITE_JOURNAL_MODE` 可覆盖），并内置只读自愈。
 - 本机 **8080 常被环境代理拦截**：curl 需 `--noproxy '*'`。
 - **联调前先确认端口上的进程是本轮构建**（曾因旧进程残留导致「字段不存在」的假象）。
+- **会话默认 `node` 是 nvm v20.5.0**：跑 TS 类型擦除 / `node:sqlite` 必须用受管 Node22 绝对路径（`C:\Users\19560\.workbuddy-ai\binaries\node\versions\22.22.2-3\node.exe`）；`npm test` 会取 PATH 的 node 而失败，直接调 node22。Python 同理用 `binaries\python\envs\default\Scripts\python.exe`。
 - Windows 时钟粒度约 15ms：用时间戳做 Map 键需带上实例标识。
 
 **框架**
@@ -153,6 +154,8 @@ node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装
 - Vite：`tsconfig.node.json` 不能同时 `composite: true` 与 `noEmit: true`（TS6310）。
 - **Express 5 / path-to-regexp v8 的裸 `*` 通配符已失效**，不只是中间件（`'{*splat}'`），**路由参数同样**：`@Put('x/upload/*')` 匹配不到多段路径，必须写 `@Put('x/upload/{*splat}')`，再取 `req.params.splat`（可能是数组，需 `join('/')`）。
 - **JS 默认参数对显式 `undefined` 也生效**：`f(x, undefined)` 会用默认值而非 undefined。测试「未配置」分支要用 `''` 或 `null`，不能用 `undefined`。
+- **TS 参数属性（`constructor(private x: T)`）不被 Node strip-only 支持**：纯逻辑文件一律显式字段赋值（控制台 `ApiError` 已改）。
+- **岗位专业维度不能整串包含**：`major_req` 先 `splitList` 拆顿号/逗号多值，再剥「优先」与「相关专业」类后缀（真实数据出现过 `金融、数学、计算机`）；「专业优先」按 neutral 处理。
 - **DOM 缺省 `maxlength` 为 `-1`（= 无限制）**：提取端必须归一为 `null`，服务端非正限制一律视为未配置——否则全员误判超限（曾把插件自动填充从 13 打到 0）。
 - **handlers 回退路径必须传全参**：`h_date` 脏输入回退曾漏传 `field` 致 TypeError（整条匹配 500），脏数据分支要有回归用例。
 - **限流的窗口边界容易算错**：窗口是 `[at-windowMs, at]`，判断「是否已滑过」要用**最后一次写入的命中时刻** + windowMs，不是第一次。
@@ -181,5 +184,6 @@ node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装
 ## 八、当前进度与阻塞
 
 - 进度清单见 `README.md`「当前进度」，详细轮次记录见 `.workbuddy-ai/memory/`。
+- **功能 B 岗位匹配度评分**已交付（`apps/api/src/match/` 五维加权纯函数 + `POST /api/v1/match/jobs`；控制台匹配度列 / 详情五因子 / 档案「期望工作城市」→ `preferences.preferred_cities`；订阅城市兜底、未登录 fail-open；e2e 332→382、控制台冒烟 71→77）。
 - **长期阻塞项**：`LLM_API_KEY`（模块一第三级匹配 + 模块二 LLM 抽取对比）；公众号清单 / 三方数据服务凭据（模块二真实源基线）。
 - PG 迁移 SQL（`db/migrations/0002_gateway_pg.sql`）已先行落地（环境无关），核查 `node db/tests/pg_migration_check.js`（32 项）；切库时改动面仅 `DatabaseService` 驱动 + `claimDue` 改 `SELECT … FOR UPDATE SKIP LOCKED`（空串时刻改 IS NULL），DDL 无需再动。

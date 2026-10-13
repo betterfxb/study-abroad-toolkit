@@ -15,13 +15,15 @@ export interface Envelope<T> {
 }
 
 export class ApiError extends Error {
-  constructor(
-    public readonly code: number,
-    message: string,
-    public readonly status: number = 0,
-  ) {
+  // 显式字段而非构造参数属性：参数属性需要 transform，Node 类型擦除（strip-only）不支持
+  readonly code: number;
+  readonly status: number;
+
+  constructor(code: number, message: string, status: number = 0) {
     super(message);
     this.name = 'ApiError';
+    this.code = code;
+    this.status = status;
   }
 
   /** 未认证 */
@@ -221,6 +223,64 @@ export interface PageResult<T> {
   items: T[];
 }
 
+// ---- 功能 B · 岗位匹配度（POST /api/v1/match/jobs，契约 §6）----
+
+/** 评分端点入参：只带评分需要的字段（与网关 jobSearchText 对齐） */
+export interface MatchJobInput {
+  id: number;
+  company?: string | null;
+  title?: string | null;
+  city?: string | null;
+  education_req?: string | null;
+  major_req?: string | null;
+  tags?: string[] | null;
+  confidence?: number | null;
+  deadline?: string | null;
+  salary?: string | null;
+  article?: { title?: string | null; account_name?: string | null } | null;
+}
+
+export type MatchFactorStatus = 'hit' | 'partial' | 'miss' | 'neutral' | 'na';
+
+export interface MatchFactor {
+  key: string;
+  label: string;
+  status: MatchFactorStatus;
+  /** 0~1 */
+  got: number;
+  weight: number;
+  note: string;
+}
+
+export interface MatchScore {
+  id: number;
+  /** 0-100 整数 */
+  score: number;
+  tier: string;
+  reason: string;
+  factors: MatchFactor[];
+  gaps: string[];
+}
+
+/** Job → 评分入参（纯函数，便于测试） */
+export function matchJobPayload(job: Job): MatchJobInput {
+  return {
+    id: job.id,
+    company: job.company,
+    title: job.title,
+    city: job.city,
+    education_req: job.education_req,
+    major_req: job.major_req,
+    tags: job.tags,
+    confidence: job.confidence,
+    deadline: job.deadline ?? null,
+    salary: job.salary,
+    article: job.article
+      ? { title: job.article.title, account_name: job.article.account_name }
+      : null,
+  };
+}
+
 export interface Facets {
   cities: { value: string; count: number }[];
   companies: { value: string; count: number }[];
@@ -332,6 +392,10 @@ export const api = {
   jobs: (query = '') => request<PageResult<Job>>('GET', `/api/v1/jobs${query}`),
   jobDetail: (id: number) => request<Job>('GET', `/api/v1/jobs/${id}`),
   facets: (query = '') => request<Facets>('GET', `/api/v1/jobs/facets${query}`),
+
+  // 功能 B · 岗位匹配度评分（登录态，限流 match 60/min）
+  matchJobs: (token: string, jobs: MatchJobInput[]) =>
+    request<{ scores: MatchScore[] }>('POST', '/api/v1/match/jobs', { token, body: { jobs } }),
 
   // 元信息
   services: () => request<ServiceHealth>('GET', '/api/v1/meta/services'),
