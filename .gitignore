@@ -28,3 +28,7 @@ data/
 .playwright-mcp/
 apps/api/storage/
 deploy/out/
+
+# 店铺凭据（勿入库）
+dashboard-prototype/ozon/accounts.json
+dashboard-prototype/ozon/other-channels.json

@@ -26,7 +26,7 @@ apps/
   extension/     Chrome MV3 插件（模块一执行端，零构建）
   twin/          储能充电站数字孪生独立站（React + three 程序化建模，5174 端口）
 packages/field-dictionary/  跨端共享字段词典（54 语义槽位）
-dashboard-prototype/  跨境电商数据大屏 HTML 原型（`index.html` + `server.js` 静态预览 8899）+ `ozon/` Seller API 接入框架（零依赖，凭据走 `.env`，已在根 gitignore）
+dashboard-prototype/  跨境电商数据大屏 HTML 原型（`index.html` + `server.js` 静态预览 8899）+ `ozon/` Seller API 接入框架（零依赖，凭据走 `.env` 或 `ozon/accounts.json` 多账号清单，均已 gitignore）
 db/             schema.sql + migrate.py + migrations/（0001_init.sql 建基表、0002_gateway_pg.sql 网关 PG 化）+ tests/pg_migration_check.js
 deploy/         docker-compose.yml
 docs/           规划 → 详设 → PoC 结论
@@ -121,12 +121,12 @@ python apps/crawler/tests/smoke_test.py        # 95
 python apps/crawler/tests/e2e_jobs_test.py     # 44
 python apps/intelligence/tests/smoke_test.py   # 89
 node   apps/extension/tests/smoke_test.js      # 254
-node   apps/console/test/smoke_test.js         # 80
+node   apps/console/test/smoke_test.js         # 81
 node   apps/console/test/render_test.js        # 11
 node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
 node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）
-node   dashboard-prototype/ozon/test.js        # 17（Ozon 接入：config/client/adapter 纯逻辑 + mock fetch）
-node   dashboard-prototype/ozon/probe.js       # 凭据连通自检（`.env` 缺 Client-Id 时 exit 2 并打印补齐步骤）
+node   dashboard-prototype/ozon/test.js        # 22（Ozon 接入：config/client/adapter 纯逻辑 + mock fetch + 多账号合并）
+node   dashboard-prototype/ozon/probe.js       # 真实拉数自检（单账号；analytics 限 1 次/分钟/Client-Id）
 ```
 
 ## 六、关键决策
@@ -152,6 +152,9 @@ node   dashboard-prototype/ozon/probe.js       # 凭据连通自检（`.env` 缺
 - Windows 时钟粒度约 15ms：用时间戳做 Map 键需带上实例标识。
 - **PowerShell 5.1 给 curl.exe 传 JSON body 引号会被吃**（单引号包裹也丢引号），Ozon 报 `code 3 invalid character`；必须写临时文件后 `--data @file`。
 - **Ozon Seller API 要求双头 `Client-Id`（正整数）+ `Api-Key`（UUID）**：缺 Client-Id 时服务端在校验 Api-Key 之前就 400，无法单独验证密钥有效性；两件凭据缺一不可。
+- **Ozon API 端点实测（2026-10）**：商品列表 `/v3/product/list`（仅 ID）→ 详情 `/v3/product/info/list`（名称/价格/库存，`stocks[].present` 求和即库存）；销售分析是 **`/v1/analytics/data`**（v3/v4 路径 404），免费指标只有 `revenue` + `ordered_units`（sessions/cvr 要 Premium），**限流约 1 次/分钟且按 Client-Id 隔离**（code 8，不同账号可并行预热）；维度值在 `dimensions[].id`（`name` 为空）。多账号清单在 `dashboard-prototype/ozon/accounts.json`（**50 人**，人名区分，gitignore），server 启动自动预热 + 限流账号尾部重试；其他平台（ETSY/TK/Shopify/亚马逊）凭据登记在 `ozon/other-channels.json`（同样 gitignore）。
+- **大屏日期区间一律 T-1 口径**（`adapter.rangeBounds` 截至昨日）：若含当日进行中数据，晨间环比会出现 -91% 之类的假崩盘；analytics 查询仍拉满 30 天，`applyRange` 按 `range?1d|7d|30d|qtd` 切片，前端 `loadRealData` 必须把 `currentRange` 拼进 URL，标签文案用 `range.labels` 联动。
+- **客户店铺库存多为占位值**（抽样张志洋 262 品全部 ~1611 件，疑似 ERP 统一填充）：库存可售天数会算出天文数字，上屏封顶显示 `365+ 天`（tooltip/资讯条/洞察里给真值或"1 年以上"），明细 pill 保留真实库存合计与日均。已知 2 账号（韩正贵、张容华）Ozon 侧 `Api access disabled, please contact support`，需客户在 Ozon 后台开通 API。
 
 **框架**
 - NestJS 11 默认 Express 5：中间件路由 `'*'` 失效，必须写 `'{*splat}'`。
