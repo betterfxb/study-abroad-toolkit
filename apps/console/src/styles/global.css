@@ -185,6 +185,9 @@ tbody tr:hover { background: #fafbfd; }
 .modal-h .x { margin-left: auto; cursor: pointer; color: var(--t3); font-size: 18px; line-height: 1; border: 0; background: none; }
 .modal-b { padding: 24px; }
 .modal-f { padding: 0 24px 24px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+/* antd Modal footer 里放的是自定义 .btn（非 antd 的 .ant-btn），
+   antd 只给自家按钮加间距，裸按钮会贴死——统一在此补 flex + gap */
+.ant-modal-footer { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 
 /* 关键词高亮（岗位表扫读）：底色走金色令牌，不写死颜色 */
 .hl { background: var(--gold-bg); color: inherit; border-radius: 4px; padding: 0 1px; }

@@ -63,7 +63,7 @@ export function AuthModal({ onClose, onDone }: Props) {
       open
       title="留学生助手"
       onCancel={onClose}
-      maskClosable={!busy}
+      mask={{ closable: !busy }}
       footer={[
         <button key="cancel" className="btn" onClick={onClose}>取消</button>,
         <button key="ok" className="btn primary" onClick={() => void submit()} disabled={busy}>

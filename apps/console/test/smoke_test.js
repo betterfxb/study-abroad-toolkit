@@ -819,7 +819,18 @@ test('组件库接入：表单控件与弹层统一走 antd', () => {
     ok(!/<input[^>]*type="date"/.test(src), `${f} 残留原生 date 输入`);
     ok(!/<input[^>]*type="range"/.test(src), `${f} 残留原生 range 输入`);
     ok(!/className="modal-mask"/.test(src), `${f} 残留手写 .modal-mask 弹层`);
+    // antd 6 已弃用 maskClosable（控制台会报 error），统一走 mask.closable
+    ok(!/maskClosable/.test(src), `${f} 残留弃用的 maskClosable（应用 mask={{ closable }}）`);
   }
+});
+
+test('组件库接入：antd Modal footer 按钮间距', () => {
+  // footer 里放的是自定义 .btn（非 .ant-btn），antd 不给它们加间距，会贴死；
+  // global.css 必须有 .ant-modal-footer 的 flex+gap 规则兜底。
+  const css = read('src/styles/global.css');
+  const rule = /\.ant-modal-footer\s*\{([^}]*)\}/.exec(css);
+  ok(rule, '缺少 .ant-modal-footer 间距规则（弹窗按钮会贴死）');
+  ok(/display:\s*flex/.test(rule[1]) && /gap:/.test(rule[1]), '.ant-modal-footer 需 flex + gap');
 });
 
 test('组件库接入：global.css 不再有会命中 antd 内部节点的元素级规则', () => {

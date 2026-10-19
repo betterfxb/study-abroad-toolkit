@@ -49,7 +49,7 @@ export function ConfirmDialog({
       open
       title={title}
       onCancel={() => { if (!busy) onCancel(); }}
-      maskClosable={!busy}
+      mask={{ closable: !busy }}
       keyboard={!busy}
       footer={[
         <button key="cancel" className="btn" onClick={onCancel} disabled={busy}>取消</button>,
