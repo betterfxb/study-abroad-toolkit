@@ -126,7 +126,7 @@ node   apps/console/test/smoke_test.js         # 81
 node   apps/console/test/render_test.js        # 11
 node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
 node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）
-node   dashboard-prototype/ozon/test.js        # 22（Ozon 接入：config/client/adapter 纯逻辑 + mock fetch + 多账号合并）
+node   dashboard-prototype/ozon/test.js        # 27（Ozon 接入：config/client/adapter 纯逻辑 + mock fetch + 多账号合并 + 多渠道 channels 适配层）
 node   dashboard-prototype/ozon/probe.js       # 真实拉数自检（单账号；analytics 限 1 次/分钟/Client-Id）
 ```
 

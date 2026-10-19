@@ -34,7 +34,7 @@ npm test
 在内存库上独立启动网关，覆盖：响应封装 / trace_id / 鉴权全流程 / Profile(JSON Merge Patch) /
 院校 / 申请 / 推荐人 / 订阅 / 订阅匹配与推送 / 订阅定时调度 / 分布式调度抢占 /
 日志模式解析与只读故障识别 / 材料 / 简历解析 / 幂等 / 错误码 / 上游降级 / 跨用户隔离 /
-GPA 换算代理降级 / 过期下架管理鉴权 / 填写会话与日志。当前 **332 项**；三服务联调 **80 项**（含 GPA 服务端换算与会话上报）。
+GPA 换算代理降级 / 过期下架管理鉴权 / 填写会话与日志。当前 **382 项**；三服务联调 **80 项**（含 GPA 服务端换算与会话上报）；外部发信器 `test/smtp_sender.mjs` **11 项**（mock SMTP，零外部依赖）。
 
 ### 三服务联调（75 项，需三个服务都在跑）
 
@@ -144,7 +144,7 @@ PATCH 语义：对象递归合并、`null` 删除键、数组整体替换。
 > 匹配与推送实现在 `notifications/`：匹配引擎是**纯函数**（关键词 OR/AND + 城市 + 学历，
 > 按 0.55×关键词命中率 + 0.25×城市权重 + 0.20×置信度评分）；
 > 推送记录表对 `(subscription_id, job_id)` 建唯一约束保证**幂等**。
-> 渠道语义：`email` 渲染后排队（`pending`，由发信器消费）；`wechat` / `webhook` 直接 POST 到
+> 渠道语义：`email` 渲染后排队（`pending`，由外部发信器消费——参考实现 `scripts/smtp-sender.mjs`，零依赖 SMTP，同批聚合为一封 digest）；`wechat` / `webhook` 直接 POST 到
 > `webhook_url`（`sent` / `failed`）。`channel` 为后两者时必须提供合法 http(s) 地址。
 
 **定时执行（`scheduler/`）**
