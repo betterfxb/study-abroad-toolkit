@@ -130,6 +130,7 @@ node   apps/console/test/render_test.js        # 11 项（控制台：六 Tab �
 node   apps/extension/tests/integration_e2e.js # 31 项（插件 ↔ 字段匹配服务，含两步向导）
 node   apps/api/test/integration_live.js       # 80 项（网关 ↔ 采集/匹配服务，含订阅推送与定时、GPA 服务端换算、会话上报）
 node   apps/api/test/multi_instance_live.js    # 16 项（多实例调度互斥：真实双进程 + 共享 SQLite）
+node   apps/api/test/smtp_sender.mjs           # 11 项（外部发信器：pending 批聚合 digest + 裸 SMTP，mock 服务器集成）
 node   apps/console/test/integration_live.js   # 23 项（控制台 ↔ 网关 ↔ 采集服务）
 ```
 

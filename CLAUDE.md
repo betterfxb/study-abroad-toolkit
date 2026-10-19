@@ -110,6 +110,7 @@ npm run build && npm start
 npm test                        # 382 项：契约/降级/调度/分布式抢占/限流/管理后台/对象存储/岗位匹配评分
 node test/integration_live.js   # 80 项（需先起 crawler/intelligence）
 node test/multi_instance_live.js# 16 项（真实双进程调度互斥）
+node test/smtp_sender.mjs       # 11 项（外部发信器：纯函数 + mock SMTP 集成）
 
 # 采集（无 Docker 时）
 cd apps/crawler
