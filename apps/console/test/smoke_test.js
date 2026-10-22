@@ -109,7 +109,7 @@ test('tokens.css 圆角与布局宽度符合规范', () => {
   ok(/--r-lg:\s*16px/.test(css), '--r-lg 应为 16px');
   ok(/--r-md:\s*10px/.test(css), '--r-md 应为 10px');
   ok(/--r-sm:\s*8px/.test(css), '--r-sm 应为 8px');
-  ok(/--wrap:\s*1280px/.test(css), '--wrap 应为 1280px');
+  ok(/--wrap:\s*min\(1800px,\s*96vw\)/.test(css), '--wrap 应为流式 min(1800px, 96vw)——宽屏铺满，不得回退固定柱宽');
 });
 
 test('global.css 通过 @import 引入 tokens.css', () => {

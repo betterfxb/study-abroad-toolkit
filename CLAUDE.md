@@ -58,7 +58,7 @@ docs/           规划 → 详设 → PoC 结论
 - 表单/规则类功能，**界面提示文案必须与后端解析规则一致**（见「顿号」教训）。
 
 **控制台（apps/console）**
-- 设计令牌唯一来源 `src/styles/tokens.css`（主色 `#2563EB`、金 `#D4AF37`、圆角 16/10/8、内容宽 **1280**）。组件内**不写死颜色**。
+- 设计令牌唯一来源 `src/styles/tokens.css`（主色 `#2563EB`、金 `#D4AF37`、圆角 16/10/8、内容柱**流式 `min(1800px, 96vw)`**——宽屏铺满、封顶防超长行，禁止回退固定柱宽，smoke 有断言）。组件内**不写死颜色**。
 - 样式两条腿：既有语义类（`.panel` `.btn` `.badge`…）不动；**新增样式优先用 UnoCSS 原子类**。像素值必须用任意值语法 `mt-[14px]`（≠ Tailwind 的 `mt-14`）；动态宽度（进度条 / 骨架屏百分比）保留内联。
 - **表单控件与弹层统一用 Ant Design 5**（`ConfigProvider` 在 `App.tsx`：`locale=zhCN`、`colorPrimary:'#2563EB'`、`borderRadius:10`）。新表单一律 `Input/Select/DatePicker/Slider/Switch/Input.TextArea`，弹层用 `Modal`（footer 自带 `.btn` 按钮）；**禁止再写裸 `<input>/<select>/<textarea>` 与手写 `.modal-mask`**。Select 空值语义：保留显式 `value:''` 选项（如「全部城市」），不改查询行为。
 - `global.css` **不得**写 `.filters input / .field input` 之类元素级规则——会命中 antd 内部节点；`.filters` 只保留 flex 布局。
