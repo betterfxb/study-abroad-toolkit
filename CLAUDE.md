@@ -44,7 +44,8 @@ docs/           规划 → 详设 → PoC 结论
 | 数据库 | PostgreSQL 16（生产）/ SQLite（本地与测试） | 本机**无 Docker、无 PG** |
 | 对象存储 | S3 兼容（MinIO / 云 OSS） | 预签名目前为登记式，未接真实对象存储 |
 
-**端口（固定，勿改）**：网关 8080 · intelligence 8090 · crawler 8100 · 控制台 5173 · 孪生站 5174（strictPort，防漂移）。
+**端口（默认值）**：网关 8080 · intelligence 8090 · crawler 8100 · 控制台 5173 · 孪生站 5174（strictPort，防漂移）。
+⚠️ **本机为共享开发机**：8080 被外部 Python `main.py`、8090 被外部 `server.py`、5173 被另一前端项目占用。实际跑 **网关 8081 / intelligence 8091 / 控制台 5174**，控制台启动需 `GATEWAY_BASE=http://127.0.0.1:8081`。完整命令见 `交接文档-2026-10-31.md` §2。**kill 端口前先查 pid 归属。**
 
 **运行时（隔离环境，勿污染全局）**
 - Python：`C:/Users/19560/.workbuddy-ai/binaries/python/envs/default`（已装 fastapi / sqlalchemy / celery / pydantic / httpx / psycopg）
