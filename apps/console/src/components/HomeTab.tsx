@@ -39,7 +39,7 @@ export function HomeTab({ onNav }: Props) {
   return (
     <>
       <div className="hero">
-        <h1>AI 驱动，载你走完留学申请与实习求职</h1>
+        <h1><em>AI 驱动</em>，载你走完留学申请与实习求职</h1>
         <p>
           留学网申自动填写 · 实习信息全网聚合 · 文书与简历精修。
           把重复枯燥的事交给 AI，你只负责检查与决策。

@@ -118,7 +118,9 @@ console.log('\n2. Tab 1 · 工具集首页');
 
 test('渲染 Hero 与 8 张工具卡片', () => {
   const html = renderAt('#/home');
-  ok(html.includes('AI 驱动，载你走完留学申请与实习求职'), '缺少 Hero 标题');
+  // 标题里的「AI 驱动」有渐变高亮 <em>，断言前先剥标签，避免改样式就误报
+  const text = html.replace(/<[^>]+>/g, '');
+  ok(text.includes('AI 驱动，载你走完留学申请与实习求职'), '缺少 Hero 标题');
   const titles = [
     '留学网申自动填写', '实习信息聚合', '简历优化 AI', '文书精修 AI',
     '院校项目库', '推荐信管理', '申请进度表', '成绩换算',
