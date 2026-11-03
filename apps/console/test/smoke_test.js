@@ -112,6 +112,26 @@ test('tokens.css 圆角与布局宽度符合规范', () => {
   ok(/--wrap:\s*min\(1800px,\s*96vw\)/.test(css), '--wrap 应为流式 min(1800px, 96vw)——宽屏铺满，不得回退固定柱宽');
 });
 
+test('tokens.css 字号阶梯（--fs-*）齐全，正文基准 15px', () => {
+  const css = read('src/styles/tokens.css');
+  const scale = [
+    ['--fs-3xs', 11], ['--fs-2xs', 12], ['--fs-xs', 13], ['--fs-sm', 14],
+    ['--fs-md', 15], ['--fs-lg', 16], ['--fs-xl', 17], ['--fs-hero', 40],
+  ];
+  for (const [name, px] of scale) {
+    ok(new RegExp(`${name}:\\s*${px}px`).test(css), `${name} 应为 ${px}px`);
+  }
+});
+
+test('global.css 字号一律走 --fs-* 令牌（无裸 14/15px 正文）', () => {
+  const css = read('src/styles/global.css');
+  ok(!/font-size:\s*(14|15)px/.test(css), '残留裸 14/15px——正文与标题字号必须用 var(--fs-*)');
+  ok(/font-size:\s*var\(--fs-md\)/.test(css), 'body 未使用 --fs-md 正文基准');
+  ok(/font-size:\s*var\(--fs-hero\)/.test(css), '.hero h1 未使用 --fs-hero');
+  const n = (css.match(/var\(--fs-/g) || []).length;
+  ok(n >= 30, `字号令牌引用过少（${n}）`);
+});
+
 test('global.css 通过 @import 引入 tokens.css', () => {
   ok(/@import\s+['"]\.\/tokens\.css['"]/.test(read('src/styles/global.css')), '缺少 tokens.css 引入');
 });
@@ -800,6 +820,8 @@ test('组件库接入：ConfigProvider 与主题令牌', () => {
   ok(/colorPrimary:\s*'#2563EB'/.test(src), '主题主色未对齐 #2563EB');
   ok(/locale=\{zhCN\}/.test(src), '未配置 zhCN 语言包');
   ok(/borderRadius:\s*10/.test(src), '圆角未对齐令牌（10）');
+  // 与 tokens.css 的 --fs-md 对齐：antd 控件字号跟随正文基准（15px）
+  ok(/fontSize:\s*15/.test(src), 'antd fontSize 未对齐 --fs-md（15）');
 });
 
 test('组件库接入：表单控件与弹层统一走 antd', () => {

@@ -63,7 +63,7 @@ export function ConfirmDialog({
         </button>,
       ]}
     >
-      <div style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.7 }}>{text}</div>
+      <div style={{ fontSize: 'var(--fs-sm)', color: 'var(--t2)', lineHeight: 1.7 }}>{text}</div>
     </Modal>
   );
 }

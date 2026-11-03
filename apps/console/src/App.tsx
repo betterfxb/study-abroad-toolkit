@@ -70,7 +70,8 @@ export default function App() {
         token: {
           colorPrimary: '#2563EB',
           borderRadius: 10,
-          fontSize: 14,
+          // 与 --fs-md 对齐（正文基准 15px），antd 控件字号跟随令牌
+          fontSize: 15,
         },
       }}
     >

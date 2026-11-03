@@ -123,7 +123,7 @@ python apps/crawler/tests/smoke_test.py        # 95
 python apps/crawler/tests/e2e_jobs_test.py     # 44
 python apps/intelligence/tests/smoke_test.py   # 89
 node   apps/extension/tests/smoke_test.js      # 254
-node   apps/console/test/smoke_test.js         # 81
+node   apps/console/test/smoke_test.js         # 83
 node   apps/console/test/render_test.js        # 11
 node   apps/site/test/smoke.mjs                # 48（官网 11 页 + 动效 + 内容构件 + SEO/红线/断链 + P3 自动化）
 node   apps/twin/test/smoke_twin.js            # 7（孪生纯逻辑 + 外壳装配）

@@ -381,7 +381,7 @@ function ResumePanel() {
           <div className="panel-title">解析结果</div>
           <pre style={{
             background: 'var(--line-soft)', padding: 14, borderRadius: 'var(--r-sm)',
-            fontSize: 12, overflowX: 'auto', lineHeight: 1.6,
+            fontSize: 'var(--fs-xs)', overflowX: 'auto', lineHeight: 1.6,
           }}>
             {JSON.stringify(parsed, null, 2)}
           </pre>
