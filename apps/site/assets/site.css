@@ -6,6 +6,10 @@
  * 内容干活页（P2 起）用浅色；断点与控制台对齐：960px 两列、560px 一列。
  */
 
+/* 浅色底上 --gold 原值对比不足：站内文字统一用「压暗金」，
+   仍由 --gold 派生（冒烟禁止硬编码色值，注释里也不许写色值） */
+:root { --gold-ink: color-mix(in srgb, var(--gold) 66%, var(--t1)); }
+
 * { box-sizing: border-box; }
 
 body {
@@ -60,15 +64,15 @@ body.landing-dark .menu-btn { background: var(--ink-soft); border-color: var(--i
 /* ---------------------------------------------------------- Hero（暗黑沉浸） */
 .hero {
   position: relative; overflow: hidden;
-  text-align: center; padding: 96px 0 72px;
+  text-align: center; padding: 108px 0 88px;
   background:
-    radial-gradient(600px 300px at 20% 10%, var(--ink-soft), transparent),
-    radial-gradient(700px 340px at 85% 25%, var(--ink-soft), transparent),
-    var(--ink);
+    radial-gradient(620px 330px at 16% 6%, color-mix(in srgb, var(--blue-light) 92%, transparent), transparent 62%),
+    radial-gradient(700px 350px at 88% 20%, color-mix(in srgb, var(--purple-bg) 80%, transparent), transparent 60%),
+    linear-gradient(165deg, var(--card) 0%, color-mix(in srgb, var(--blue-light) 50%, var(--card)) 52%, var(--ink) 100%);
 }
-.hero-kicker { color: var(--ink-dim); font-size: 13px; letter-spacing: 2px; margin-bottom: 16px; }
-.hero h1 { font-size: 54px; line-height: 1.25; margin: 0 0 16px; color: var(--ink-text); }
-.hero-sub { color: var(--ink-dim); margin: 0 auto 28px; max-width: 720px; font-size: 16px; }
+.hero-kicker { color: var(--gold-ink); font-size: 14px; letter-spacing: 3px; margin-bottom: 18px; }
+.hero h1 { font-size: 60px; line-height: 1.22; font-weight: 800; letter-spacing: -.5px; margin: 0 0 20px; color: var(--ink-text); }
+.hero-sub { color: var(--ink-dim); margin: 0 auto 32px; max-width: 760px; font-size: 18px; line-height: 1.9; }
 /* 单栏页（hero-sub 直挂 .wrap，无 .hero-copy）：左对齐 */
 .hero > .wrap > .hero-sub { margin: 0 0 28px; }
 .hero > .wrap > .hero-tags { justify-content: flex-start; }
@@ -78,13 +82,42 @@ body.landing-dark .menu-btn { background: var(--ink-soft); border-color: var(--i
   border: 1px solid var(--ink-line); border-radius: 999px;
   padding: 4px 12px; font-size: 12px; color: var(--ink-dim); background: transparent;
 }
-.pill.gold { border-color: var(--gold); color: var(--gold); background: transparent; }
+.pill.gold { border-color: var(--gold-ink); color: var(--gold-ink); background: transparent; }
 
 /* ---------------------------------------------------------- 主体（暗黑延续） */
 main { background: var(--ink); }
-section { margin-bottom: 0; padding: 48px 0; }
-section h2 { font-size: 24px; margin: 0 0 8px; color: var(--ink-text); }
-.sec-sub { color: var(--ink-dim); font-size: 14px; margin: 0 0 20px; }
+section { margin-bottom: 0; padding: 76px 0; }
+section h2 {
+  position: relative; padding-left: 16px;
+  font-size: 32px; font-weight: 700; letter-spacing: -.3px;
+  margin: 0 0 10px; color: var(--ink-text); line-height: 1.35;
+}
+/* 标题 accent 竖条（与控制台 .panel-title 同气质，走令牌） */
+section h2::before {
+  content: ''; position: absolute; left: 0; top: 52%; transform: translateY(-50%);
+  width: 5px; height: .95em; border-radius: 3px;
+  background: linear-gradient(180deg, var(--blue), var(--purple));
+}
+.sec-sub { color: var(--ink-dim); font-size: 16px; margin: 0 0 28px; line-height: 1.8; }
+
+/* 图标（浅色化后补「太素」）：全部 currentColor，随文字色走令牌 */
+.eyebrow svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 6px; color: var(--gold-ink); }
+.pain-list li { display: flex; align-items: flex-start; gap: 9px; }
+.pain-list li svg { flex: none; width: 17px; height: 17px; margin-top: 2px; color: var(--red); }
+.card-ico {
+  width: 44px; height: 44px; border-radius: var(--r-md); display: grid; place-items: center;
+  margin-bottom: 14px; color: var(--blue);
+  background: color-mix(in srgb, var(--blue-light) 75%, var(--card));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 12%, transparent);
+}
+.card-ico svg { width: 23px; height: 23px; }
+.arch-node svg { display: block; width: 24px; height: 24px; margin-bottom: 9px; color: var(--blue); }
+
+/* 分区层次：交替底色带，打破「整页一块死色」（颜色全走令牌） */
+#pain, #stats, #compare, #compliance {
+  background: color-mix(in srgb, var(--blue-light) 55%, var(--card));
+  box-shadow: inset 0 1px 0 var(--line), inset 0 -1px 0 var(--line);
+}
 
 .pain-list { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .pain-list li {
@@ -239,7 +272,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 
 /* 章节眉题（金色编号＋小字） */
 .eyebrow {
-  color: var(--gold); font-size: 12px; letter-spacing: 3px; margin-bottom: 8px;
+  color: var(--gold-ink); font-size: 12px; letter-spacing: 3px; margin-bottom: 8px;
   font-weight: 600;
 }
 
@@ -302,7 +335,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 }
 .faq-list summary { cursor: pointer; font-size: 14px; font-weight: 600; list-style: none; }
 .faq-list summary::-webkit-details-marker { display: none; }
-.faq-list summary::before { content: "+ "; color: var(--gold); }
+.faq-list summary::before { content: "+ "; color: var(--gold-ink); }
 .faq-list details[open] summary::before { content: "− "; }
 .faq-list details p { color: var(--ink-dim); font-size: 13px; line-height: 1.8; margin: 10px 0 2px; }
 
@@ -347,7 +380,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 }
 .stat-item { text-align: center; }
 .stat-num {
-  font-size: 32px; font-weight: 700; color: var(--gold);
+  font-size: 32px; font-weight: 700; color: var(--gold-ink);
   font-variant-numeric: tabular-nums;
 }
 .stat-num small { font-size: 16px; font-weight: 600; color: var(--ink-text); }
@@ -384,7 +417,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 }
 .compare-col h3 { margin: 0 0 14px; font-size: 15px; }
 .compare-col.before h3 { color: var(--ink-dim); }
-.compare-col.after h3 { color: var(--blue-light); }
+.compare-col.after h3 { color: var(--blue); }
 .compare-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .compare-col li { font-size: 13px; color: var(--ink-text); padding-left: 20px; position: relative; }
 .compare-col.before li::before { content: "✕"; position: absolute; left: 0; color: var(--red); }
@@ -435,7 +468,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   border-radius: var(--r-md); padding: 14px;
 }
 .slot-group h4 {
-  margin: 0 0 8px; font-size: 13px; color: var(--gold);
+  margin: 0 0 8px; font-size: 13px; color: var(--gold-ink);
   display: flex; align-items: center; gap: 6px;
 }
 .slot-group h4 .cnt {
@@ -458,7 +491,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   width: 44px; height: 44px; margin: 0 auto 12px;
   display: flex; align-items: center; justify-content: center;
   background: var(--ink); border-radius: var(--r-md);
-  color: var(--blue-light); font-size: 22px;
+  color: var(--blue); font-size: 22px;
 }
 .src-card h3 { margin: 0 0 6px; font-size: 15px; color: var(--ink-text); }
 .src-card p { margin: 0; font-size: 13px; color: var(--ink-dim); line-height: 1.6; }
@@ -471,8 +504,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   font-size: 13px; line-height: 1.8; color: var(--ink-text);
   overflow-x: auto;
 }
-.rule-demo .key { color: var(--blue-light); }
-.rule-demo .str { color: var(--gold); }
+.rule-demo .key { color: var(--blue); }
+.rule-demo .str { color: var(--gold-ink); }
 .rule-demo .cmt { color: var(--ink-dim); }
 
 /* 更新日志 */
@@ -527,7 +560,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   text-align: center; padding: 22px 10px 8px;
 }
 .calc-out .out-num {
-  font-size: 56px; font-weight: 700; color: var(--gold);
+  font-size: 56px; font-weight: 700; color: var(--gold-ink);
   font-variant-numeric: tabular-nums; line-height: 1.1;
 }
 .calc-out .out-label { font-size: 13px; color: var(--ink-dim); margin-top: 6px; }
@@ -543,7 +576,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   background: var(--ink); border: 1px solid var(--ink-line); border-radius: var(--r-md);
   padding: 14px; text-align: center;
 }
-.result-cell b { display: block; font-size: 24px; color: var(--gold); font-variant-numeric: tabular-nums; }
+.result-cell b { display: block; font-size: 24px; color: var(--gold-ink); font-variant-numeric: tabular-nums; }
 .result-cell span { font-size: 12px; color: var(--ink-dim); }
 
 /* 内链互荐 */
