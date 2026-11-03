@@ -143,6 +143,21 @@ test('Hero 浅色炫酷：居中舞台 + 星尘动效 + 悬浮胶囊顶栏', () 
   ok(/prefers-reduced-motion/.test(css), '缺少「减弱动态效果」兜底');
 });
 
+test('首页动效五件套：入场 / 跟随 / 跑马灯 / 数字滚动 / 光扫', () => {
+  const css = read('src/styles/global.css');
+  const js = read('src/components/HomeTab.tsx');
+  ok(/@keyframes word-in/.test(css), '缺少标题逐词入场（word-in）');
+  ok(/@keyframes em-flow/.test(css), '缺少渐变字色相流动（em-flow）');
+  ok(/\.hero-glow/.test(css) && /\.hero\.tracking \.hero-glow/.test(css), '缺少指针跟随光斑（未交互时须自动漂移）');
+  ok(/@keyframes marquee/.test(css), '缺少跑马灯（marquee）');
+  ok(/@keyframes card-in/.test(css), '缺少卡片错峰入场（card-in）');
+  ok(/@keyframes btn-shine/.test(css), '缺少主按钮光扫（btn-shine）');
+  ok(/function CountUp/.test(js), '缺少 CountUp 数字滚动');
+  // 红线：基础态不得 opacity:0（起始态只能写在 @keyframes 的 from 里）
+  ok(!/\.card\s*\{[^}]*opacity:\s*0/s.test(css), '.card 不得以 opacity:0 为常态');
+  ok(!/\.marquee-track\s*\{[^}]*opacity:\s*0/s.test(css), '跑马灯不得以 opacity:0 为常态');
+});
+
 test('global.css 通过 @import 引入 tokens.css', () => {
   ok(/@import\s+['"]\.\/tokens\.css['"]/.test(read('src/styles/global.css')), '缺少 tokens.css 引入');
 });

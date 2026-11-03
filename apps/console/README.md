@@ -140,7 +140,7 @@ src/
 
 `npm test` 为**零依赖**测试，共 75 项：
 
-**冒烟测试（84 项，`test/smoke_test.js`）** 分十层：
+**冒烟测试（85 项，`test/smoke_test.js`）** 分十层：
 
 1. 设计令牌与样式契约（含「不得残留旧酒红主色」回归）
 2. 纯逻辑行为（`format.ts` / `tools.ts`，借助 Node ≥22.18 原生类型擦除直接 `import`）
