@@ -39,6 +39,8 @@ export function HomeTab({ onNav }: Props) {
   return (
     <>
       <div className="hero">
+        {/* 星尘点阵：纯 CSS 背景点阵 + 渐隐遮罩，加载即可见（非视口显现），自适应宽度 */}
+        <div className="hero-dust" aria-hidden="true" />
         <h1><em>AI 驱动</em>，载你走完留学申请与实习求职</h1>
         <p>
           留学网申自动填写 · 实习信息全网聚合 · 文书与简历精修。

@@ -63,7 +63,13 @@
   --fs-md:  15px;  /* 正文基准：body / 导航 / 页签 / 顶栏 */
   --fs-lg:  16px;  /* 引导语：Hero 副标题 */
   --fs-xl:  17px;  /* 标题：卡片 h3 / 面板标题 / 弹窗标题 / logo */
-  --fs-hero: 40px; /* Hero 大标题 */
+  --fs-hero: 56px; /* Hero 大标题（对标参考站 60px 的浅色版舞台感） */
+
+  /* Hero 渐变与光效（浅色炫酷）——颜色一律走令牌，不写死 rgba */
+  --grad-brand: linear-gradient(120deg, var(--blue), color-mix(in srgb, var(--blue) 55%, var(--purple)));
+  --glow-blue: color-mix(in srgb, var(--blue) 30%, transparent);
+  --glow-purple: color-mix(in srgb, var(--purple) 16%, transparent);
+  --glow-gold: color-mix(in srgb, var(--gold) 24%, transparent);
 
   /* 布局：流式内容柱——宽屏铺满（封顶 1800 保可读性），窄窗随视口伸缩 */
   --wrap: min(1800px, 96vw);

@@ -116,7 +116,7 @@ test('tokens.css 字号阶梯（--fs-*）齐全，正文基准 15px', () => {
   const css = read('src/styles/tokens.css');
   const scale = [
     ['--fs-3xs', 11], ['--fs-2xs', 12], ['--fs-xs', 13], ['--fs-sm', 14],
-    ['--fs-md', 15], ['--fs-lg', 16], ['--fs-xl', 17], ['--fs-hero', 40],
+    ['--fs-md', 15], ['--fs-lg', 16], ['--fs-xl', 17], ['--fs-hero', 56],
   ];
   for (const [name, px] of scale) {
     ok(new RegExp(`${name}:\\s*${px}px`).test(css), `${name} 应为 ${px}px`);
@@ -130,6 +130,17 @@ test('global.css 字号一律走 --fs-* 令牌（无裸 14/15px 正文）', () =
   ok(/font-size:\s*var\(--fs-hero\)/.test(css), '.hero h1 未使用 --fs-hero');
   const n = (css.match(/var\(--fs-/g) || []).length;
   ok(n >= 30, `字号令牌引用过少（${n}）`);
+});
+
+test('Hero 浅色炫酷：居中舞台 + 星尘动效 + 悬浮胶囊顶栏', () => {
+  const css = read('src/styles/global.css');
+  ok(/\.hero \{[^}]*text-align:\s*center/s.test(css), '.hero 未居中');
+  ok(/@keyframes hero-shift/.test(css), '缺少 Hero 动态渐变（hero-shift）');
+  ok(/\.hero-dust \{[^}]*opacity:\s*\.85/s.test(css), '星尘须常驻可见——不得 opacity:0 等视口显现（会截成空白）');
+  ok(/@keyframes dust-drift/.test(css), '缺少星尘漂移动画（dust-drift）');
+  ok(/\.topbar-in \{[^}]*border-radius:\s*999px/s.test(css), '顶栏未改悬浮玻璃胶囊');
+  ok(/\.card \{[^}]*border-box/s.test(css), '卡片未用渐变描边（padding-box/border-box）');
+  ok(/prefers-reduced-motion/.test(css), '缺少「减弱动态效果」兜底');
 });
 
 test('global.css 通过 @import 引入 tokens.css', () => {
