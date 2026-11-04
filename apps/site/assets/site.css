@@ -8,7 +8,7 @@
 
 /* 浅色底上 --gold 原值对比不足：站内文字统一用「压暗金」，
    仍由 --gold 派生（冒烟禁止硬编码色值，注释里也不许写色值） */
-:root { --gold-ink: color-mix(in srgb, var(--gold) 66%, var(--t1)); }
+:root { --gold-ink: color-mix(in srgb, var(--gold) 50%, var(--t1)); }
 
 * { box-sizing: border-box; }
 
@@ -67,9 +67,10 @@ body.landing-dark .menu-btn { background: var(--ink-soft); border-color: var(--i
   position: relative; overflow: hidden;
   text-align: center; padding: 84px 0 64px;
   background:
-    radial-gradient(620px 330px at 16% 6%, color-mix(in srgb, var(--blue-light) 92%, transparent), transparent 62%),
-    radial-gradient(700px 350px at 88% 20%, color-mix(in srgb, var(--purple-bg) 80%, transparent), transparent 60%),
-    linear-gradient(165deg, var(--card) 0%, color-mix(in srgb, var(--blue-light) 50%, var(--card)) 52%, var(--ink) 100%);
+    radial-gradient(780px 430px at 10% -12%, color-mix(in srgb, var(--blue) 24%, transparent), transparent 62%),
+    radial-gradient(700px 400px at 92% 16%, color-mix(in srgb, var(--purple) 20%, transparent), transparent 60%),
+    radial-gradient(560px 340px at 58% 108%, color-mix(in srgb, var(--gold) 14%, transparent), transparent 64%),
+    linear-gradient(152deg, color-mix(in srgb, var(--blue-light) 96%, var(--card)) 0%, var(--card) 46%, color-mix(in srgb, var(--purple-bg) 92%, var(--card)) 100%);
 }
 .hero-kicker { color: var(--gold-ink); font-size: 18px; letter-spacing: 3px; margin-bottom: 18px; }
 .hero h1 { font-size: 60px; line-height: 1.22; font-weight: 800; letter-spacing: -.5px; margin: 0 0 20px; color: var(--ink-text); }
@@ -126,7 +127,8 @@ section h2::before {
   box-shadow: var(--shadow-sm);
 }
 .trust-metrics { display: flex; flex-wrap: wrap; gap: 34px; }
-.tm { display: flex; align-items: baseline; gap: 8px; }
+.tm { display: flex; align-items: center; gap: 9px; }
+.tm svg { width: 21px; height: 21px; color: var(--blue); flex: none; }
 .trust-bar .stat-num { font-size: 27px; color: var(--blue); }
 .trust-metrics span { font-size: 15px; color: var(--ink-dim); }
 .trust-badges { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -136,7 +138,7 @@ section h2::before {
   color: var(--green-fg);
   border: 1px solid color-mix(in srgb, var(--green) 35%, transparent);
 }
-.cta-note { font-size: 15px; color: var(--ink-dim); margin: -6px 0 18px; }
+.cta-note { font-size: 16px; color: var(--ink-text); margin: 0 0 24px; }
 .cta-assure { font-size: 15px; color: var(--ink-dim); margin: 16px 0 0; }
 
 /* 首屏滚动引导（transform only，命名含 drift 进白名单） */
@@ -357,7 +359,24 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 }
 
 /* Hero 左右分栏：左文案右控制台 mock 窗 */
-.hero-in { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; text-align: left; }
+.hero-in { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; text-align: left; position: relative; z-index: 1; }
+
+/* Hero 装饰层：网格点纹理 + 同心圆环（静态、纯装饰、不参与动画白名单） */
+.hero-deco {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--blue) 26%, transparent) 1.1px, transparent 1.7px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 58% 66% at 78% 34%, black 8%, transparent 72%);
+  mask-image: radial-gradient(ellipse 58% 66% at 78% 34%, black 8%, transparent 72%);
+}
+.hero-deco::before {
+  content: ""; position: absolute; right: -110px; top: -170px; width: 540px; height: 540px;
+  border: 1.5px solid color-mix(in srgb, var(--blue) 28%, transparent); border-radius: 50%;
+}
+.hero-deco::after {
+  content: ""; position: absolute; right: 70px; top: -20px; width: 320px; height: 320px;
+  border: 1.5px dashed color-mix(in srgb, var(--purple) 34%, transparent); border-radius: 50%;
+}
 .hero { text-align: left; }
 .hero-copy .hero-tags { justify-content: flex-start; }
 .hero-copy .hero-sub { margin: 0 0 34px; max-width: 620px; }
@@ -374,21 +393,22 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 .mock {
   background: var(--ink-soft); border: 1px solid var(--ink-line);
   border-radius: var(--r-lg); overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 36px 72px -34px color-mix(in srgb, var(--blue) 58%, transparent), 0 10px 26px -14px color-mix(in srgb, var(--purple) 32%, transparent);
   transform: perspective(1200px) rotateY(-6deg) rotateX(2deg);
   transition: transform 0.3s ease-out;
 }
 .mock:hover { transform: perspective(1200px) rotateY(-2deg) rotateX(0deg); }
 .mock-bar {
   display: flex; gap: 6px; align-items: center;
-  padding: 10px 14px; border-bottom: 1px solid var(--ink-line);
-  font-size: 16px; color: var(--ink-dim);
+  padding: 12px 16px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--blue) 94%, var(--ink-soft)), color-mix(in srgb, var(--purple) 88%, var(--ink-soft)));
+  font-size: 16px; color: var(--card);
 }
-.mock-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--ink-line); }
+.mock-bar i { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, var(--card) 62%, transparent); }
 .mock-bar i:first-child { background: var(--red); }
 .mock-bar span {
-  margin-left: 8px; background: var(--ink); border: 1px solid var(--ink-line);
-  border-radius: 999px; padding: 2px 12px;
+  margin-left: 8px; background: var(--ink); border: 1px solid color-mix(in srgb, var(--card) 45%, transparent);
+  border-radius: 999px; padding: 2px 12px; color: var(--ink-text);
 }
 .mock-row {
   display: flex; justify-content: space-between; align-items: center;
