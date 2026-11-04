@@ -53,17 +53,17 @@
   --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
 
-  /* 字号阶梯（2026-11-03 整体上调一档：正文 14→15，其余按同比例上抬）。
+  /* 字号阶梯（2026-11-03 上调一档；2026-11-04 按用户「还是小」反馈再上调一档）。
      全站字号唯一来源——组件与 global.css 一律 var(--fs-*)，不要写死 px。
      只调这里就能全局缩放字号。 */
-  --fs-3xs: 11px;  /* 极小：HOT 徽标 */
-  --fs-2xs: 12px;  /* 徽标 / 标签 / 头像 / chips 提示 */
-  --fs-xs:  13px;  /* 辅助：小按钮 / 胶囊 / 来源 / 表头 / label / 脚注 */
-  --fs-sm:  14px;  /* 次要正文：卡片描述 / 表格正文 / 按钮 / 统计 / 分页 / toast */
-  --fs-md:  15px;  /* 正文基准：body / 导航 / 页签 / 顶栏 */
-  --fs-lg:  16px;  /* 引导语：Hero 副标题 */
-  --fs-xl:  17px;  /* 标题：卡片 h3 / 面板标题 / 弹窗标题 / logo */
-  --fs-hero: 56px; /* Hero 大标题（对标参考站 60px 的浅色版舞台感） */
+  --fs-3xs: 13px;  /* 极小：HOT 徽标 */
+  --fs-2xs: 14px;  /* 徽标 / 标签 / 头像 / chips 提示 */
+  --fs-xs:  15px;  /* 辅助：小按钮 / 胶囊 / 来源 / 表头 / label / 脚注 */
+  --fs-sm:  16px;  /* 次要正文：卡片描述 / 表格正文 / 按钮 / 统计 / 分页 / toast */
+  --fs-md:  17px;  /* 正文基准：body / 导航 / 页签 / 顶栏 */
+  --fs-lg:  18px;  /* 引导语：Hero 副标题 */
+  --fs-xl:  19px;  /* 标题：卡片 h3 / 面板标题 / 弹窗标题 / logo */
+  --fs-hero: 60px; /* Hero 大标题 */
 
   /* Hero 渐变与光效（浅色炫酷）——颜色一律走令牌，不写死 rgba */
   --grad-brand: linear-gradient(120deg, var(--blue), color-mix(in srgb, var(--blue) 55%, var(--purple)));

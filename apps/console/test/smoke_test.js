@@ -115,8 +115,8 @@ test('tokens.css 圆角与布局宽度符合规范', () => {
 test('tokens.css 字号阶梯（--fs-*）齐全，正文基准 15px', () => {
   const css = read('src/styles/tokens.css');
   const scale = [
-    ['--fs-3xs', 11], ['--fs-2xs', 12], ['--fs-xs', 13], ['--fs-sm', 14],
-    ['--fs-md', 15], ['--fs-lg', 16], ['--fs-xl', 17], ['--fs-hero', 56],
+    ['--fs-3xs', 13], ['--fs-2xs', 14], ['--fs-xs', 15], ['--fs-sm', 16],
+    ['--fs-md', 17], ['--fs-lg', 18], ['--fs-xl', 19], ['--fs-hero', 60],
   ];
   for (const [name, px] of scale) {
     ok(new RegExp(`${name}:\\s*${px}px`).test(css), `${name} 应为 ${px}px`);
@@ -846,8 +846,8 @@ test('组件库接入：ConfigProvider 与主题令牌', () => {
   ok(/colorPrimary:\s*'#2563EB'/.test(src), '主题主色未对齐 #2563EB');
   ok(/locale=\{zhCN\}/.test(src), '未配置 zhCN 语言包');
   ok(/borderRadius:\s*10/.test(src), '圆角未对齐令牌（10）');
-  // 与 tokens.css 的 --fs-md 对齐：antd 控件字号跟随正文基准（15px）
-  ok(/fontSize:\s*15/.test(src), 'antd fontSize 未对齐 --fs-md（15）');
+  // 与 tokens.css 的 --fs-md 对齐：antd 控件字号跟随正文基准（17px）
+  ok(/fontSize:\s*17/.test(src), 'antd fontSize 未对齐 --fs-md（17）');
 });
 
 test('组件库接入：表单控件与弹层统一走 antd', () => {

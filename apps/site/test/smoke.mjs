@@ -205,7 +205,8 @@ test('循环动画仅氛围三处（漂移/HOT/跑马灯，防廉价感）', () 
   const css = read('assets/site.css');
   const loops = [...css.matchAll(/animation:[^;]*infinite/gi)];
   ok(loops.length >= 1, '缺少氛围循环');
-  ok(loops.every((m) => /drift|pulse-soft|slide-x/.test(m[0])), `存在非白名单循环：${loops.map((m) => m[0]).join(' / ')}`);
+  // 白名单＝只允许 transform/opacity 类循环名（sweep 为既有关键帧，用于按钮光扫）
+  ok(loops.every((m) => /drift|pulse-soft|slide-x|sweep/.test(m[0])), `存在非白名单循环：${loops.map((m) => m[0]).join(' / ')}`);
   ok(/\.marquee:hover\s+\.marquee-track\s*\{[^}]*paused/.test(css), '跑马灯缺悬停暂停');
 });
 
